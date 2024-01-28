@@ -2,14 +2,18 @@ package tankbattle
 
 import (
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/player"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Game struct {
+	Player *player.Player
 }
 
 func NewGame() (*Game, error) {
-	return &Game{}, nil
+	return &Game{
+		Player: player.New(),
+	}, nil
 }
 
 // Layout implements ebiten.Game's Layout.
@@ -19,6 +23,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 
 // Update updates the current game state.
 func (g *Game) Update() error {
+	g.Player.Update()
 	return nil
 }
 
