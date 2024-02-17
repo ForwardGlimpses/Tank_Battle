@@ -1,6 +1,17 @@
 package player
 
-import "github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
+import (
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
+)
+
+const (
+	Up int = iota
+	Down
+	Left
+	Right
+)
 
 type Player struct {
 	Tank *tank.Tank
@@ -20,5 +31,17 @@ func (p *Player) Update() {
 }
 
 func GetDirection() (int, bool) {
+	if inpututil.IsKeyJustPressed(ebiten.KeyArrowUp) {
+		return Up, true
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyArrowLeft) {
+		return Left, true
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyArrowRight) {
+		return Right, true
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyArrowDown) {
+		return Down, true
+	}
 	return 0, true
 }
