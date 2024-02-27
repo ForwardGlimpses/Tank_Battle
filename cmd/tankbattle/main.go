@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
 	"github.com/hajimehoshi/ebiten/v2"
 )
