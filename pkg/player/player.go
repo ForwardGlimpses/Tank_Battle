@@ -31,7 +31,7 @@ func (p *Player) Update() {
 }
 
 func (p *Player) Draw(screen *ebiten.Image) {
-	p.Tank.Draw(screen)
+		p.Tank.Draw(screen)  
 }
 func GetDirection() (int, bool) {
 	if inpututil.IsKeyJustPressed(ebiten.KeyArrowUp) {
@@ -48,3 +48,4 @@ func GetDirection() (int, bool) {
 	}
 	return 0, false
 }
+
