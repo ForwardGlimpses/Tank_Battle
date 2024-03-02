@@ -1,12 +1,17 @@
 package tank
 
 import (
-	"image"
 
+	"bytes"
+	"image"
+	_ "image/png"
 	//"log"
 	"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/hajimehoshi/ebiten/v2"
+)
+var (
+	m image.Image
 )
 
 const (
@@ -14,23 +19,17 @@ const (
 	Down
 	Left
 	Right
-	step int = 1
+	step int = 1 
 )
 
 type Tank struct {
-	dx    int
-	dy    int
-	Hp    int
-	Image image.Image
+	dx int
+	dy int
+	Hp int
 }
 
 func New() *Tank {
-	return &Tank{
-		dx:    0,
-		dy:    0,
-		Hp:    100,
-		Image: tank.PlayerImage,
-	}
+	return &Tank{}
 }
 
 func (t *Tank) Move(direction int) {
@@ -43,8 +42,8 @@ func (t *Tank) Move(direction int) {
 	} else {
 		t.dy += step
 	}
-	Width, Height := config.GetWindowSize()
-	MinWidth, MinHeight := config.GetWindowLimit()
+	Width , Height := config.GetWindowSize()
+	MinWidth , MinHeight := config.GetWindowLimit()
 	if t.dx < MinHeight {
 		t.dx = MinHeight
 	}
@@ -55,12 +54,25 @@ func (t *Tank) Move(direction int) {
 		t.dx = Height
 	}
 	if t.dy > Width {
-		t.dy = Width
+		t.dy = Width 
 	}
+}
+func (t *Tank) Update() {
+
+}
+
+func (t *Tank) Layout(w, h int) (int, int) {
+	return t.dx, t.dy
+}
+func (t *Tank) Analysis() {
+	m, _, _ = image.Decode(bytes.NewReader(tank.Tank0_png))
+	// if err := ebiten.RunGame(&Tank{}); err != nil {
+	// 	log.Fatal(err)
+	// }
 }
 
 func (t *Tank) Draw(screen *ebiten.Image) {
-	opt := &ebiten.DrawImageOptions{}
-	opt.GeoM.Translate(float64(t.dx), float64(t.dy))
-	screen.DrawImage(ebiten.NewImageFromImage(t.Image), opt)
+
+	screen.DrawImage(ebiten.NewImageFromImage(m), &ebiten.DrawImageOptions{})
 }
+
