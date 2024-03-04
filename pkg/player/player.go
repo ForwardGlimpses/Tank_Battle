@@ -27,6 +27,7 @@ func (p *Player) Update() {
 	direction, pressed := GetDirection()
 	if pressed {
 		p.Tank.Move(direction)
+		//p.Tank.Rotate()
 	}
 }
 
