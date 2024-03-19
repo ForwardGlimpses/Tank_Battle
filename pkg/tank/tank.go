@@ -29,8 +29,8 @@ type Tank struct {
 
 func New() *Tank {
 	return &Tank{
-		dx:    0,
-		dy:    0,
+		dx:    28,
+		dy:    25,
 		Hp:    100,
 		Image: tank.PlayerImage,
 	}
