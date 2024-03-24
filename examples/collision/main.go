@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"image/color"
 	"math/rand"
 
@@ -10,6 +11,7 @@ import (
 )
 
 type Bouncer struct {
+	Name   string
 	Object *resolv.Object
 	Speed  resolv.Vector
 }
@@ -46,22 +48,24 @@ func NewGame() *Game {
 
 	g.Space.Add(g.Geometry...)
 
-	for i := 0; i < 4; i++ {
-		g.SpawnObject()
+	for i := 0; i < 7; i++ {
+		g.SpawnObject(i)
 	}
 
 	return g
 }
 
-func (g *Game) SpawnObject() {
+func (g *Game) SpawnObject(idx int) {
 
 	bouncer := &Bouncer{
+		Name:   fmt.Sprintf("Bouncer%d", idx),
 		Object: resolv.NewObject(0, 0, 2, 2),
 		Speed: resolv.NewVector(
 			(rand.Float64()*8)-4,
 			(rand.Float64()*8)-4,
 		),
 	}
+	bouncer.Object.Data = bouncer
 
 	g.Space.Add(bouncer.Object)
 
@@ -94,6 +98,13 @@ func (g *Game) Update() error {
 			contact := check.ContactWithCell(check.Cells[0])
 			dx = contact.X
 			b.Speed.X *= -1
+			for _, obj := range check.Objects {
+				switch obj.Data.(type) {
+				case *Bouncer:
+					cb := obj.Data.(*Bouncer)
+					fmt.Printf("%s 和 %s 发生了碰撞\n", b.Name, cb.Name)
+				}
+			}
 		}
 
 		b.Object.Position.X += dx
@@ -102,6 +113,13 @@ func (g *Game) Update() error {
 			contact := check.ContactWithCell(check.Cells[0])
 			dy = contact.Y
 			b.Speed.Y *= -1
+			for _, obj := range check.Objects {
+				switch obj.Data.(type) {
+				case *Bouncer:
+					cb := obj.Data.(*Bouncer)
+					fmt.Printf("%s 和 %s 发生了碰撞\n", b.Name, cb.Name)
+				}
+			}
 		}
 
 		b.Object.Position.Y += dy
