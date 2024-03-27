@@ -11,6 +11,7 @@ type Bullet struct{
 	dx int
 	dy int
 	direction int 
+	speed int
 	Image image.Image
 }
 
@@ -20,11 +21,15 @@ func New() *Bullet {
 		dx:    0,
 		dy:    0,
 		direction: 0,
+		speed:  10,
 		Image: bullet.BulletImage,
 	}
 }
-func (b *Bullet) Update(){
+func (b *Bullet) Move(Tank_dx int,Tank_dy int){
+	b.dx = Tank_dx
+	b.dy = Tank_dy
 	
+
 }
 func (b *Bullet) Draw(screen *ebiten.Image) {
 	opt := &ebiten.DrawImageOptions{}

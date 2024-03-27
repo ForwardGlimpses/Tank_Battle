@@ -27,13 +27,14 @@ func (p *Player) Update() {
 	direction, pressed := GetDirection()
 	if pressed {
 		p.Tank.Move(direction)
-		//p.Tank.Rotate()
 	}
+	p.Tank.Fight(GetAttack())
 }
 
 func (p *Player) Draw(screen *ebiten.Image) {
 		p.Tank.Draw(screen)  
 }
+
 func GetDirection() (int, bool) {
 	if inpututil.IsKeyJustPressed(ebiten.KeyArrowUp) {
 		return Up, true
@@ -48,5 +49,9 @@ func GetDirection() (int, bool) {
 		return Down, true
 	}
 	return 0, false
+}
+
+func GetAttack() (bool) {
+	return inpututil.IsKeyJustPressed(ebiten.KeySpace)
 }
 

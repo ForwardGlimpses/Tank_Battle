@@ -11,7 +11,6 @@ type DefaultWeapon struct {
 	Picture image.Image
 }
 
-func (D *DefaultWeapon)Fight(direction int, dx int, dy int) {
-	
+func (D *DefaultWeapon) Fight(direction int, dx int, dy int) {
 
 }

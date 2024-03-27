@@ -5,7 +5,7 @@ import (
 	"image"
 	_ "image/png"
 	"math"
-
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/bullet"
 	"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -25,6 +25,7 @@ type Tank struct {
 	Hp    int
 	theta  int
 	Image image.Image
+	Buttle *bullet.Bullet
 }
 
 func New() *Tank {
@@ -33,6 +34,7 @@ func New() *Tank {
 		dy:    25,
 		Hp:    100,
 		Image: tank.PlayerImage,
+		Buttle: bullet.New(),
 	}
 }
 
@@ -66,6 +68,12 @@ func (t *Tank) Move(direction int) {
 	}
 }
 
+func (t *Tank) Fight (IS_pressed bool) {
+	if IS_pressed {
+		t.Buttle.Move(t.dx,t.dy)
+	}
+
+}
 
 func (t *Tank) Draw(screen *ebiten.Image) {
 	opt := &ebiten.DrawImageOptions{}

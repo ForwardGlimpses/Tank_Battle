@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	//go:embed bullet0.png
+	//go:embed bullet.png
 	Bullet0_png   []byte
 	BulletImage image.Image
 )
