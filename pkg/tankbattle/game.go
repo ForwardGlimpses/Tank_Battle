@@ -1,7 +1,7 @@
 package tankbattle
 
 import (
-
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/bullet"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/player"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -25,12 +25,12 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 // Update updates the current game state.
 func (g *Game) Update() error {
 	g.Player.Update()
+	bullet.Update()
 	return nil
 }
 
 // Draw draws the current game to the given screen.
 func (g *Game) Draw(screen *ebiten.Image) {
-	
 	g.Player.Draw(screen)
-	
+	bullet.Draw(screen)
 }

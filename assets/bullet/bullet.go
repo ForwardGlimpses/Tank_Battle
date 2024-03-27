@@ -5,14 +5,17 @@ import (
 	_ "embed"
 	"image"
 	_ "image/png"
+
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
 var (
 	//go:embed bullet.png
-	Bullet0_png   []byte
-	BulletImage image.Image
+	Bullet_png  []byte
+	BulletImage *ebiten.Image
 )
 
 func init() {
-	BulletImage, _, _ = image.Decode(bytes.NewReader(Bullet0_png))
+	temp, _, _ := image.Decode(bytes.NewReader(Bullet_png))
+	BulletImage = ebiten.NewImageFromImage(temp)
 }

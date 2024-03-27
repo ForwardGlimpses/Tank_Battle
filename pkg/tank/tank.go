@@ -1,13 +1,14 @@
 package tank
 
 import (
-	//"fmt"
 	"image"
 	_ "image/png"
 	"math"
-	"github.com/ForwardGlimpses/Tank_Battle/pkg/bullet"
+
 	"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
-	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/direction"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/vector2"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/weapon"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -20,65 +21,53 @@ const (
 )
 
 type Tank struct {
-	dx    int
-	dy    int
-	Hp    int
-	theta  int
-	Image image.Image
-	Buttle *bullet.Bullet
+	Hp        int
+	position  *vector2.Vector2
+	direction direction.Direction
+	weapon    weapon.Weapon
+	Image     image.Image
 }
 
 func New() *Tank {
 	return &Tank{
-		dx:    28,
-		dy:    25,
-		Hp:    100,
-		Image: tank.PlayerImage,
-		Buttle: bullet.New(),
+		position: vector2.New(28, 25),
+		Hp:       100,
+		weapon:   &weapon.DefaultWeapon{},
+		Image:    tank.PlayerImage,
 	}
 }
 
-func (t *Tank) Move(direction int) {
-	if direction == Up {
-		t.dy -= step
-		t.theta = 0
-	} else if direction == Down {
-		t.dy += step
-		t.theta = 180
-	} else if direction == Left {
-		t.dx -= step
-		t.theta = -90
-	} else {
-		t.dx += step
-		t.theta = 90
-	}
-	Width, Height := config.GetWindowSize()
-	MinWidth, MinHeight := config.GetWindowLimit()
-	if t.dx < MinHeight {
-		t.dx = MinHeight
-	}
-	if t.dy < MinWidth {
-		t.dy = MinWidth
-	}
-	if t.dx > Height {
-		t.dx = Height
-	}
-	if t.dy > Width {
-		t.dy = Width
-	}
+func (t *Tank) Move(direction direction.Direction) {
+	t.direction = direction
+	t.position = t.position.Add(direction.DirectionVector2().MulScalar(step))
+
+	// TODO: 通过碰撞检测限制移动
+
+	// Width, Height := config.GetWindowSize()
+	// MinWidth, MinHeight := config.GetWindowLimit()
+	// if t.dx < MinHeight {
+	// 	t.dx = MinHeight
+	// }
+	// if t.dy < MinWidth {
+	// 	t.dy = MinWidth
+	// }
+	// if t.dx > Height {
+	// 	t.dx = Height
+	// }
+	// if t.dy > Width {
+	// 	t.dy = Width
+	// }
 }
 
-func (t *Tank) Fight (IS_pressed bool) {
-	if IS_pressed {
-		t.Buttle.Move(t.dx,t.dy)
-	}
-
+func (t *Tank) Fight() {
+	// TODO: 计算子弹发射位置（坦克正前方）
+	t.weapon.Fight(t.position, t.direction)
 }
 
 func (t *Tank) Draw(screen *ebiten.Image) {
 	opt := &ebiten.DrawImageOptions{}
 	opt.GeoM.Translate(-float64(55)/2, -float64(49)/2)
-	opt.GeoM.Rotate(float64(t.theta%360) * 2 * math.Pi / 360)
-	opt.GeoM.Translate(float64(t.dx), float64(t.dy))
+	opt.GeoM.Rotate(t.direction.Theta() * 2 * math.Pi / 360)
+	opt.GeoM.Translate(t.position.ValueFloat64())
 	screen.DrawImage(ebiten.NewImageFromImage(t.Image), opt)
 }

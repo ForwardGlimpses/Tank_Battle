@@ -1,16 +1,24 @@
 package weapon
 
-import "image"
+import (
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/bullet"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/direction"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/vector2"
+)
 
 type Weapon interface {
-	Fight(direction int, dx int, dy int)
+	Fight(position *vector2.Vector2, direction direction.Direction)
 }
 
+// 当前武器是一个抽象概念，不需要实际的图片
 type DefaultWeapon struct {
-	Damage  int
-	Picture image.Image
+	Damage int
 }
 
-func (D *DefaultWeapon) Fight(direction int, dx int, dy int) {
-
+func (D *DefaultWeapon) Fight(position *vector2.Vector2, direction direction.Direction) {
+	opt := &bullet.CreateOption{
+		Position:  position,
+		Direction: direction,
+	}
+	bullet.Create(opt)
 }
