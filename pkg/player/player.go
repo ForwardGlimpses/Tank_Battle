@@ -1,6 +1,7 @@
 package player
 
 import (
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/direction"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -28,20 +29,31 @@ func (p *Player) Update() {
 	if pressed {
 		p.Tank.Move(direction)
 	}
+	if GetAttack() {
+		p.Tank.Fight()
+	}
 }
 
-func GetDirection() (int, bool) {
+func (p *Player) Draw(screen *ebiten.Image) {
+	p.Tank.Draw(screen)
+}
+
+func GetDirection() (direction.Direction, bool) {
 	if inpututil.IsKeyJustPressed(ebiten.KeyArrowUp) {
-		return Up, true
+		return direction.Up, true
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyArrowLeft) {
-		return Left, true
+		return direction.Left, true
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyArrowRight) {
-		return Right, true
+		return direction.Right, true
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyArrowDown) {
-		return Down, true
+		return direction.Down, true
 	}
-	return 0, true
+	return 0, false
+}
+
+func GetAttack() bool {
+	return inpututil.IsKeyJustPressed(ebiten.KeySpace)
 }
