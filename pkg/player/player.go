@@ -39,16 +39,16 @@ func (p *Player) Draw(screen *ebiten.Image) {
 }
 
 func GetDirection() (direction.Direction, bool) {
-	if inpututil.IsKeyJustPressed(ebiten.KeyArrowUp) {
+	if ebiten.IsKeyPressed(ebiten.KeyArrowUp) {
 		return direction.Up, true
 	}
-	if inpututil.IsKeyJustPressed(ebiten.KeyArrowLeft) {
+	if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
 		return direction.Left, true
 	}
-	if inpututil.IsKeyJustPressed(ebiten.KeyArrowRight) {
+	if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
 		return direction.Right, true
 	}
-	if inpututil.IsKeyJustPressed(ebiten.KeyArrowDown) {
+	if ebiten.IsKeyPressed(ebiten.KeyArrowDown) {
 		return direction.Down, true
 	}
 	return 0, false

@@ -24,6 +24,8 @@ func (b *Bullet) Draw(screen *ebiten.Image) {
 	screen.DrawImage(b.Image, opt)
 }
 
+var step int = 2
+
 // 全局子弹列表
 var globalBullets []*Bullet
 
@@ -50,7 +52,7 @@ func Create(opt *CreateOption) {
 	bullet := &Bullet{
 		Position:  opt.Position,
 		Direction: opt.Direction,
-		Speed:     opt.Direction.DirectionVector2(),
+		Speed:     opt.Direction.DirectionVector2().MulScalar(step),
 		Image:     bullet.BulletImage,
 	}
 	//  TODO: 设置碰撞器
