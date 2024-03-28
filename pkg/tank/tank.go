@@ -17,7 +17,7 @@ const (
 	Down
 	Left
 	Right
-	step int = 10
+	step int = 1
 )
 
 type Tank struct {
