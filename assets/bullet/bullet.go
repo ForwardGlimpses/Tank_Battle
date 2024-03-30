@@ -19,3 +19,4 @@ func init() {
 	temp, _, _ := image.Decode(bytes.NewReader(Bullet_png))
 	BulletImage = ebiten.NewImageFromImage(temp)
 }
+

@@ -24,7 +24,7 @@ func (b *Bullet) Draw(screen *ebiten.Image) {
 	screen.DrawImage(b.Image, opt)
 }
 
-var step int = 2
+var step int = 5
 
 // 全局子弹列表
 var globalBullets []*Bullet

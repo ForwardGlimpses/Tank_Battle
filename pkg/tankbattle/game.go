@@ -4,16 +4,19 @@ import (
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/bullet"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/player"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/scenes"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Game struct {
 	Player *player.Player
+	//Scense *scenes.Scenes
 }
 
 func NewGame() (*Game, error) {
 	return &Game{
 		Player: player.New(),
+		//Scense: scenes.New(),
 	}, nil
 }
 
@@ -33,4 +36,5 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.Player.Draw(screen)
 	bullet.Draw(screen)
+	scenes.New().Draw(screen)
 }
