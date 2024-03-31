@@ -27,7 +27,7 @@ func (b *Bullet) Draw(screen *ebiten.Image) {
 var step int = 5
 
 // 全局子弹列表
-var globalBullets []*Bullet
+var globalBullets = make(map[*Bullet]*Bullet)
 
 func Update() {
 	for _, bullet := range globalBullets {
@@ -57,5 +57,5 @@ func Create(opt *CreateOption) {
 	}
 	//  TODO: 设置碰撞器
 
-	globalBullets = append(globalBullets, bullet)
+	globalBullets[bullet] = bullet
 }

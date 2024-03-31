@@ -4,13 +4,13 @@ import (
 	"bytes"
 	_ "embed"
 	"image"
-	_ "image/png"
-
+//	_ "image/jpeg"
+    _ "image/png"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 var (
-	//go:embed scenes0.png
+	//go:embed scenes3.png
 	Scenes1_png  []byte
 	ScenesImage *ebiten.Image
 )

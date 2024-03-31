@@ -15,6 +15,7 @@ type Scenes struct {
 
 var globalScenes = make(map[*Scenes]*Scenes)
 
+
 func New() *Scenes{
 	return &Scenes{
 		Position: vector2.New(100,100),
