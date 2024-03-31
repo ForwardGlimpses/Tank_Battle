@@ -14,6 +14,7 @@ type Game struct {
 }
 
 func NewGame() (*Game, error) {
+	scenes.Init()
 	return &Game{
 		Player: player.New(),
 		//Scense: scenes.New(),
@@ -36,5 +37,5 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.Player.Draw(screen)
 	bullet.Draw(screen)
-	scenes.New().Draw(screen)
+	scenes.Draw(screen)
 }

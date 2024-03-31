@@ -12,6 +12,7 @@ type Bullet struct {
 	Direction direction.Direction
 	Speed     *vector2.Vector2
 	Image     *ebiten.Image
+	Index     int
 }
 
 func (b *Bullet) Update() {
@@ -27,7 +28,7 @@ func (b *Bullet) Draw(screen *ebiten.Image) {
 var step int = 5
 
 // 全局子弹列表
-var globalBullets = make(map[*Bullet]*Bullet)
+var globalBullets = make(map[int]*Bullet)
 
 func Update() {
 	for _, bullet := range globalBullets {
@@ -48,14 +49,19 @@ type CreateOption struct {
 	Direction direction.Direction
 }
 
+var index = 0
+
 func Create(opt *CreateOption) {
+	index += 1
+
 	bullet := &Bullet{
 		Position:  opt.Position,
 		Direction: opt.Direction,
 		Speed:     opt.Direction.DirectionVector2().MulScalar(step),
 		Image:     bullet.BulletImage,
+		Index:     index,
 	}
 	//  TODO: 设置碰撞器
 
-	globalBullets[bullet] = bullet
+	globalBullets[bullet.Index] = bullet
 }
