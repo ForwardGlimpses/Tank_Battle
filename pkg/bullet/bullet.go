@@ -53,7 +53,6 @@ var index = 0
 
 func Create(opt *CreateOption) {
 	index += 1
-
 	bullet := &Bullet{
 		Position:  opt.Position,
 		Direction: opt.Direction,
@@ -62,6 +61,6 @@ func Create(opt *CreateOption) {
 		Index:     index,
 	}
 	//  TODO: 设置碰撞器
-
+	
 	globalBullets[bullet.Index] = bullet
 }

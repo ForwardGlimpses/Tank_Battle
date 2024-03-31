@@ -5,18 +5,27 @@ import (
 	_ "embed"
 	"image"
 	_ "image/png"
-
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 var (
 	// 导入的图片名应该和变量名对应，尽量和 scenes 代码中的类型也对上
-	//go:embed scenes3.png
-	Scenes1_png []byte
-	ScenesImage *ebiten.Image
+	//go:embed brick.png
+	brick_png []byte
+	BrickImage *ebiten.Image
+	//go:embed steel.png
+	steel_png []byte
+	SteelImage *ebiten.Image
+	//go:embed grass.png
+	grass_png []byte
+	GrassImage *ebiten.Image
 )
 
 func init() {
-	temp, _, _ := image.Decode(bytes.NewReader(Scenes1_png))
-	ScenesImage = ebiten.NewImageFromImage(temp)
+	Brick, _, _ := image.Decode(bytes.NewReader(brick_png))
+	BrickImage = ebiten.NewImageFromImage(Brick)
+	Steel, _, _ := image.Decode(bytes.NewReader(steel_png))
+	SteelImage = ebiten.NewImageFromImage(Steel)
+	Grass, _, _ := image.Decode(bytes.NewReader(grass_png))
+	GrassImage = ebiten.NewImageFromImage(Grass)
 }
