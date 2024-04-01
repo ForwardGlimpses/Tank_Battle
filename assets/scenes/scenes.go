@@ -9,7 +9,6 @@ import (
 )
 
 var (
-	// 导入的图片名应该和变量名对应，尽量和 scenes 代码中的类型也对上
 	//go:embed brick.png
 	brick_png []byte
 	BrickImage *ebiten.Image

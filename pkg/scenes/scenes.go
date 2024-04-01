@@ -9,60 +9,45 @@ import (
 type ScenesType int
 
 const (
-	// Space 不使用，仅作为地图空白标识
 	Space ScenesType = iota
 	Brick
 	Steel
 	Grass
-	// TODO: 补充地形
 )
 
 type Scenes struct {
 	Position *vector2.Vector2
 	Image    *ebiten.Image
-	Index     ScenesType
+	index    int
+	Type     ScenesType
 }
 
-var globalScenes = make(map[ScenesType]*Scenes)
-
-var Key ScenesType = 1
+var (
+	globalScenes = make(map[int]*Scenes)
+	scenesImages = []*ebiten.Image{nil, scenes.BrickImage, scenes.SteelImage, scenes.GrassImage}
+	Key int = 0
+)
 
 func Init() {
-	// TODO: 遍历地图，生成各个块，加到 globalScenes 里面
 	for y, line := range defMap {
 		for x, t := range line {
-			Key ++
-			var position *vector2.Vector2 = vector2.New(x*60,y*60)
-			globalScenes[Key]=New(position,t)
+			var position *vector2.Vector2 = vector2.New(x*60, y*60)
+			if t != Space {
+				ins := New(position,t)
+				globalScenes[ins.index] = ins
+			}
 		}
 	}
 }
 
 func New(position *vector2.Vector2, t ScenesType) *Scenes {
-	// TODO: 根据类型使用不同的图片
-	switch t {
-	case Brick: return &Scenes{
-					Position: position,
-					Image:    scenes.BrickImage,
-					Index:    t,
-				}
-	case Steel: return &Scenes{
-					Position: position,
-					Image:    scenes.SteelImage,
-					Index:    t,
-				}
-	case Grass: return &Scenes{
-					Position: position,
-					Image:    scenes.GrassImage,
-					Index:    t,
-				}
-    }
+	Key++
 	return &Scenes{
 		Position: position,
-		Image:    scenes.BrickImage,
-		Index:    t,
+		Image:    scenesImages[t],
+		index:    Key,
+		Type:     t,
 	}
-
 }
 
 func (s *Scenes) Draw(screen *ebiten.Image) {
@@ -72,9 +57,7 @@ func (s *Scenes) Draw(screen *ebiten.Image) {
 }
 
 func Draw(screen *ebiten.Image) {
-	for _ , scenes := range globalScenes {
-		if scenes.Index != Space{
+	for _, scenes := range globalScenes {
 		scenes.Draw(screen)
-	    }
 	}
 }
