@@ -2,7 +2,10 @@ module github.com/ForwardGlimpses/Tank_Battle
 
 go 1.21.3
 
-require github.com/hajimehoshi/ebiten/v2 v2.6.3
+require (
+	github.com/hajimehoshi/ebiten/v2 v2.6.3
+	github.com/solarlune/resolv v0.7.0
+)
 
 require (
 	github.com/ebitengine/purego v0.5.0 // indirect
