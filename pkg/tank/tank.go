@@ -1,15 +1,20 @@
 package tank
 
 import (
+	//"fmt"
 	"image"
 	_ "image/png"
 	"math"
 
 	"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/direction"
-	"github.com/ForwardGlimpses/Tank_Battle/pkg/vector2"
+
+	//	"github.com/ForwardGlimpses/Tank_Battle/pkg/vector2"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/weapon"
 	"github.com/hajimehoshi/ebiten/v2"
+
+	//	"github.com/hajimehoshi/ebiten/v2/vector"
+	"github.com/solarlune/resolv"
 )
 
 const (
@@ -17,12 +22,12 @@ const (
 	Down
 	Left
 	Right
-	step int = 1
+	step float64 = 1
 )
 
 type Tank struct {
 	Hp        int
-	position  *vector2.Vector2
+	Position  resolv.Vector
 	direction direction.Direction
 	weapon    weapon.Weapon
 	Image     image.Image
@@ -30,7 +35,7 @@ type Tank struct {
 
 func New() *Tank {
 	return &Tank{
-		position: vector2.New(28, 25),
+		Position: resolv.NewVector(28, 25),
 		Hp:       100,
 		weapon:   &weapon.DefaultWeapon{},
 		Image:    tank.PlayerImage,
@@ -39,7 +44,7 @@ func New() *Tank {
 
 func (t *Tank) Move(direction direction.Direction) {
 	t.direction = direction
-	t.position = t.position.Add(direction.DirectionVector2().MulScalar(step))
+	t.Position = t.Position.Add(direction.DirectionVector2().Scale(step))
 
 	// TODO: 通过碰撞检测限制移动
 
@@ -61,13 +66,13 @@ func (t *Tank) Move(direction direction.Direction) {
 
 func (t *Tank) Fight() {
 	// TODO: 计算子弹发射位置（坦克正前方）
-	t.weapon.Fight(t.position, t.direction)
+	t.weapon.Fight(t.Position, t.direction)
 }
 
 func (t *Tank) Draw(screen *ebiten.Image) {
 	opt := &ebiten.DrawImageOptions{}
 	opt.GeoM.Translate(-float64(55)/2, -float64(49)/2)
 	opt.GeoM.Rotate(t.direction.Theta() * 2 * math.Pi / 360)
-	opt.GeoM.Translate(t.position.ValueFloat64())
+	opt.GeoM.Translate(t.Position.X,t.Position.Y)
 	screen.DrawImage(ebiten.NewImageFromImage(t.Image), opt)
 }
