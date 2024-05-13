@@ -1,119 +1,77 @@
 package bullet
 
 import (
-	//"fmt"
+	"fmt"
 	//"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/ForwardGlimpses/Tank_Battle/assets/bullet"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/direction"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/solarlune/resolv"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/scenes"
 )
-
-// type Game struct {
-// 	Space       *resolv.Space
-// 	Geometry    []*resolv.Object // 四周围墙
-// 	Bullets     []*Bullet     // 所有小球
-// 	MaxBouncers int
-// }
 
 
 type Bullet struct {
-	Object    resolv.Object
-	Position  resolv.Vector
+	Collider    *resolv.Object
 	Direction direction.Direction
 	Speed     resolv.Vector
 	Image     *ebiten.Image
 	Index     int
 }
 
-// func NewGame() *Game {
-// 	w := &Game{
-// 		MaxBouncers: 3000,
-// 	}
 
-// 	w.Init()
+func Init() {
 
-// 	return w
-// }
+	gw ,gh := 100, 100
 
-// func (world *Game) Init() {
+	cellSize := 8
 
-// 	gw ,gh := config.GetWindowSize()
+	// gw, gh 为碰撞网格的长和高，cellSize 为碰撞检测的精度（cellSize*cellSize 的方格内就算碰撞）
+	scenes.World.Space = resolv.NewSpace(gw, gh, cellSize, cellSize)
 
-// 	cellSize := 8
+	world.Geometry = []*resolv.Object{
+		resolv.NewObject(0, 0, 16, float64(gh)),
+		resolv.NewObject(float64(gw-16), 0, 16, float64(gh)),
+		resolv.NewObject(0, 0, float64(gw), 16),
+		resolv.NewObject(0, float64(gh-24), float64(gw), 32),
+	}
 
-// 	// gw, gh 为碰撞网格的长和高，cellSize 为碰撞检测的精度（cellSize*cellSize 的方格内就算碰撞）
-// 	world.Space = resolv.NewSpace(gw, gh, cellSize, cellSize)
+	world.Space.Add(world.Geometry...)
 
-// 	world.Geometry = []*resolv.Object{
-// 		resolv.NewObject(0, 0, 16, float64(gh)),
-// 		resolv.NewObject(float64(gw-16), 0, 16, float64(gh)),
-// 		resolv.NewObject(0, 0, float64(gw), 16),
-// 		resolv.NewObject(0, float64(gh-24), float64(gw), 32),
-// 	}
+	world.Bullets = []*Bullet{}
 
-// 	world.Space.Add(world.Geometry...)
-
-// 	world.Bullets = []*Bullet{}
-
-// 	// for i := 0; i < 10; i++ {
-// 	// 	world.SpawnObject(i)
-// 	// }
-// }
-
+}
 
 
 func (b *Bullet) Update() {
-	b.Position = b.Position.Add(b.Speed)
 
-	// b.Object.Position.X += b.Speed.X
-	// b.Object.Position.Y += b.Speed.Y
-	// // b.Speed.Y += 0.1
+		dx := b.Speed.X + b.Collider.Position.X
+		dy := b.Speed.Y + b.Collider.Position.Y
 
-	// 	dx := b.Speed.X
-	// 	dy := b.Speed.Y
+		//检测 x 轴是否碰撞，如果碰撞将 x 轴速度反向，下面的 y 轴处理同理
+		if check := b.Collider.Check(dx, dy); check != nil {
+			// 打印发生碰撞的小球编号
+			for _, obj := range check.Objects {
+				if t, ok := obj.Data.(*Bullet); ok {
+					fmt.Println(b.Index, t.Index)
+				}
+			}
+		 } else {
+			b.Collider.Position = b.Collider.Position.Add(b.Speed)
+		}
 
-	// 	// 检测 x 轴是否碰撞，如果碰撞将 x 轴速度反向，下面的 y 轴处理同理
-	// 	if check := b.Object.Check(dx, 0); check != nil {
-	// 		// contact := check.ContactWithCell(check.Cells[0])
-	// 		// dx = contact.X
-	// 		//b.Speed.X *= -1
-
-	// 		// 打印发生碰撞的小球编号
-	// 		for _, obj := range check.Objects {
-	// 			if t, ok := obj.Data.(*Bullet); ok {
-	// 				fmt.Println(b.Index, t.Index)
-	// 			}
-	// 		}
-	// 	}
-
-	// 	//b.Object.Position.X += dx
-
-	// 	if check := b.Object.Check(0, dy); check != nil {
-	// 		// contact := check.ContactWithCell(check.Cells[0])
-	// 		// dy = contact.Y
-	// 		//b.Speed.Y *= -1
-	// 		for _, obj := range check.Objects {
-	// 			if t, ok := obj.Data.(*Bullet); ok {
-	// 				fmt.Println(b.Index, t.Index)
-	// 			}
-	// 		}
-	// 	}
-
-	// 	//b.Object.Position.Y += dy
-
-	// 	// 更新自身在网格内的位置
-	// 	b.Object.Update()
+		// 更新自身在网格内的位置
+		b.Collider.Update()
 
 }
 
 func (b *Bullet) Draw(screen *ebiten.Image) {
 	opt := &ebiten.DrawImageOptions{}
-	opt.GeoM.Translate(b.Position.X,b.Position.Y)
+	opt.GeoM.Translate(b.Collider.Position.X,b.Collider.Position.Y)
 	screen.DrawImage(b.Image, opt)
 }
 
-var step float64 = 5
+var step float64 = 1
 
 // 全局子弹列表
 var globalBullets = make(map[int]*Bullet)
@@ -143,13 +101,16 @@ var index = 0
 func Create(opt *CreateOption) {
 	index += 1
 	bullet := &Bullet {
-		Position:  opt.Position,
+		Collider:    resolv.NewObject(opt.Position.X-10, opt.Position.Y-10, 10, 10),
 		Direction: opt.Direction,
 		Speed:     opt.Direction.DirectionVector2().Scale(step),
 		Image:     bullet.BulletImage,
 		Index:     index,
 	}
+	bullet.Collider.Data = bullet
 	//  TODO: 设置碰撞器
-	
+	world.Space.Add(bullet.Collider)
+
 	globalBullets[bullet.Index] = bullet
 }
+

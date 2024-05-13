@@ -22,7 +22,7 @@ const (
 	Down
 	Left
 	Right
-	step float64 = 1
+	step float64 = 3
 )
 
 type Tank struct {
@@ -35,7 +35,7 @@ type Tank struct {
 
 func New() *Tank {
 	return &Tank{
-		Position: resolv.NewVector(28, 25),
+		Position: resolv.NewVector(90, 90),
 		Hp:       100,
 		weapon:   &weapon.DefaultWeapon{},
 		Image:    tank.PlayerImage,

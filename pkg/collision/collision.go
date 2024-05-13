@@ -131,7 +131,7 @@ func (world *Game) Update() error {
 
 		// 更新自身在网格内的位置
 		b.Object.Update()
-
+		
 	}
 
 	return nil

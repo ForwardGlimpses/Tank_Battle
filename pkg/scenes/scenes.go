@@ -30,8 +30,8 @@ var (
 	Key int = 0
 )
 
-func Init() {
-	for y, line := range defMap {
+func (world *World) Init() {
+	for y, line := range world.Map {
 		for x, t := range line {
 			var position resolv.Vector = resolv.NewVector(float64(x*60), float64(y*60))
 			if t != Space {
