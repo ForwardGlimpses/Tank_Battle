@@ -13,8 +13,8 @@ import (
 
 
 type Bullet struct {
-	Object    resolv.Object
-	Position  resolv.Vector
+	Collider  *resolv.Object
+	//Position  resolv.Vector
 	Direction direction.Direction
 	Speed     resolv.Vector
 	Image     *ebiten.Image
@@ -23,32 +23,43 @@ type Bullet struct {
 
 
 func (b *Bullet) Update() {
-	b.Position= b.Position.Add(b.Speed)
-	b.Object.Position = b.Object.Position.Add(b.Speed)
+	// b.Position= b.Position.Add(b.Speed)
+	// b.Object.Position = b.Object.Position.Add(b.Speed)
+	
+	
+	b.Collider.Position=b.Collider.Position.Add(b.Speed)
 
-		dx := b.Object.Position.X
-		dy := b.Object.Position.Y
+
+		// dx := b.Object.Position.X
+		// dy := b.Object.Position.Y
+		// dx := b.Position.X;
+		// dy := b.Position.Y;
+		dx := b.Collider.Position.X
+		dy := b.Collider.Position.Y
 
 		// 检测 x 轴是否碰撞，如果碰撞将 x 轴速度反向，下面的 y 轴处理同理
-		if check := b.Object.Check(dx, dy); check != nil {
+		if check := b.Collider.Check(dx, dy); check != nil {
 
 			// 打印发生碰撞的小球编号
 			for _, obj := range check.Objects {
+				
 				if t, ok := obj.Data.(*Bullet); ok {
 					fmt.Println(b.Index, t.Index)
-					scenes.SpaceRemove(&b.Object)
+					scenes.SpaceRemove(b.Collider)
+					scenes.SpaceRemove(t.Collider)
 				}
 			}
 		}
 
+
 		// 更新自身在网格内的位置
-		b.Object.Update()
+		b.Collider.Update()
 
 }
 
 func (b *Bullet) Draw(screen *ebiten.Image) {
 	opt := &ebiten.DrawImageOptions{}
-	opt.GeoM.Translate(b.Position.X,b.Position.Y)
+	opt.GeoM.Translate(b.Collider.Position.X,b.Collider.Position.Y)
 	screen.DrawImage(b.Image, opt)
 }
 
@@ -82,15 +93,17 @@ var index = 0
 func Create(opt *CreateOption) {
 	index += 1
 	bullet := &Bullet {
-		Position:  opt.Position,
-		Object: *resolv.NewObject(0,0,3,3),
+		//Position:  opt.Position,
+		//Object:    *resolv.NewObject(opt.Position.X,opt.Position.Y,3,3),
+		Collider:  resolv.NewObject(opt.Position.X,opt.Position.Y,3,3),
 		Direction: opt.Direction,
 		Speed:     opt.Direction.DirectionVector2().Scale(step),
 		Image:     bullet.BulletImage,
 		Index:     index,
 	}
 	//  TODO: 设置碰撞器
-	bullet.Object.Data = bullet
-	scenes.SpaceAdd(&bullet.Object)
+
+	bullet.Collider.Data = bullet
+	scenes.SpaceAdd(bullet.Collider)
 	globalBullets[bullet.Index] = bullet
 }
