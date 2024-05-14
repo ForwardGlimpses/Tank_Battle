@@ -22,7 +22,7 @@ const (
 	Down
 	Left
 	Right
-	step float64 = 1
+	step float64 = 5
 )
 
 type Tank struct {
