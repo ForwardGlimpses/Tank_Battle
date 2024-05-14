@@ -21,15 +21,11 @@ type Bullet struct {
 	Index     int
 }
 
-
 func (b *Bullet) Update() {
 	// b.Position= b.Position.Add(b.Speed)
 	// b.Object.Position = b.Object.Position.Add(b.Speed)
 	
-	
 	b.Collider.Position=b.Collider.Position.Add(b.Speed)
-
-
 		// dx := b.Object.Position.X
 		// dy := b.Object.Position.Y
 		// dx := b.Position.X;
@@ -50,8 +46,6 @@ func (b *Bullet) Update() {
 				}
 			}
 		}
-
-
 		// 更新自身在网格内的位置
 		b.Collider.Update()
 
