@@ -10,11 +10,8 @@ import (
 	"github.com/solarlune/resolv"
 )
 
-
-
 type Bullet struct {
 	Collider  *resolv.Object
-	//Position  resolv.Vector
 	Direction direction.Direction
 	Speed     resolv.Vector
 	Image     *ebiten.Image
@@ -22,16 +19,9 @@ type Bullet struct {
 }
 
 func (b *Bullet) Update() {
-	// b.Position= b.Position.Add(b.Speed)
-	// b.Object.Position = b.Object.Position.Add(b.Speed)
-	
-	b.Collider.Position=b.Collider.Position.Add(b.Speed)
-		// dx := b.Object.Position.X
-		// dy := b.Object.Position.Y
-		// dx := b.Position.X;
-		// dy := b.Position.Y;
-		dx := b.Collider.Position.X
-		dy := b.Collider.Position.Y
+
+		dx := b.Speed.X
+		dy := b.Speed.Y
 
 		// 检测 x 轴是否碰撞，如果碰撞将 x 轴速度反向，下面的 y 轴处理同理
 		if check := b.Collider.Check(dx, dy); check != nil {
@@ -46,6 +36,7 @@ func (b *Bullet) Update() {
 				}
 			}
 		}
+		b.Collider.Position=b.Collider.Position.Add(b.Speed)
 		// 更新自身在网格内的位置
 		b.Collider.Update()
 
@@ -76,7 +67,6 @@ func Draw(screen *ebiten.Image) {
 
 // TODO: 还需要伤害，创建者之类的信息
 type CreateOption struct {
-	//Object *resolv.Object
 	Position  resolv.Vector
 	// Speed     *vector2.Vector2    // 子弹速度如果都相同，可以通过方向计算出来
 	Direction direction.Direction
@@ -87,8 +77,6 @@ var index = 0
 func Create(opt *CreateOption) {
 	index += 1
 	bullet := &Bullet {
-		//Position:  opt.Position,
-		//Object:    *resolv.NewObject(opt.Position.X,opt.Position.Y,3,3),
 		Collider:  resolv.NewObject(opt.Position.X,opt.Position.Y,3,3),
 		Direction: opt.Direction,
 		Speed:     opt.Direction.DirectionVector2().Scale(step),
