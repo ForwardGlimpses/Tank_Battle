@@ -33,13 +33,30 @@ func (b *Bullet) Update() {
 					fmt.Println(b.Index, t.Index)
 					scenes.SpaceRemove(b.Collider)
 					scenes.SpaceRemove(t.Collider)
+					delete(globalBullets,b.Index)
+					delete(globalBullets,t.Index)
+				}
+				if t, ok := obj.Data.(*scenes.Scenes); ok {
+					if t.Type == scenes.Steel {
+						scenes.SpaceRemove(b.Collider)
+						delete(globalBullets,b.Index)
+					} else if t.Type == scenes.Brick {
+						scenes.SpaceRemove(b.Collider)
+						scenes.SpaceRemove(t.Collider)
+						delete(globalBullets,b.Index)
+						scenes.Delete(t)
+					} else {
+						b.Collider.Position=b.Collider.Position.Add(b.Speed)
+					}
 				}
 			}
+		} else {
+			b.Collider.Position=b.Collider.Position.Add(b.Speed)
 		}
-		b.Collider.Position=b.Collider.Position.Add(b.Speed)
+		
 		// 更新自身在网格内的位置
 		b.Collider.Update()
-
+		
 }
 
 func (b *Bullet) Draw(screen *ebiten.Image) {
@@ -48,7 +65,7 @@ func (b *Bullet) Draw(screen *ebiten.Image) {
 	screen.DrawImage(b.Image, opt)
 }
 
-var step float64 = 1
+var step float64 = 5
 
 // 全局子弹列表
 var globalBullets = make(map[int]*Bullet)

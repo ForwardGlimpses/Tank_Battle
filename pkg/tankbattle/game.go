@@ -17,7 +17,6 @@ func NewGame() (*Game, error) {
 	scenes.Init()
 	return &Game{
 		Player: player.New(),
-		//Scense: scenes.New(),
 	}, nil
 }
 
