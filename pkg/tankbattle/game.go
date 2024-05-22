@@ -5,15 +5,17 @@ import (
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/player"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/scenes"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Game struct {
 	Player *player.Player
-	//Scense *scenes.Scenes
 }
 
 func NewGame() (*Game, error) {
+	sizeX, sizeY := config.GetWindowSize()
+	collision.Init(sizeX, sizeY, 2, 2)
 	scenes.Init()
 	return &Game{
 		Player: player.New(),

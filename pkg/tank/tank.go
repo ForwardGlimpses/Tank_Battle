@@ -7,16 +7,11 @@ import (
 	_ "image/png"
 	"math"
 
-	//"github.com/ForwardGlimpses/Tank_Battle/pkg/scenes"
 	"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
-	"github.com/ForwardGlimpses/Tank_Battle/pkg/direction"
-
-	//	"github.com/ForwardGlimpses/Tank_Battle/pkg/vector2"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/direction"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/weapon"
 	"github.com/hajimehoshi/ebiten/v2"
-
-	//	"github.com/hajimehoshi/ebiten/v2/vector"
-	"github.com/solarlune/resolv"
 )
 
 const (
@@ -28,9 +23,9 @@ const (
 )
 
 type Tank struct {
-	Hp        int
-	Collider  *resolv.Object
-	//Position  resolv.Vector
+	Hp       int
+	Collider *collision.Collider
+	//Position  vector2.Vector
 	direction direction.Direction
 	weapon    weapon.Weapon
 	Image     image.Image
@@ -38,8 +33,7 @@ type Tank struct {
 
 func New() *Tank {
 	return &Tank{
-		//Position: resolv.NewVector(28, 25),
-		Collider: resolv.NewObject(60,60,20,20),
+		Collider: collision.NewCollider(60, 60, 20, 20),
 		Hp:       100,
 		weapon:   &weapon.DefaultWeapon{},
 		Image:    tank.PlayerImage,
@@ -48,26 +42,21 @@ func New() *Tank {
 
 func (t *Tank) Move(direction direction.Direction) {
 	t.direction = direction
-	increment:= direction.DirectionVector2().Scale(step)
+	increment := direction.DirectionVector2().MulScale(step)
 	dx := increment.X
 	dy := increment.Y
 	if check := t.Collider.Check(dx, dy); check != nil {
-		// 打印发生碰撞的小球编号
-		for _, obj := range check.Objects {
-			
+		// TODO: 这里需要判断是否碰到障碍物，如果没碰到，正常移动
+		for _, obj := range check.Colliders {
 			if _, ok := obj.Data.(*Tank); ok {
 				fmt.Print(t.Hp)
-				//scenes.SpaceRemove(t.Collider)
 			}
 		}
 	} else {
-		t.Collider.Position = t.Collider.Position.Add(direction.DirectionVector2().Scale(step))
+		t.Collider.Position = t.Collider.Position.Add(direction.DirectionVector2().MulScale(step))
 	}
 	// // 更新自身在网格内的位置
 	t.Collider.Update()
-
-	// TODO: 通过碰撞检测限制移动
-	
 }
 
 func (t *Tank) Fight() {
@@ -79,6 +68,6 @@ func (t *Tank) Draw(screen *ebiten.Image) {
 	opt := &ebiten.DrawImageOptions{}
 	opt.GeoM.Translate(-float64(55)/2, -float64(49)/2)
 	opt.GeoM.Rotate(t.direction.Theta() * 2 * math.Pi / 360)
-	opt.GeoM.Translate(t.Collider.Position.X,t.Collider.Position.Y)
+	opt.GeoM.Translate(t.Collider.Position.X, t.Collider.Position.Y)
 	screen.DrawImage(ebiten.NewImageFromImage(t.Image), opt)
 }

@@ -1,8 +1,8 @@
 package player
 
 import (
-	"github.com/ForwardGlimpses/Tank_Battle/pkg/direction"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/direction"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )

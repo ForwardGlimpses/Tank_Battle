@@ -1,0 +1,1 @@
+from github.com/solarlune/resolv
