@@ -19,8 +19,9 @@ type Player struct {
 }
 
 func New() *Player {
+	camp := "Player"
 	return &Player{
-		Tank: tank.New(),
+		Tank: tank.New(camp, 60, 60),
 	}
 }
 
@@ -56,4 +57,8 @@ func GetDirection() (direction.Direction, bool) {
 
 func GetAttack() bool {
 	return inpututil.IsKeyJustPressed(ebiten.KeySpace)
+}
+
+func GetCreatEnemy() bool {
+	return inpututil.IsKeyJustPressed(ebiten.KeyQ)
 }

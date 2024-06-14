@@ -22,6 +22,7 @@ type Scenes struct {
 	Image *ebiten.Image
 	index int
 	Type  ScenesType
+	Hp int
 }
 
 var (
@@ -46,10 +47,11 @@ func Init() {
 func New(position vector2.Vector, t ScenesType) *Scenes {
 	Key++
 	return &Scenes{
-		Collider: collision.NewCollider(position.X, position.Y, 50, 50),
+		Collider: collision.NewCollider(position.X, position.Y, float64(scenesImages[t].Bounds().Dy()), float64(scenesImages[t].Bounds().Dx())),
 		Image:    scenesImages[t],
 		index:    Key,
 		Type:     t,
+		Hp:       100,
 	}
 }
 
@@ -76,10 +78,11 @@ func (t *Scenes) GetCamp() string {
 
 func (t *Scenes) TakeDamage(damage int) {
 	if t.Type == Brick {
-		// t.Hp -= damage
+		t.Hp -= damage
 	}
 }
 
 // 此函数暂时无逻辑，仅标识此结构为障碍物
 func (t *Scenes) Obstacle() {
+
 }

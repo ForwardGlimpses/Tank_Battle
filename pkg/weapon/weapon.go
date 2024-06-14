@@ -7,7 +7,7 @@ import (
 )
 
 type Weapon interface {
-	Fight(position vector2.Vector, direction direction.Direction)
+	Fight(position vector2.Vector, direction direction.Direction,camp string)
 }
 
 // 当前武器是一个抽象概念，不需要实际的图片
@@ -15,10 +15,11 @@ type DefaultWeapon struct {
 	Damage int
 }
 
-func (D *DefaultWeapon) Fight(position vector2.Vector, direction direction.Direction) {
+func (D *DefaultWeapon) Fight(position vector2.Vector, direction direction.Direction,camp string) {
 	opt := &bullet.CreateOption{
 		Position:  position,
 		Direction: direction,
+		Camp: camp,
 	}
 	bullet.Create(opt)
 }

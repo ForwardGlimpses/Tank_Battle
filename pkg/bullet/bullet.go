@@ -1,8 +1,12 @@
 package bullet
 
 import (
+	//"fmt"
+
 	"github.com/ForwardGlimpses/Tank_Battle/assets/bullet"
+	"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/scenes"
+	//"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/types"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/direction"
@@ -16,6 +20,8 @@ type Bullet struct {
 	Speed     vector2.Vector
 	Image     *ebiten.Image
 	Index     int
+	Damage    int
+	Camp      string
 }
 
 func (b *Bullet) Update() {
@@ -23,27 +29,37 @@ func (b *Bullet) Update() {
 	dx := b.Speed.X
 	dy := b.Speed.Y
 
-	// 检测 x 轴是否碰撞，如果碰撞将 x 轴速度反向，下面的 y 轴处理同理
+	// 检测 x 或 y 轴是否碰撞，如果碰撞将子弹销毁
 	if check := b.Collider.Check(dx, dy); check != nil {
 
 		// 打印发生碰撞的小球编号
 		for _, obj := range check.Colliders {
 
 			if t, ok := obj.Data.(types.TakeDamage); ok {
-				t.GetCamp()
+				if t.GetCamp() != b.Camp {
+					t.TakeDamage(b.Damage)
+				} else {
+					b.Collider.Move(b.Speed)
+				}
 			}
 			if t, ok := obj.Data.(*scenes.Scenes); ok {
-				if t.Type == scenes.Steel {
+				if t.Type == scenes.Steel || t.Type == scenes.Grass {
 					b.Collider.Destruction()
 					delete(globalBullets, b.Index)
 				} else if t.Type == scenes.Brick {
 					b.Collider.Destruction()
-					t.Collider.Destruction()
 					delete(globalBullets, b.Index)
-					scenes.Delete(t)
-				} else {
-					b.Collider.Position = b.Collider.Position.Add(b.Speed)
+					if t.Hp <= 0 {
+						scenes.Delete(t)
+						t.Collider.Destruction()
+					}
 				}
+			} else if _, ook := obj.Data.(types.Obstacle); ook {
+				b.Collider.Destruction()
+				delete(globalBullets, b.Index)
+				//fmt.Println(tt.Hp)
+			} else {
+				b.Collider.Move(b.Speed)
 			}
 		}
 	} else {
@@ -52,7 +68,7 @@ func (b *Bullet) Update() {
 
 	// 更新自身在网格内的位置
 	b.Collider.Update()
-
+	
 }
 
 func (b *Bullet) Draw(screen *ebiten.Image) {
@@ -61,7 +77,11 @@ func (b *Bullet) Draw(screen *ebiten.Image) {
 	screen.DrawImage(b.Image, opt)
 }
 
-var step float64 = 5
+func (b *Bullet) Obstacle() {
+
+}
+
+var step float64 = 4
 
 // 全局子弹列表
 var globalBullets = make(map[int]*Bullet)
@@ -83,18 +103,33 @@ type CreateOption struct {
 	Position vector2.Vector
 	// Speed     *vector2.Vector2    // 子弹速度如果都相同，可以通过方向计算出来
 	Direction direction.Direction
+	Camp      string
 }
 
 var index = 0
 
 func Create(opt *CreateOption) {
 	index += 1
+	dirx := opt.Direction.DirectionVector2().X
+	diry := opt.Direction.DirectionVector2().Y
+	dxx := 0
+	dyy := 0
+	if dirx < 0 {
+		dxx = -5
+	}
+	if diry < 0 {
+		dyy = -5
+	}
+	Tankx, Tanky := tank.PlayerImage.Bounds().Dx()/2*int(dirx)+tank.PlayerImage.Bounds().Dx()/2+dxx, tank.PlayerImage.Bounds().Dy()/2*int(diry)+tank.PlayerImage.Bounds().Dy()/2+dyy
+	Bullx, Bully := bullet.BulletImage.Bounds().Dx(), bullet.BulletImage.Bounds().Dy()
 	bullet := &Bullet{
-		Collider:  collision.NewCollider(opt.Position.X, opt.Position.Y, 3, 3),
+		Collider:  collision.NewCollider(opt.Position.X+float64(Tankx), opt.Position.Y+float64(Tanky), float64(Bullx), float64(Bully)),
 		Direction: opt.Direction,
 		Speed:     opt.Direction.DirectionVector2().MulScale(step),
 		Image:     bullet.BulletImage,
 		Index:     index,
+		Damage:    50,
+		Camp:      opt.Camp,
 	}
 	//  TODO: 设置碰撞器
 
