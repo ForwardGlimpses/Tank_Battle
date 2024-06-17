@@ -1,7 +1,7 @@
 package tank
 
 import (
-	"fmt"
+	//"fmt"
 	"image"
 	_ "image/png"
 	"math"
@@ -37,13 +37,15 @@ type Tank struct {
 }
 
 func New(camp string,tankx int,tanky int) *Tank {
-	return &Tank{
+	tank := &Tank{
 		Collider: collision.NewCollider(float64(tankx), float64(tanky), float64(tank.PlayerImage.Bounds().Dx()), float64(tank.PlayerImage.Bounds().Dy())),
 		Hp:       100,
 		weapon:   &weapon.DefaultWeapon{},
 		Image:    tank.TankImage[camp],
 		Camp:     camp,
 	}
+	tank.Collider.Data = tank
+	return tank
 }
 
 func (t *Tank) Move(direction direction.Direction) {
@@ -56,7 +58,7 @@ func (t *Tank) Move(direction direction.Direction) {
 		// TODO: 这里需要判断是否碰到障碍物，如果没碰到，正常移动
 		for _, obj := range check.Colliders {
 			if _, ok := obj.Data.(*Tank); ok {
-				fmt.Print(t.Hp)
+				stop = true
 			}
 			if  _ , ok := obj.Data.(types.Obstacle); ok {
 				stop = true
@@ -89,4 +91,12 @@ func (t *Tank) Draw(screen *ebiten.Image) {
 
 func (t *Tank) Obstacle() {
 
+}
+
+func (t *Tank) GetCamp() string {
+	return t.Camp
+}
+
+func (t *Tank) TakeDamage(damage int) {
+	t.Hp -= damage
 }

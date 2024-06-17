@@ -3,9 +3,12 @@ package bullet
 import (
 	//"fmt"
 
+	//"fmt"
+
 	"github.com/ForwardGlimpses/Tank_Battle/assets/bullet"
 	"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/scenes"
+
 	//"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/types"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
@@ -38,26 +41,26 @@ func (b *Bullet) Update() {
 			if t, ok := obj.Data.(types.TakeDamage); ok {
 				if t.GetCamp() != b.Camp {
 					t.TakeDamage(b.Damage)
+					if tt, ok := obj.Data.(*scenes.Scenes); ok {
+						if tt.Type == scenes.Steel || tt.Type == scenes.Grass {
+							b.Collider.Destruction()
+							delete(globalBullets, b.Index)
+						} else if tt.Type == scenes.Brick {
+							b.Collider.Destruction()
+							delete(globalBullets, b.Index)
+							if tt.Hp <= 0 {
+								scenes.Delete(tt)
+								tt.Collider.Destruction()
+							}
+						}
+					} else {
+						b.Collider.Destruction()
+						delete(globalBullets, b.Index)
+					}
 				} else {
 					b.Collider.Move(b.Speed)
+					break ;
 				}
-			}
-			if t, ok := obj.Data.(*scenes.Scenes); ok {
-				if t.Type == scenes.Steel || t.Type == scenes.Grass {
-					b.Collider.Destruction()
-					delete(globalBullets, b.Index)
-				} else if t.Type == scenes.Brick {
-					b.Collider.Destruction()
-					delete(globalBullets, b.Index)
-					if t.Hp <= 0 {
-						scenes.Delete(t)
-						t.Collider.Destruction()
-					}
-				}
-			} else if _, ook := obj.Data.(types.Obstacle); ook {
-				b.Collider.Destruction()
-				delete(globalBullets, b.Index)
-				//fmt.Println(tt.Hp)
 			} else {
 				b.Collider.Move(b.Speed)
 			}
@@ -124,6 +127,7 @@ func Create(opt *CreateOption) {
 	Bullx, Bully := bullet.BulletImage.Bounds().Dx(), bullet.BulletImage.Bounds().Dy()
 	bullet := &Bullet{
 		Collider:  collision.NewCollider(opt.Position.X+float64(Tankx), opt.Position.Y+float64(Tanky), float64(Bullx), float64(Bully)),
+		//Collider:  collision.NewCollider(opt.Position.X+float64(tank.EnemyImage.Bounds().Dx()), opt.Position.Y+float64(tank.EnemyImage.Bounds().Dy()), float64(Bullx), float64(Bully)),
 		Direction: opt.Direction,
 		Speed:     opt.Direction.DirectionVector2().MulScale(step),
 		Image:     bullet.BulletImage,

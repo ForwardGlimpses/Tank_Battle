@@ -32,7 +32,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 // Update updates the current game state.
 func (g *Game) Update() error {
 	g.Player.Update()
-	g.Enemy.Update()
+	enemy.Update()
 	bullet.Update()
 	return nil
 }
@@ -40,7 +40,7 @@ func (g *Game) Update() error {
 // Draw draws the current game to the given screen.
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.Player.Draw(screen)
-	g.Enemy.Draw(screen)
+	enemy.Draw(screen)
 	bullet.Draw(screen)
 	scenes.Draw(screen)
 }

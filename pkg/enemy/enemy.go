@@ -7,7 +7,7 @@ import (
 
 	//"time"
 	//"sync"
-	//"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
+	tankImage "github.com/ForwardGlimpses/Tank_Battle/assets/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/player"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
@@ -43,16 +43,13 @@ func Update() {
 
 		hx, hy := config.GetWindowSize()
 		var dx, dy int
-		var t *collision.Collider
 		for {
 			dx = rand.Intn(hx)
 			dy = rand.Intn(hy)
-			if check := t.Check(float64(dx), float64(dy)); check != nil {
-
-			} else {
+			t := collision.NewCollider(float64(dx), float64(dy), float64(tankImage.EnemyImage.Bounds().Dx()), float64(tankImage.EnemyImage.Bounds().Dy()))
+			if check := t.Check(0, 0); check == nil {
 				break
 			}
-
 		}
 		index += 1
 		enemy := &Enemy{
@@ -67,9 +64,22 @@ func Update() {
 		globalEnemy[enemy.Index] = enemy
 	}
 
+	var Destroyed []Enemy
+
 	for _, enemy := range globalEnemy {
-		enemy.Update()
+		if enemy.Tank.Hp <= 0 {
+			Destroyed = append(Destroyed, *enemy)
+		} else {
+			enemy.Update()
+		}
 	}
+
+	for _, enemy := range Destroyed {
+		delete(globalEnemy, enemy.Index)
+		enemy.Tank.Collider.Destruction()
+		enemy.Tank.Collider.Update()
+	}
+
 }
 
 func (a *Enemy) Update() {
@@ -119,11 +129,12 @@ func (p *Enemy) Draw(screen *ebiten.Image) {
 }
 
 func Draw(screen *ebiten.Image) {
+
 	for _, enemy := range globalEnemy {
-		enemy.Draw(screen)
+		// if enemy.Tank.Hp <= 0 {
+		// 	Destroyed = append(Destroyed, *enemy)
+		// } else {
+			enemy.Draw(screen)
+		// }
 	}
-}
-
-func Obstacle() {
-
 }
