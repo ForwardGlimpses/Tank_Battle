@@ -1,8 +1,7 @@
 package direction
 
-import "github.com/ForwardGlimpses/Tank_Battle/pkg/vector2"
+import "github.com/ForwardGlimpses/Tank_Battle/pkg/utils/vector2"
 
-// 当前只设置了四个方向，后续可以拓展为八个方向
 type Direction int
 
 const (
@@ -10,6 +9,7 @@ const (
 	Right
 	Down
 	Left
+	Static
 )
 
 func (d *Direction) TurnRight() {
@@ -28,16 +28,16 @@ func (d *Direction) Theta() float64 {
 	return float64(*d) * 90
 }
 
-func (d *Direction) DirectionVector2() *vector2.Vector2 {
+func (d *Direction) DirectionVector2() vector2.Vector {
 	switch *d {
 	case Up:
-		return vector2.New(0, -1)
+		return vector2.NewVector(0, -1)
 	case Right:
-		return vector2.New(1, 0)
+		return vector2.NewVector(1, 0)
 	case Down:
-		return vector2.New(0, 1)
+		return vector2.NewVector(0, 1)
 	case Left:
-		return vector2.New(-1, 0)
+		return vector2.NewVector(-1, 0)
 	}
-	return vector2.New(0, 0)
+	return vector2.NewVector(0, 0)
 }

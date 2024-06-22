@@ -3,17 +3,21 @@ package tankbattle
 import (
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/bullet"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/enemy"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/player"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/scenes"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Game struct {
 	Player *player.Player
-	//Scense *scenes.Scenes
+	Enemy  *enemy.Enemy
 }
 
 func NewGame() (*Game, error) {
+	sizeX, sizeY := config.GetWindowSize()
+	collision.Init(sizeX, sizeY, 2, 2)
 	scenes.Init()
 	return &Game{
 		Player: player.New(),
@@ -29,6 +33,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 // Update updates the current game state.
 func (g *Game) Update() error {
 	g.Player.Update()
+	enemy.Update()
 	bullet.Update()
 	return nil
 }
@@ -36,6 +41,7 @@ func (g *Game) Update() error {
 // Draw draws the current game to the given screen.
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.Player.Draw(screen)
+	enemy.Draw(screen)
 	bullet.Draw(screen)
 	scenes.Draw(screen)
 }

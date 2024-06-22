@@ -1,8 +1,8 @@
 package player
 
 import (
-	"github.com/ForwardGlimpses/Tank_Battle/pkg/direction"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/direction"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
@@ -19,8 +19,9 @@ type Player struct {
 }
 
 func New() *Player {
+	camp := "Player"
 	return &Player{
-		Tank: tank.New(),
+		Tank: tank.New(camp, 60, 60),
 	}
 }
 
@@ -56,4 +57,8 @@ func GetDirection() (direction.Direction, bool) {
 
 func GetAttack() bool {
 	return inpututil.IsKeyJustPressed(ebiten.KeySpace)
+}
+
+func GetCreatEnemy() bool {
+	return inpututil.IsKeyJustPressed(ebiten.KeyQ)
 }
