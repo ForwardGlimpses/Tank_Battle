@@ -34,13 +34,16 @@ type Enemy struct {
 	Index          int
 }
 
-var globalEnemy = make(map[int]*Enemy)
-
-var index = 0
+var ( 
+	globalEnemy = make(map[int]*Enemy)
+    index = 0
+	Enemynumers = 0
+	Limit = 5
+)
 
 func Update() {
-	if player.GetCreatEnemy() {
-
+	if player.GetCreatEnemy() && Enemynumers < Limit {
+		Enemynumers ++
 		hx, hy := config.GetWindowSize()
 		var dx, dy int
 		for {
@@ -76,8 +79,8 @@ func Update() {
 
 	for _, enemy := range Destroyed {
 		delete(globalEnemy, enemy.Index)
+		Enemynumers --
 		enemy.Tank.Collider.Destruction()
-		enemy.Tank.Collider.Update()
 	}
 
 }

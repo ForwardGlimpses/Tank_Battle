@@ -14,6 +14,7 @@ const (
 	Brick
 	Steel
 	Grass
+	Rivers
 )
 
 type Scenes struct {
@@ -27,7 +28,7 @@ type Scenes struct {
 
 var (
 	globalScenes     = make(map[int]*Scenes)
-	scenesImages     = []*ebiten.Image{nil, scenes.BrickImage, scenes.SteelImage, scenes.GrassImage}
+	scenesImages     = []*ebiten.Image{nil, scenes.BrickImage, scenes.SteelImage, scenes.GrassImage,scenes.Rivers_Image}
 	Key          int = 0
 )
 

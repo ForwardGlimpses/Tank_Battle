@@ -7,6 +7,7 @@ import (
 	"math"
 
 	"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/scenes"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/types"
 
 	//"github.com/ForwardGlimpses/Tank_Battle/pkg/scenes"
@@ -62,6 +63,11 @@ func (t *Tank) Move(direction direction.Direction) {
 			}
 			if  _ , ok := obj.Data.(types.Obstacle); ok {
 				stop = true
+			}
+			if  tt , ok := obj.Data.(*scenes.Scenes); ok {
+				if tt.Type == scenes.Grass {
+					stop = false
+				}
 			}
 		}
 	}

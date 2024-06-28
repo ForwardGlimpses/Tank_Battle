@@ -42,9 +42,9 @@ func (b *Bullet) Update() {
 				if t.GetCamp() != b.Camp {
 					t.TakeDamage(b.Damage)
 					if tt, ok := obj.Data.(*scenes.Scenes); ok {
-						if tt.Type == scenes.Steel || tt.Type == scenes.Grass {
-							b.Collider.Destruction()
-							delete(globalBullets, b.Index)
+						if tt.Type == scenes.Rivers || tt.Type == scenes.Grass {
+					 		b.Collider.Move(b.Speed)
+					        break ;
 						} else if tt.Type == scenes.Brick {
 							b.Collider.Destruction()
 							delete(globalBullets, b.Index)
@@ -52,6 +52,9 @@ func (b *Bullet) Update() {
 								scenes.Delete(tt)
 								tt.Collider.Destruction()
 							}
+						} else if tt.Type == scenes.Steel{
+							b.Collider.Destruction()
+							delete(globalBullets, b.Index)
 						}
 					} else {
 						b.Collider.Destruction()

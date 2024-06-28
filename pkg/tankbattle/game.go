@@ -19,8 +19,9 @@ func NewGame() (*Game, error) {
 	sizeX, sizeY := config.GetWindowSize()
 	collision.Init(sizeX, sizeY, 2, 2)
 	scenes.Init()
+	player.Init()
 	return &Game{
-		Player: player.New(),
+		// Player: player.New(),
 		//Scense: scenes.New(),
 	}, nil
 }
@@ -32,7 +33,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 
 // Update updates the current game state.
 func (g *Game) Update() error {
-	g.Player.Update()
+	player.Update()
 	enemy.Update()
 	bullet.Update()
 	return nil
@@ -40,7 +41,7 @@ func (g *Game) Update() error {
 
 // Draw draws the current game to the given screen.
 func (g *Game) Draw(screen *ebiten.Image) {
-	g.Player.Draw(screen)
+	player.Draw(screen)
 	enemy.Draw(screen)
 	bullet.Draw(screen)
 	scenes.Draw(screen)
