@@ -8,7 +8,7 @@ import (
 	"github.com/ForwardGlimpses/Tank_Battle/assets/bullet"
 	"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/scenes"
-
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
 	//"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/types"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
@@ -25,6 +25,11 @@ type Bullet struct {
 	Index     int
 	Damage    int
 	Camp      string
+}
+
+func init() {
+	tankbattle.RegisterUpdate(Update,3)
+	tankbattle.RegisterDraw(Draw,3)
 }
 
 func (b *Bullet) Update() {

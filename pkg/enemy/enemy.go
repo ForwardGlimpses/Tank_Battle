@@ -9,13 +9,12 @@ import (
 	//"sync"
 	tankImage "github.com/ForwardGlimpses/Tank_Battle/assets/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
-	"github.com/ForwardGlimpses/Tank_Battle/pkg/player"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
-
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/direction"
 	"github.com/hajimehoshi/ebiten/v2"
-	//"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 const (
@@ -34,16 +33,21 @@ type Enemy struct {
 	Index          int
 }
 
-var ( 
+var (
 	globalEnemy = make(map[int]*Enemy)
-    index = 0
+	index       = 0
 	Enemynumers = 0
-	Limit = 5
+	Limit       = 5
 )
 
+func init() {
+	tankbattle.RegisterUpdate(Update, 1)
+}
+
 func Update() {
-	if player.GetCreatEnemy() && Enemynumers < Limit {
-		Enemynumers ++
+
+	if GetCreatEnemy() && Enemynumers < Limit {
+		Enemynumers++
 		hx, hy := config.GetWindowSize()
 		var dx, dy int
 		for {
@@ -79,7 +83,8 @@ func Update() {
 
 	for _, enemy := range Destroyed {
 		delete(globalEnemy, enemy.Index)
-		Enemynumers --
+		Enemynumers--
+		delete(tank.GlobalTanks, enemy.Tank.Index)
 		enemy.Tank.Collider.Destruction()
 	}
 
@@ -91,6 +96,7 @@ func (a *Enemy) Update() {
 		a.MoveDuration--
 	} else {
 		a.randMove()
+		a.IsMove()
 	}
 	if a.AttackDuration > 0 {
 		a.AttackDuration--
@@ -100,10 +106,12 @@ func (a *Enemy) Update() {
 
 	// 攻击
 	if a.Attack {
-		a.Tank.Fight()
+		a.Tank.Attack = true
 		a.Attack = false
 	}
-	a.Tank.Move(a.Direction)
+
+	a.Tank.Direction = a.Direction
+	tank.GlobalTanks[a.Tank.Index] = a.Tank
 }
 
 var baseDuration = 60
@@ -127,17 +135,15 @@ func (a *Enemy) randMove() {
 	a.Direction = direction.Direction(dir)
 }
 
-func (p *Enemy) Draw(screen *ebiten.Image) {
-	p.Tank.Draw(screen)
+func (a *Enemy) IsMove() {
+	stop := rand.Intn(2)
+	if stop%2 == 1 {
+		a.Tank.Move = false
+	} else {
+		a.Tank.Move = true
+	}
 }
 
-func Draw(screen *ebiten.Image) {
-
-	for _, enemy := range globalEnemy {
-		// if enemy.Tank.Hp <= 0 {
-		// 	Destroyed = append(Destroyed, *enemy)
-		// } else {
-			enemy.Draw(screen)
-		// }
-	}
+func GetCreatEnemy() bool {
+	return inpututil.IsKeyJustPressed(ebiten.KeyQ)
 }

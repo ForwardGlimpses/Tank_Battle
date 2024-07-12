@@ -3,6 +3,8 @@ package config
 import (
 	//"strings"
 
+	//"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
+	//"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -57,6 +59,16 @@ type Window struct {
 	MinHeight int
 	MinWidth  int
 }
+
+// func init(){
+// 	tankbattle.RegisterInit(Init,1)
+// }
+
+// func Init() error{
+// 	// sizeX, sizeY := GetWindowSize()
+// 	// collision.Init(sizeX, sizeY, 2, 2)
+// 	return nil
+// }
 
 func KeyMap(name string)ebiten.Key{
 	switch name{

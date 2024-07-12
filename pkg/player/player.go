@@ -1,14 +1,12 @@
 package player
 
 import (
-	//"fmt"
 
 	"container/list"
-	"fmt"
-
 	tankImage "github.com/ForwardGlimpses/Tank_Battle/assets/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/direction"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -30,6 +28,11 @@ type Player struct {
 	Tank   *tank.Tank
 	Index  int
 	action config.Action
+}
+
+func init() {
+	tankbattle.RegisterInit(Init, 3)
+	tankbattle.RegisterUpdate(Update, 2)
 }
 
 var globalPlayer = make(map[int]*Player)
@@ -58,15 +61,15 @@ func PlayerDetection(dx, dy int) Position {
 	queue := list.New()
 	queue.PushBack(Position{X: dx, Y: dy}) // 将根节点入队
 
-	SizeX,SizeY:=config.GetWindowSize()
+	SizeX, SizeY := config.GetWindowSize()
 
-	visited := make([][]bool, SizeX) 
-	for i := range visited {  
-		visited[i] = make([]bool, SizeY)  
-	}  
+	visited := make([][]bool, SizeX)
+	for i := range visited {
+		visited[i] = make([]bool, SizeY)
+	}
 	visited[dx][dy] = true
 
-	directions := [][]int{{-20, 0}, {20, 0}, {0, -20}, {0, 20}} // 上下左右四个方向
+	directions := [][]int{{-10, 0}, {10, 0}, {0, -10}, {0, 10}} // 上下左右四个方向
 	for queue.Len() > 0 {
 		// 出队一个位置
 		e := queue.Front()
@@ -76,14 +79,14 @@ func PlayerDetection(dx, dy int) Position {
 		// 遍历四个方向
 		for _, dir := range directions {
 			newX, newY := pos.X+dir[0], pos.Y+dir[1]
-			fmt.Println(newX," ",newY)
 			// 检查新位置是否合法且未访问过且不是障碍物
-			fmt.Println(config.C.Window.Width,config.C.Window.Height)
-			fmt.Println(visited[newX][newY])
-			if newX > 0 && newX < SizeX && newY > 0 && newY < SizeY && !visited[newX][newY] {
+			if newX > 0 && newX < SizeX && newY > 0 && newY < SizeY {
+				if visited[newX][newY] {
+					continue
+				}
 				visited[newX][newY] = true
 				t := collision.NewCollider(float64(newX), float64(newY), float64(tankImage.PlayerImage.Bounds().Dx()), float64(tankImage.PlayerImage.Bounds().Dx()))
-				if check := t.Check(0,0); check != nil {
+				if check := t.Check(float64(dx), float64(dy)); check != nil {
 					queue.PushBack(Position{X: newX, Y: newY}) // 将新位置入队
 				} else {
 					return Position{X: newX, Y: newY}
@@ -94,27 +97,25 @@ func PlayerDetection(dx, dy int) Position {
 	return Position{dx, dy}
 }
 
-func CreatePlayer(dx,dy int) {
-	t := PlayerDetection(dx,dy)
-	if t.X == dx && t.Y == dy{
-		return 
+func CreatePlayer(dx, dy ,indexx int) {
+	t := PlayerDetection(dx, dy)
+	if t.X == dx && t.Y == dy {
+		return
 	}
 	NewX := t.X
 	NewY := t.Y
-	index %= 2
 	player := &Player{
 		Tank:   tank.New("Player", NewX, NewY),
-		Index:  index,
-		action: config.DefaultPlayers[index],
+		Index:  indexx,
+		action: config.DefaultPlayers[indexx],
 	}
 	globalPlayer[player.Index] = player
-	index++
 }
 
 func Update() {
 
 	var Destroyed []Player
-    var Create []int
+	var Create []int
 
 	for _, player := range globalPlayer {
 		if player.Tank.Hp <= 0 {
@@ -127,32 +128,27 @@ func Update() {
 	for _, player := range Destroyed {
 		delete(globalPlayer, player.Index)
 		player.Tank.Collider.Destruction()
+		delete(tank.GlobalTanks, player.Tank.Index)
 		Create = append(Create, player.Index)
 	}
-	
-	for _,indexx := range Create {
-		CreatePlayer((indexx+2)*100,(indexx+2)*100)
+
+	for _, indexx := range Create {
+		CreatePlayer((indexx+2)*100, (indexx+2)*100,indexx)
 	}
 }
 
 func (p *Player) Update() {
 	direction, pressed := p.GetDirection()
 	if pressed {
-		p.Tank.Move(direction)
+		p.Tank.Direction = direction
+		p.Tank.Move = true
+	} else {
+		p.Tank.Move = false
 	}
 	if p.Attack() {
-		p.Tank.Fight()
+		p.Tank.Attack = true
 	}
-}
-
-func Draw(screen *ebiten.Image) {
-	for _, player := range globalPlayer {
-		player.Draw(screen)
-	}
-}
-
-func (p *Player) Draw(screen *ebiten.Image) {
-	p.Tank.Draw(screen)
+	tank.GlobalTanks[p.Tank.Index] = p.Tank
 }
 
 func (p *Player) GetDirection() (direction.Direction, bool) {
@@ -173,8 +169,4 @@ func (p *Player) GetDirection() (direction.Direction, bool) {
 
 func (p *Player) Attack() bool {
 	return inpututil.IsKeyJustPressed(config.KeyMap(config.DefaultPlayers[p.Index].Attack))
-}
-
-func GetCreatEnemy() bool {
-	return inpututil.IsKeyJustPressed(ebiten.KeyQ)
 }

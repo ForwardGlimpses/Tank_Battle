@@ -8,6 +8,7 @@ import (
 
 	"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/scenes"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/types"
 
 	//"github.com/ForwardGlimpses/Tank_Battle/pkg/scenes"
@@ -25,16 +26,20 @@ const (
 	step float64 = 3
 )
 
-// var globalBullets = make(map[int]*Tank)
+var GlobalTanks = make(map[int]*Tank)
+
+var TankIndex = 0
 
 type Tank struct {
 	Hp       int
 	Collider *collision.Collider
-	//Position  vector2.Vector
-	direction direction.Direction
+	Direction direction.Direction
 	weapon    weapon.Weapon
 	Image     image.Image
+	Attack    bool
+	Move      bool
 	Camp      string
+	Index     int
 }
 
 func New(camp string,tankx int,tanky int) *Tank {
@@ -44,13 +49,21 @@ func New(camp string,tankx int,tanky int) *Tank {
 		weapon:   &weapon.DefaultWeapon{},
 		Image:    tank.TankImage[camp],
 		Camp:     camp,
+		Index:    TankIndex,
 	}
 	tank.Collider.Data = tank
+	GlobalTanks[tank.Index] = tank
+	TankIndex ++
 	return tank
 }
 
-func (t *Tank) Move(direction direction.Direction) {
-	t.direction = direction
+func init() {
+	tankbattle.RegisterDraw(Draw,2)
+	tankbattle.RegisterUpdate(Update,3)
+}
+
+func (t *Tank) Update(direction direction.Direction) {
+	t.Direction = direction
 	increment := direction.DirectionVector2().MulScale(step)
 	dx := increment.X
 	dy := increment.Y
@@ -78,21 +91,45 @@ func (t *Tank) Move(direction direction.Direction) {
 	t.Collider.Update()
 }
 
+func Update() {
+	for _,tank := range GlobalTanks{
+		if tank.Move {
+			tank.Update(tank.Direction)
+		}
+	}
+	for _,tank := range GlobalTanks{
+		if tank.Attack {
+			tank.Fight()
+			tank.Attack = false
+		}
+	}
+}
+
 func (t *Tank) Fight() {
 	// TODO: 计算子弹发射位置（坦克正前方）
-	t.weapon.Fight(t.Collider.Position, t.direction, t.Camp)
+	t.weapon.Fight(t.Collider.Position, t.Direction, t.Camp)
 }
+
+// func Fight(){
+	
+// }
 
 func (t *Tank) Draw(screen *ebiten.Image) {
 	opt := &ebiten.DrawImageOptions{}
 	tranX := float64(t.Image.Bounds().Dx()) / 2
 	tranY := float64(t.Image.Bounds().Dy()) / 2
 	opt.GeoM.Translate(-tranX, -tranY)
-	opt.GeoM.Rotate(t.direction.Theta() * 2 * math.Pi / 360)
+	opt.GeoM.Rotate(t.Direction.Theta() * 2 * math.Pi / 360)
 	opt.GeoM.Translate(t.Collider.Position.X+tranX, t.Collider.Position.Y+tranY)
 	//screen.DrawImage(t.Image, opt)
 	screen.DrawImage(ebiten.NewImageFromImage(t.Image), opt)
 
+}
+
+func Draw(screen *ebiten.Image) {
+	for _,tank := range GlobalTanks{
+		tank.Draw(screen)
+	}
 }
 
 func (t *Tank) Obstacle() {

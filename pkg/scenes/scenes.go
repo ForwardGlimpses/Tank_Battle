@@ -2,6 +2,7 @@ package scenes
 
 import (
 	"github.com/ForwardGlimpses/Tank_Battle/assets/scenes"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/vector2"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -19,7 +20,6 @@ const (
 
 type Scenes struct {
 	Collider *collision.Collider
-	//Position vector2.Vector
 	Image *ebiten.Image
 	index int
 	Type  ScenesType
@@ -32,7 +32,13 @@ var (
 	Key          int = 0
 )
 
-func Init() {
+func init() {
+	tankbattle.RegisterInit(Init,2)
+	tankbattle.RegisterDraw(Draw,1)
+}
+
+
+func Init() error {
 	for y, line := range defMap {
 		for x, t := range line {
 			var position vector2.Vector = vector2.NewVector(float64(x*60), float64(y*60))
@@ -43,6 +49,7 @@ func Init() {
 			}
 		}
 	}
+	return nil
 }
 
 func New(position vector2.Vector, t ScenesType) *Scenes {
