@@ -18,6 +18,9 @@ var (
 	//go:embed grass.png
 	grass_png []byte
 	GrassImage *ebiten.Image
+	//go:embed rivers.png
+	rivers_png []byte
+	Rivers_Image *ebiten.Image
 )
 
 func init() {
@@ -27,4 +30,6 @@ func init() {
 	SteelImage = ebiten.NewImageFromImage(Steel)
 	Grass, _, _ := image.Decode(bytes.NewReader(grass_png))
 	GrassImage = ebiten.NewImageFromImage(Grass)
+	Rivers, _, _ := image.Decode(bytes.NewReader(rivers_png))
+	Rivers_Image = ebiten.NewImageFromImage(Rivers)
 }

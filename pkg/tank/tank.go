@@ -1,13 +1,19 @@
 package tank
 
 import (
+	//"fmt"
 	"image"
 	_ "image/png"
 	"math"
 
 	"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
-	"github.com/ForwardGlimpses/Tank_Battle/pkg/direction"
-	"github.com/ForwardGlimpses/Tank_Battle/pkg/vector2"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/scenes"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/types"
+
+	//"github.com/ForwardGlimpses/Tank_Battle/pkg/scenes"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/direction"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/weapon"
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -17,57 +23,123 @@ const (
 	Down
 	Left
 	Right
-	step int = 1
+	step float64 = 3
 )
 
+var GlobalTanks = make(map[int]*Tank)
+
+var TankIndex = 0
+
 type Tank struct {
-	Hp        int
-	position  *vector2.Vector2
-	direction direction.Direction
+	Hp       int
+	Collider *collision.Collider
+	Direction direction.Direction
 	weapon    weapon.Weapon
 	Image     image.Image
+	Attack    bool
+	Move      bool
+	Camp      string
+	Index     int
 }
 
-func New() *Tank {
-	return &Tank{
-		position: vector2.New(28, 25),
+func New(camp string,tankx int,tanky int) *Tank {
+	tank := &Tank{
+		Collider: collision.NewCollider(float64(tankx), float64(tanky), float64(tank.PlayerImage.Bounds().Dx()), float64(tank.PlayerImage.Bounds().Dy())),
 		Hp:       100,
 		weapon:   &weapon.DefaultWeapon{},
-		Image:    tank.PlayerImage,
+		Image:    tank.TankImage[camp],
+		Camp:     camp,
+		Index:    TankIndex,
 	}
+	tank.Collider.Data = tank
+	GlobalTanks[tank.Index] = tank
+	TankIndex ++
+	return tank
 }
 
-func (t *Tank) Move(direction direction.Direction) {
-	t.direction = direction
-	t.position = t.position.Add(direction.DirectionVector2().MulScalar(step))
+func init() {
+	tankbattle.RegisterDraw(Draw,2)
+	tankbattle.RegisterUpdate(Update,3)
+}
 
-	// TODO: 通过碰撞检测限制移动
+func (t *Tank) Update(direction direction.Direction) {
+	t.Direction = direction
+	increment := direction.DirectionVector2().MulScale(step)
+	dx := increment.X
+	dy := increment.Y
+	stop := false
+	if check := t.Collider.Check(dx, dy); check != nil {
+		// TODO: 这里需要判断是否碰到障碍物，如果没碰到，正常移动
+		for _, obj := range check.Colliders {
+			if _, ok := obj.Data.(*Tank); ok {
+				stop = true
+			}
+			if  _ , ok := obj.Data.(types.Obstacle); ok {
+				stop = true
+			}
+			if  tt , ok := obj.Data.(*scenes.Scenes); ok {
+				if tt.Type == scenes.Grass {
+					stop = false
+				}
+			}
+		}
+	}
+	if !stop {
+		t.Collider.Position = t.Collider.Position.Add(direction.DirectionVector2().MulScale(step))
+	}
+	 // 更新自身在网格内的位置
+	t.Collider.Update()
+}
 
-	// Width, Height := config.GetWindowSize()
-	// MinWidth, MinHeight := config.GetWindowLimit()
-	// if t.dx < MinHeight {
-	// 	t.dx = MinHeight
-	// }
-	// if t.dy < MinWidth {
-	// 	t.dy = MinWidth
-	// }
-	// if t.dx > Height {
-	// 	t.dx = Height
-	// }
-	// if t.dy > Width {
-	// 	t.dy = Width
-	// }
+func Update() {
+	for _,tank := range GlobalTanks{
+		if tank.Move {
+			tank.Update(tank.Direction)
+		}
+	}
+	for _,tank := range GlobalTanks{
+		if tank.Attack {
+			tank.Fight()
+			tank.Attack = false
+		}
+	}
 }
 
 func (t *Tank) Fight() {
 	// TODO: 计算子弹发射位置（坦克正前方）
-	t.weapon.Fight(t.position, t.direction)
+	t.weapon.Fight(t.Collider.Position, t.Direction, t.Camp)
 }
+
+// func Fight(){
+	
+// }
 
 func (t *Tank) Draw(screen *ebiten.Image) {
 	opt := &ebiten.DrawImageOptions{}
-	opt.GeoM.Translate(-float64(55)/2, -float64(49)/2)
-	opt.GeoM.Rotate(t.direction.Theta() * 2 * math.Pi / 360)
-	opt.GeoM.Translate(t.position.ValueFloat64())
+	tranX := float64(t.Image.Bounds().Dx()) / 2
+	tranY := float64(t.Image.Bounds().Dy()) / 2
+	opt.GeoM.Translate(-tranX, -tranY)
+	opt.GeoM.Rotate(t.Direction.Theta() * 2 * math.Pi / 360)
+	opt.GeoM.Translate(t.Collider.Position.X+tranX, t.Collider.Position.Y+tranY)
+	//screen.DrawImage(t.Image, opt)
 	screen.DrawImage(ebiten.NewImageFromImage(t.Image), opt)
+
+}
+
+func Draw(screen *ebiten.Image) {
+	for _,tank := range GlobalTanks{
+		tank.Draw(screen)
+	}
+}
+
+func (t *Tank) Obstacle() {
+
+}
+
+func (t *Tank) GetCamp() string {
+	return t.Camp
+}
+
+func (t *Tank) TakeDamage(damage int) {
+	t.Hp -= damage
 }
