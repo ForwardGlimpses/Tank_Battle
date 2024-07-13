@@ -58,7 +58,7 @@ func New(camp string,tankx int,tanky int) *Tank {
 }
 
 func init() {
-	tankbattle.RegisterDraw(Draw,2)
+	tankbattle.RegisterDraw(Draw,1)
 	tankbattle.RegisterUpdate(Update,3)
 }
 

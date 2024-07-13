@@ -37,7 +37,7 @@ var (
 	globalEnemy = make(map[int]*Enemy)
 	index       = 0
 	Enemynumers = 0
-	Limit       = 5
+	Limit       = 4
 )
 
 func init() {

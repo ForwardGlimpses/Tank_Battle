@@ -34,7 +34,7 @@ var (
 
 func init() {
 	tankbattle.RegisterInit(Init,2)
-	tankbattle.RegisterDraw(Draw,1)
+	tankbattle.RegisterDraw(Draw,2)
 }
 
 
