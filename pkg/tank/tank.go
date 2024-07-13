@@ -7,7 +7,7 @@ import (
 	"math"
 
 	"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
-	"github.com/ForwardGlimpses/Tank_Battle/pkg/scenes"
+	//"github.com/ForwardGlimpses/Tank_Battle/pkg/scenes"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/types"
 
@@ -74,12 +74,9 @@ func (t *Tank) Update(direction direction.Direction) {
 			if _, ok := obj.Data.(*Tank); ok {
 				stop = true
 			}
-			if  _ , ok := obj.Data.(types.Obstacle); ok {
-				stop = true
-			}
-			if  tt , ok := obj.Data.(*scenes.Scenes); ok {
-				if tt.Type == scenes.Grass {
-					stop = false
+			if  tt , ok := obj.Data.(types.Obstacle); ok {
+				if !tt.TankIsPassable() {
+					stop = true
 				}
 			}
 		}
@@ -110,9 +107,6 @@ func (t *Tank) Fight() {
 	t.weapon.Fight(t.Collider.Position, t.Direction, t.Camp)
 }
 
-// func Fight(){
-	
-// }
 
 func (t *Tank) Draw(screen *ebiten.Image) {
 	opt := &ebiten.DrawImageOptions{}
@@ -134,6 +128,14 @@ func Draw(screen *ebiten.Image) {
 
 func (t *Tank) Obstacle() {
 
+}
+
+func (t *Tank) TankIsPassable() bool {
+		return false
+}
+
+func (t *Tank) BulletIsPassable() bool {
+		return false
 }
 
 func (t *Tank) GetCamp() string {
