@@ -2,13 +2,12 @@ package player
 
 import (
 
-	"container/list"
-	tankImage "github.com/ForwardGlimpses/Tank_Battle/assets/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
-	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
+
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/direction"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/ebitenextend"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
@@ -50,55 +49,9 @@ func Init() error {
 	return nil
 }
 
-type Position struct {
-	X int
-	Y int
-}
-
-func PlayerDetection(dx, dy int) Position {
-
-	// 使用list包实现队列
-	queue := list.New()
-	queue.PushBack(Position{X: dx, Y: dy}) // 将根节点入队
-
-	SizeX, SizeY := config.GetWindowSize()
-
-	visited := make([][]bool, SizeX)
-	for i := range visited {
-		visited[i] = make([]bool, SizeY)
-	}
-	visited[dx][dy] = true
-
-	directions := [][]int{{-10, 0}, {10, 0}, {0, -10}, {0, 10}} // 上下左右四个方向
-	for queue.Len() > 0 {
-		// 出队一个位置
-		e := queue.Front()
-		queue.Remove(e)
-		pos := e.Value.(Position)
-
-		// 遍历四个方向
-		for _, dir := range directions {
-			newX, newY := pos.X+dir[0], pos.Y+dir[1]
-			// 检查新位置是否合法且未访问过且不是障碍物
-			if newX > 0 && newX < SizeX && newY > 0 && newY < SizeY {
-				if visited[newX][newY] {
-					continue
-				}
-				visited[newX][newY] = true
-				t := collision.NewCollider(float64(newX), float64(newY), float64(tankImage.PlayerImage.Bounds().Dx()), float64(tankImage.PlayerImage.Bounds().Dx()))
-				if check := t.Check(float64(dx), float64(dy)); check != nil {
-					queue.PushBack(Position{X: newX, Y: newY}) // 将新位置入队
-				} else {
-					return Position{X: newX, Y: newY}
-				}
-			}
-		}
-	}
-	return Position{dx, dy}
-}
 
 func CreatePlayer(dx, dy ,indexx int) {
-	t := PlayerDetection(dx, dy)
+	t := tank.TankBorn(dx, dy)
 	if t.X == dx && t.Y == dy {
 		return
 	}
@@ -148,25 +101,29 @@ func (p *Player) Update() {
 	if p.Attack() {
 		p.Tank.Attack = true
 	}
-	tank.GlobalTanks[p.Tank.Index] = p.Tank
 }
 
 func (p *Player) GetDirection() (direction.Direction, bool) {
-	if ebiten.IsKeyPressed(config.KeyMap((config.DefaultPlayers[p.Index].Up))) {
+	KeyUp , _ := ebitenextend.KeyNameToKeyCode(config.DefaultPlayers[p.Index].Up)
+	KeyDown , _ := ebitenextend.KeyNameToKeyCode(config.DefaultPlayers[p.Index].Down)
+	KeyLeft , _ := ebitenextend.KeyNameToKeyCode(config.DefaultPlayers[p.Index].Left)
+	KeyRight , _ := ebitenextend.KeyNameToKeyCode(config.DefaultPlayers[p.Index].Right)
+	if ebiten.IsKeyPressed(ebiten.Key(KeyUp)) {
 		return direction.Up, true
 	}
-	if ebiten.IsKeyPressed(config.KeyMap((config.DefaultPlayers[p.Index].Down))) {
+	if ebiten.IsKeyPressed(ebiten.Key(KeyDown)){
 		return direction.Down, true
 	}
-	if ebiten.IsKeyPressed(config.KeyMap((config.DefaultPlayers[p.Index].Left))) {
+	if ebiten.IsKeyPressed(ebiten.Key(KeyLeft)) {
 		return direction.Left, true
 	}
-	if ebiten.IsKeyPressed(config.KeyMap((config.DefaultPlayers[p.Index].Right))) {
+	if ebiten.IsKeyPressed(ebiten.Key(KeyRight)) {
 		return direction.Right, true
 	}
 	return 0, false
 }
 
 func (p *Player) Attack() bool {
-	return inpututil.IsKeyJustPressed(config.KeyMap(config.DefaultPlayers[p.Index].Attack))
+	attack , _ := ebitenextend.KeyNameToKeyCode(config.DefaultPlayers[p.Index].Attack)
+	return inpututil.IsKeyJustPressed(ebiten.Key(attack))
 }

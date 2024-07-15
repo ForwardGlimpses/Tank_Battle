@@ -1,17 +1,16 @@
 package tank
 
 import (
-	//"fmt"
+	"container/list"
 	"image"
 	_ "image/png"
 	"math"
 
 	"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
-	//"github.com/ForwardGlimpses/Tank_Battle/pkg/scenes"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/types"
 
-	//"github.com/ForwardGlimpses/Tank_Battle/pkg/scenes"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/direction"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/weapon"
@@ -42,6 +41,10 @@ type Tank struct {
 	Index     int
 }
 
+type Position struct {
+	X int
+	Y int
+}
 func New(camp string,tankx int,tanky int) *Tank {
 	tank := &Tank{
 		Collider: collision.NewCollider(float64(tankx), float64(tanky), float64(tank.PlayerImage.Bounds().Dx()), float64(tank.PlayerImage.Bounds().Dy())),
@@ -69,7 +72,6 @@ func (t *Tank) Update(direction direction.Direction) {
 	dy := increment.Y
 	stop := false
 	if check := t.Collider.Check(dx, dy); check != nil {
-		// TODO: 这里需要判断是否碰到障碍物，如果没碰到，正常移动
 		for _, obj := range check.Colliders {
 			if _, ok := obj.Data.(*Tank); ok {
 				stop = true
@@ -84,7 +86,6 @@ func (t *Tank) Update(direction direction.Direction) {
 	if !stop {
 		t.Collider.Position = t.Collider.Position.Add(direction.DirectionVector2().MulScale(step))
 	}
-	 // 更新自身在网格内的位置
 	t.Collider.Update()
 }
 
@@ -103,10 +104,47 @@ func Update() {
 }
 
 func (t *Tank) Fight() {
-	// TODO: 计算子弹发射位置（坦克正前方）
 	t.weapon.Fight(t.Collider.Position, t.Direction, t.Camp)
 }
 
+
+func TankBorn(dx, dy int) Position {
+
+	queue := list.New()
+	queue.PushBack(Position{X: dx, Y: dy})
+
+	SizeX, SizeY := config.GetWindowSize()
+
+	visited := make([][]bool, SizeX)
+	for i := range visited {
+		visited[i] = make([]bool, SizeY)
+	}
+	visited[dx][dy] = true
+
+	directions := [][]int{{-10, 0}, {10, 0}, {0, -10}, {0, 10}}
+	for queue.Len() > 0 {
+		e := queue.Front()
+		queue.Remove(e)
+		pos := e.Value.(Position)
+
+		for _, dir := range directions {
+			newX, newY := pos.X+dir[0], pos.Y+dir[1]
+			if newX > 0 && newX < SizeX && newY > 0 && newY < SizeY {
+				if visited[newX][newY] {
+					continue
+				}
+				visited[newX][newY] = true
+				t := collision.NewCollider(float64(dx), float64(dy), float64(tank.PlayerImage.Bounds().Dx()), float64(tank.PlayerImage.Bounds().Dy()))
+				if check := t.Check(float64(newX-dx), float64(newY-dy)); check != nil {
+					queue.PushBack(Position{X: newX, Y: newY})
+				} else {
+					return Position{X: newX, Y: newY}
+				}
+			}
+		}
+	}
+	return Position{dx, dy}
+}
 
 func (t *Tank) Draw(screen *ebiten.Image) {
 	opt := &ebiten.DrawImageOptions{}
@@ -115,7 +153,6 @@ func (t *Tank) Draw(screen *ebiten.Image) {
 	opt.GeoM.Translate(-tranX, -tranY)
 	opt.GeoM.Rotate(t.Direction.Theta() * 2 * math.Pi / 360)
 	opt.GeoM.Translate(t.Collider.Position.X+tranX, t.Collider.Position.Y+tranY)
-	//screen.DrawImage(t.Image, opt)
 	screen.DrawImage(ebiten.NewImageFromImage(t.Image), opt)
 
 }
@@ -124,10 +161,6 @@ func Draw(screen *ebiten.Image) {
 	for _,tank := range GlobalTanks{
 		tank.Draw(screen)
 	}
-}
-
-func (t *Tank) Obstacle() {
-
 }
 
 func (t *Tank) TankIsPassable() bool {

@@ -7,11 +7,11 @@ import (
 
 	//"time"
 	//"sync"
-	tankImage "github.com/ForwardGlimpses/Tank_Battle/assets/tank"
-	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
+	//tankImage "github.com/ForwardGlimpses/Tank_Battle/assets/tank"
+	//"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
-	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
+	//"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/direction"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -35,7 +35,6 @@ type Enemy struct {
 
 var (
 	globalEnemy = make(map[int]*Enemy)
-	index       = 0
 	Enemynumers = 0
 	Limit       = 4
 )
@@ -47,28 +46,23 @@ func init() {
 func Update() {
 
 	if GetCreatEnemy() && Enemynumers < Limit {
-		Enemynumers++
-		hx, hy := config.GetWindowSize()
-		var dx, dy int
-		for {
-			dx = rand.Intn(hx)
-			dy = rand.Intn(hy)
-			t := collision.NewCollider(float64(dx), float64(dy), float64(tankImage.EnemyImage.Bounds().Dx()), float64(tankImage.EnemyImage.Bounds().Dy()))
-			if check := t.Check(0, 0); check == nil {
-				break
+		dx:= (Enemynumers+1)*100
+		dy:= (Enemynumers+1)*100
+		t:=tank.TankBorn(dx,dy)
+		if t.X != dx || t.Y != dy {
+			Enemynumers += 1
+			enemy := &Enemy{
+				Attack:         false,
+				MoveDuration:   0,
+				AttackDuration: 0,
+				Index:          Enemynumers,
+				Direction:      direction.Direction(Up),
+				Tank:           tank.New("Enemy", t.X, t.Y),
 			}
-		}
-		index += 1
-		enemy := &Enemy{
-			Attack:         false,
-			MoveDuration:   0,
-			AttackDuration: 0,
-			Index:          index,
-			Direction:      direction.Direction(Up),
-			Tank:           tank.New("NPC", dx, dy),
-		}
 
-		globalEnemy[enemy.Index] = enemy
+			globalEnemy[enemy.Index] = enemy
+		}
+	    
 	}
 
 	var Destroyed []Enemy
@@ -83,9 +77,9 @@ func Update() {
 
 	for _, enemy := range Destroyed {
 		delete(globalEnemy, enemy.Index)
-		Enemynumers--
-		delete(tank.GlobalTanks, enemy.Tank.Index)
 		enemy.Tank.Collider.Destruction()
+		delete(tank.GlobalTanks, enemy.Tank.Index)
+		Enemynumers--
 	}
 
 }
@@ -111,7 +105,6 @@ func (a *Enemy) Update() {
 	}
 
 	a.Tank.Direction = a.Direction
-	tank.GlobalTanks[a.Tank.Index] = a.Tank
 }
 
 var baseDuration = 60

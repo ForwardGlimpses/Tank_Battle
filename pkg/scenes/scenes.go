@@ -63,10 +63,6 @@ func New(position vector2.Vector, t ScenesType) *Scenes {
 	}
 }
 
-// func Delete(s *Scenes) {
-// 	delete(globalScenes, s.index)
-// 	s.Collider.Update()
-// }
 
 func (s *Scenes) Draw(screen *ebiten.Image) {
 	opt := &ebiten.DrawImageOptions{}
@@ -95,10 +91,6 @@ func (t *Scenes) TakeDamage(damage int) {
 	}
 }
 
-// 此函数暂时无逻辑，仅标识此结构为障碍物
-func (t *Scenes) Obstacle() {
-
-}
 
 func (t *Scenes) TankIsPassable() bool {
 	if t.Type == Grass {

@@ -10,7 +10,6 @@ type TakeDamage interface {
 
 // 当前只有一个空函数，不做任何处理，实现此函数即认为是障碍物
 type Obstacle interface {
-	Obstacle()
 	TankIsPassable() bool
 	BulletIsPassable() bool
 }

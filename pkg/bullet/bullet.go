@@ -5,9 +5,12 @@ import (
 
 	//"fmt"
 
+	//"fmt"
+
 	"github.com/ForwardGlimpses/Tank_Battle/assets/bullet"
 	"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
+
 	//"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/types"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
@@ -36,28 +39,27 @@ func (b *Bullet) Update() {
 	dx := b.Speed.X
 	dy := b.Speed.Y
 
-	flag1 := true
-	flag2 := true
-	// 检测 x 或 y 轴是否碰撞，如果碰撞将子弹销毁
+	flag := true
 	if check := b.Collider.Check(dx, dy); check != nil {
 
-		// 打印发生碰撞的小球编号
 		for _, obj := range check.Colliders {
 
-			if tt , ok := obj.Data.(types.TakeDamage);ok{
-				if tt.GetCamp() != b.Camp {
-					tt.TakeDamage(b.Damage)
-					flag1 = false
+			if t , ok := obj.Data.(types.TakeDamage);ok{
+				if t.GetCamp() != b.Camp {
+					t.TakeDamage(b.Damage)
+					if tt ,ok := obj.Data.(types.Obstacle);ok {
+						if !tt.BulletIsPassable(){
+							flag = false
+						}
+					}
+				}else {
+					continue
 				}
 			}
-			if t ,ok := obj.Data.(types.Obstacle);ok {
-				if !t.BulletIsPassable(){
-					flag2 = false
-				}
-			}
+			
 		}
 	}
-	if flag1 || flag2{
+	if flag {
 		b.Collider.Move(b.Speed)
 	}else{
 		b.Collider.Destruction()
@@ -73,18 +75,6 @@ func (b *Bullet) Draw(screen *ebiten.Image) {
 	opt := &ebiten.DrawImageOptions{}
 	opt.GeoM.Translate(b.Collider.Position.X, b.Collider.Position.Y)
 	screen.DrawImage(b.Image, opt)
-}
-
-func (b *Bullet) Obstacle() {
-
-}
-
-func (b *Bullet) TankIsPassable() bool {
-	return false
-}
-
-func (b *Bullet) BulletIsPassable() bool {
-	return false
 }
 
 var step float64 = 4

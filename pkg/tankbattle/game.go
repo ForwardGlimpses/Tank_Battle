@@ -1,16 +1,8 @@
 package tankbattle
 
 import (
-	//"github.com/ForwardGlimpses/Tank_Battle/pkg/bullet"
-
-	//"github.com/ForwardGlimpses/Tank_Battle/pkg/enemy"
-	//"github.com/ForwardGlimpses/Tank_Battle/pkg/player"
-	//"github.com/ForwardGlimpses/Tank_Battle/pkg/scenes"
-	"fmt"
 	"sort"
-
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
-	//"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -41,7 +33,7 @@ func RegisterInit(a func() error,b int) {
 	sort.Slice(InitList,func(i int, j int) bool{
 		return InitList[i].priority < InitList[j].priority
 	})
-	fmt.Println("Init")
+	//fmt.Println("Init")
 }
 
 func RegisterUpdate(a func(),b int) {
@@ -52,7 +44,7 @@ func RegisterUpdate(a func(),b int) {
 	sort.Slice(UpdateList,func(i int, j int) bool{
 		return UpdateList[i].priority < UpdateList[j].priority
 	})
-	fmt.Println("Update")
+	//fmt.Println("Update")
 }
 
 func RegisterDraw(a func(screen *ebiten.Image),b int) {
@@ -63,7 +55,7 @@ func RegisterDraw(a func(screen *ebiten.Image),b int) {
 	sort.Slice(DrawList,func(i int, j int) bool{
 		return DrawList[i].priority < DrawList[j].priority
 	})
-	fmt.Println("Draw")
+	//fmt.Println("Draw")
 }
 
 type Game struct {
