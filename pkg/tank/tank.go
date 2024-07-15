@@ -2,6 +2,7 @@ package tank
 
 import (
 	"container/list"
+	//"fmt"
 	"image"
 	_ "image/png"
 	"math"
@@ -73,9 +74,6 @@ func (t *Tank) Update(direction direction.Direction) {
 	stop := false
 	if check := t.Collider.Check(dx, dy); check != nil {
 		for _, obj := range check.Colliders {
-			if _, ok := obj.Data.(*Tank); ok {
-				stop = true
-			}
 			if  tt , ok := obj.Data.(types.Obstacle); ok {
 				if !tt.TankIsPassable() {
 					stop = true
@@ -90,17 +88,27 @@ func (t *Tank) Update(direction direction.Direction) {
 }
 
 func Update() {
+	var Destroyed []Tank
 	for _,tank := range GlobalTanks{
-		if tank.Move {
+		if tank.Hp <= 0 {
+			Destroyed=append(Destroyed,*tank)
+		}else if tank.Move {
 			tank.Update(tank.Direction)
 		}
 	}
+
+	for _,tank :=range Destroyed {
+		tank.Collider.Destruction()
+		delete(GlobalTanks,tank.Index)
+	}
+
 	for _,tank := range GlobalTanks{
 		if tank.Attack {
 			tank.Fight()
 			tank.Attack = false
 		}
 	}
+
 }
 
 func (t *Tank) Fight() {
@@ -121,7 +129,7 @@ func TankBorn(dx, dy int) Position {
 	}
 	visited[dx][dy] = true
 
-	directions := [][]int{{-10, 0}, {10, 0}, {0, -10}, {0, 10}}
+	directions := [][]int{{-20, 0}, {20, 0}, {0, -20}, {0, 20}}
 	for queue.Len() > 0 {
 		e := queue.Front()
 		queue.Remove(e)
@@ -159,7 +167,9 @@ func (t *Tank) Draw(screen *ebiten.Image) {
 
 func Draw(screen *ebiten.Image) {
 	for _,tank := range GlobalTanks{
-		tank.Draw(screen)
+		if tank.Hp >0 {
+			tank.Draw(screen)
+		}
 	}
 }
 

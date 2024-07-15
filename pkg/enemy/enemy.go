@@ -1,17 +1,10 @@
 package enemy
 
 import (
-	//"fmt"
-	//"fmt"
 	"math/rand"
 
-	//"time"
-	//"sync"
-	//tankImage "github.com/ForwardGlimpses/Tank_Battle/assets/tank"
-	//"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
-	//"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/direction"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -36,7 +29,7 @@ type Enemy struct {
 var (
 	globalEnemy = make(map[int]*Enemy)
 	Enemynumers = 0
-	Limit       = 4
+	Limit       = 5
 )
 
 func init() {
@@ -57,16 +50,14 @@ func Update() {
 				AttackDuration: 0,
 				Index:          Enemynumers,
 				Direction:      direction.Direction(Up),
-				Tank:           tank.New("Enemy", t.X, t.Y),
+				Tank:           tank.New("NPC", t.X, t.Y),
 			}
 
 			globalEnemy[enemy.Index] = enemy
 		}
 	    
 	}
-
 	var Destroyed []Enemy
-
 	for _, enemy := range globalEnemy {
 		if enemy.Tank.Hp <= 0 {
 			Destroyed = append(Destroyed, *enemy)
@@ -74,11 +65,8 @@ func Update() {
 			enemy.Update()
 		}
 	}
-
 	for _, enemy := range Destroyed {
 		delete(globalEnemy, enemy.Index)
-		enemy.Tank.Collider.Destruction()
-		delete(tank.GlobalTanks, enemy.Tank.Index)
 		Enemynumers--
 	}
 

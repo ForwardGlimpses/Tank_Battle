@@ -11,7 +11,6 @@ import (
 	"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
 
-	//"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/types"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/direction"
@@ -66,7 +65,6 @@ func (b *Bullet) Update() {
 		delete(globalBullets, b.Index)
 	}
 
-	// 更新自身在网格内的位置
 	b.Collider.Update()
 	
 }

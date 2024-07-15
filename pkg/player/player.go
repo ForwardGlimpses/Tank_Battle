@@ -80,8 +80,6 @@ func Update() {
 
 	for _, player := range Destroyed {
 		delete(globalPlayer, player.Index)
-		player.Tank.Collider.Destruction()
-		delete(tank.GlobalTanks, player.Tank.Index)
 		Create = append(Create, player.Index)
 	}
 
