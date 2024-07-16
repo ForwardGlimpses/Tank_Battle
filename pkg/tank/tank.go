@@ -3,6 +3,7 @@ package tank
 import (
 	"container/list"
 	//"fmt"
+	//"fmt"
 	"image"
 	_ "image/png"
 	"math"
@@ -96,7 +97,7 @@ func Update() {
 			tank.Update(tank.Direction)
 		}
 	}
-
+    
 	for _,tank :=range Destroyed {
 		tank.Collider.Destruction()
 		delete(GlobalTanks,tank.Index)
@@ -167,9 +168,7 @@ func (t *Tank) Draw(screen *ebiten.Image) {
 
 func Draw(screen *ebiten.Image) {
 	for _,tank := range GlobalTanks{
-		if tank.Hp >0 {
-			tank.Draw(screen)
-		}
+		tank.Draw(screen)
 	}
 }
 

@@ -1,6 +1,7 @@
 package enemy
 
 import (
+	//"fmt"
 	"math/rand"
 
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
@@ -30,6 +31,7 @@ var (
 	globalEnemy = make(map[int]*Enemy)
 	Enemynumers = 0
 	Limit       = 5
+	index       = 0
 )
 
 func init() {
@@ -43,25 +45,24 @@ func Update() {
 		dy:= (Enemynumers+1)*100
 		t:=tank.TankBorn(dx,dy)
 		if t.X != dx || t.Y != dy {
-			Enemynumers += 1
 			enemy := &Enemy{
 				Attack:         false,
 				MoveDuration:   0,
 				AttackDuration: 0,
-				Index:          Enemynumers,
+				Index:          index,
 				Direction:      direction.Direction(Up),
 				Tank:           tank.New("NPC", t.X, t.Y),
 			}
-
+			Enemynumers ++
+			index ++
 			globalEnemy[enemy.Index] = enemy
 		}
-	    
 	}
 	var Destroyed []Enemy
 	for _, enemy := range globalEnemy {
 		if enemy.Tank.Hp <= 0 {
 			Destroyed = append(Destroyed, *enemy)
-		} else {
+		}else{
 			enemy.Update()
 		}
 	}
