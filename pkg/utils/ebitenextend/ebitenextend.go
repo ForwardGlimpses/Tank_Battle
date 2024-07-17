@@ -2,304 +2,302 @@ package ebitenextend
 
 import (
 	"strings"
+
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-type Key int 
-
-
-func KeyNameToKeyCode(name string) (Key, bool) {
+func KeyNameToKeyCode(name string) ebiten.Key {
 	switch strings.ToLower(name) {
 	case "0":
-		return Key(ebiten.Key0), true
+		return ebiten.Key0
 	case "1":
-		return Key(ebiten.Key1), true
+		return ebiten.Key1
 	case "2":
-		return Key(ebiten.Key2), true
+		return ebiten.Key2
 	case "3":
-		return Key(ebiten.Key3), true
+		return ebiten.Key3
 	case "4":
-		return Key(ebiten.Key4), true
+		return ebiten.Key4
 	case "5":
-		return Key(ebiten.Key5), true
+		return ebiten.Key5
 	case "6":
-		return Key(ebiten.Key6), true
+		return ebiten.Key6
 	case "7":
-		return Key(ebiten.Key7), true
+		return ebiten.Key7
 	case "8":
-		return Key(ebiten.Key8), true
+		return ebiten.Key8
 	case "9":
-		return Key(ebiten.Key9), true
+		return ebiten.Key9
 	case "a":
-		return Key(ebiten.KeyA), true
+		return ebiten.KeyA
 	case "b":
-		return Key(ebiten.KeyB), true
+		return ebiten.KeyB
 	case "c":
-		return Key(ebiten.KeyC), true
+		return ebiten.KeyC
 	case "d":
-		return Key(ebiten.KeyD), true
+		return ebiten.KeyD
 	case "e":
-		return Key(ebiten.KeyE), true
+		return ebiten.KeyE
 	case "f":
-		return Key(ebiten.KeyF), true
+		return ebiten.KeyF
 	case "g":
-		return Key(ebiten.KeyG), true
+		return ebiten.KeyG
 	case "h":
-		return Key(ebiten.KeyH), true
+		return ebiten.KeyH
 	case "i":
-		return Key(ebiten.KeyI), true
+		return ebiten.KeyI
 	case "j":
-		return Key(ebiten.KeyJ), true
+		return ebiten.KeyJ
 	case "k":
-		return Key(ebiten.KeyK), true
+		return ebiten.KeyK
 	case "l":
-		return Key(ebiten.KeyL), true
+		return ebiten.KeyL
 	case "m":
-		return Key(ebiten.KeyM), true
+		return ebiten.KeyM
 	case "n":
-		return Key(ebiten.KeyN), true
+		return ebiten.KeyN
 	case "o":
-		return Key(ebiten.KeyO), true
+		return ebiten.KeyO
 	case "p":
-		return Key(ebiten.KeyP), true
+		return ebiten.KeyP
 	case "q":
-		return Key(ebiten.KeyQ), true
+		return ebiten.KeyQ
 	case "r":
-		return Key(ebiten.KeyR), true
+		return ebiten.KeyR
 	case "s":
-		return Key(ebiten.KeyS), true
+		return ebiten.KeyS
 	case "t":
-		return Key(ebiten.KeyT), true
+		return ebiten.KeyT
 	case "u":
-		return Key(ebiten.KeyU), true
+		return ebiten.KeyU
 	case "v":
-		return Key(ebiten.KeyV), true
+		return ebiten.KeyV
 	case "w":
-		return Key(ebiten.KeyW), true
+		return ebiten.KeyW
 	case "x":
-		return Key(ebiten.KeyX), true
+		return ebiten.KeyX
 	case "y":
-		return Key(ebiten.KeyY), true
+		return ebiten.KeyY
 	case "z":
-		return Key(ebiten.KeyZ), true
+		return ebiten.KeyZ
 	case "alt":
-		return Key(ebiten.KeyAlt), true
+		return ebiten.KeyAlt
 	case "altleft":
-		return Key(ebiten.KeyAltLeft), true
+		return ebiten.KeyAltLeft
 	case "altright":
-		return Key(ebiten.KeyAltRight), true
+		return ebiten.KeyAltRight
 	case "apostrophe":
-		return Key(ebiten.KeyApostrophe), true
+		return ebiten.KeyApostrophe
 	case "arrowdown":
-		return Key(ebiten.KeyArrowDown), true
+		return ebiten.KeyArrowDown
 	case "arrowleft":
-		return Key(ebiten.KeyArrowLeft), true
+		return ebiten.KeyArrowLeft
 	case "arrowright":
-		return Key(ebiten.KeyArrowRight), true
+		return ebiten.KeyArrowRight
 	case "arrowup":
-		return Key(ebiten.KeyArrowUp), true
+		return ebiten.KeyArrowUp
 	case "backquote":
-		return Key(ebiten.KeyBackquote), true
+		return ebiten.KeyBackquote
 	case "backslash":
-		return Key(ebiten.KeyBackslash), true
+		return ebiten.KeyBackslash
 	case "backspace":
-		return Key(ebiten.KeyBackspace), true
+		return ebiten.KeyBackspace
 	case "bracketleft":
-		return Key(ebiten.KeyBracketLeft), true
+		return ebiten.KeyBracketLeft
 	case "bracketright":
-		return Key(ebiten.KeyBracketRight), true
+		return ebiten.KeyBracketRight
 	case "capslock":
-		return Key(ebiten.KeyCapsLock), true
+		return ebiten.KeyCapsLock
 	case "comma":
-		return Key(ebiten.KeyComma), true
+		return ebiten.KeyComma
 	case "contextmenu":
-		return Key(ebiten.KeyContextMenu), true
+		return ebiten.KeyContextMenu
 	case "control":
-		return Key(ebiten.KeyControl), true
+		return ebiten.KeyControl
 	case "controlleft":
-		return Key(ebiten.KeyControlLeft), true
+		return ebiten.KeyControlLeft
 	case "controlright":
-		return Key(ebiten.KeyControlRight), true
+		return ebiten.KeyControlRight
 	case "delete":
-		return Key(ebiten.KeyDelete), true
+		return ebiten.KeyDelete
 	case "digit0":
-		return Key(ebiten.KeyDigit0), true
+		return ebiten.KeyDigit0
 	case "digit1":
-		return Key(ebiten.KeyDigit1), true
+		return ebiten.KeyDigit1
 	case "digit2":
-		return Key(ebiten.KeyDigit2), true
+		return ebiten.KeyDigit2
 	case "digit3":
-		return Key(ebiten.KeyDigit3), true
+		return ebiten.KeyDigit3
 	case "digit4":
-		return Key(ebiten.KeyDigit4), true
+		return ebiten.KeyDigit4
 	case "digit5":
-		return Key(ebiten.KeyDigit5), true
+		return ebiten.KeyDigit5
 	case "digit6":
-		return Key(ebiten.KeyDigit6), true
+		return ebiten.KeyDigit6
 	case "digit7":
-		return Key(ebiten.KeyDigit7), true
+		return ebiten.KeyDigit7
 	case "digit8":
-		return Key(ebiten.KeyDigit8), true
+		return ebiten.KeyDigit8
 	case "digit9":
-		return Key(ebiten.KeyDigit9), true
+		return ebiten.KeyDigit9
 	case "down":
-		return Key(ebiten.KeyDown), true
+		return ebiten.KeyDown
 	case "end":
-		return Key(ebiten.KeyEnd), true
+		return ebiten.KeyEnd
 	case "enter":
-		return Key(ebiten.KeyEnter), true
+		return ebiten.KeyEnter
 	case "equal":
-		return Key(ebiten.KeyEqual), true
+		return ebiten.KeyEqual
 	case "escape":
-		return Key(ebiten.KeyEscape), true
+		return ebiten.KeyEscape
 	case "f1":
-		return Key(ebiten.KeyF1), true
+		return ebiten.KeyF1
 	case "f2":
-		return Key(ebiten.KeyF2), true
+		return ebiten.KeyF2
 	case "f3":
-		return Key(ebiten.KeyF3), true
+		return ebiten.KeyF3
 	case "f4":
-		return Key(ebiten.KeyF4), true
+		return ebiten.KeyF4
 	case "f5":
-		return Key(ebiten.KeyF5), true
+		return ebiten.KeyF5
 	case "f6":
-		return Key(ebiten.KeyF6), true
+		return ebiten.KeyF6
 	case "f7":
-		return Key(ebiten.KeyF7), true
+		return ebiten.KeyF7
 	case "f8":
-		return Key(ebiten.KeyF8), true
+		return ebiten.KeyF8
 	case "f9":
-		return Key(ebiten.KeyF9), true
+		return ebiten.KeyF9
 	case "f10":
-		return Key(ebiten.KeyF10), true
+		return ebiten.KeyF10
 	case "f11":
-		return Key(ebiten.KeyF11), true
+		return ebiten.KeyF11
 	case "f12":
-		return Key(ebiten.KeyF12), true
+		return ebiten.KeyF12
 	case "graveaccent":
-		return Key(ebiten.KeyGraveAccent), true
+		return ebiten.KeyGraveAccent
 	case "home":
-		return Key(ebiten.KeyHome), true
+		return ebiten.KeyHome
 	case "insert":
-		return Key(ebiten.KeyInsert), true
+		return ebiten.KeyInsert
 	case "kp0":
-		return Key(ebiten.KeyKP0), true
+		return ebiten.KeyKP0
 	case "kp1":
-		return Key(ebiten.KeyKP1), true
+		return ebiten.KeyKP1
 	case "kp2":
-		return Key(ebiten.KeyKP2), true
+		return ebiten.KeyKP2
 	case "kp3":
-		return Key(ebiten.KeyKP3), true
+		return ebiten.KeyKP3
 	case "kp4":
-		return Key(ebiten.KeyKP4), true
+		return ebiten.KeyKP4
 	case "kp5":
-		return Key(ebiten.KeyKP5), true
+		return ebiten.KeyKP5
 	case "kp6":
-		return Key(ebiten.KeyKP6), true
+		return ebiten.KeyKP6
 	case "kp7":
-		return Key(ebiten.KeyKP7), true
+		return ebiten.KeyKP7
 	case "kp8":
-		return Key(ebiten.KeyKP8), true
+		return ebiten.KeyKP8
 	case "kp9":
-		return Key(ebiten.KeyKP9), true
+		return ebiten.KeyKP9
 	case "kpadd":
-		return Key(ebiten.KeyKPAdd), true
+		return ebiten.KeyKPAdd
 	case "kpdecimal":
-		return Key(ebiten.KeyKPDecimal), true
+		return ebiten.KeyKPDecimal
 	case "kpdivide":
-		return Key(ebiten.KeyKPDivide), true
+		return ebiten.KeyKPDivide
 	case "kpenter":
-		return Key(ebiten.KeyKPEnter), true
+		return ebiten.KeyKPEnter
 	case "kpequal":
-		return Key(ebiten.KeyKPEqual), true
+		return ebiten.KeyKPEqual
 	case "kpmultiply":
-		return Key(ebiten.KeyKPMultiply), true
+		return ebiten.KeyKPMultiply
 	case "kpsubtract":
-		return Key(ebiten.KeyKPSubtract), true
+		return ebiten.KeyKPSubtract
 	case "left":
-		return Key(ebiten.KeyLeft), true
+		return ebiten.KeyLeft
 	case "leftbracket":
-		return Key(ebiten.KeyLeftBracket), true
+		return ebiten.KeyLeftBracket
 	case "menu":
-		return Key(ebiten.KeyMenu), true
+		return ebiten.KeyMenu
 	case "meta":
-		return Key(ebiten.KeyMeta), true
+		return ebiten.KeyMeta
 	case "metaleft":
-		return Key(ebiten.KeyMetaLeft), true
+		return ebiten.KeyMetaLeft
 	case "metaright":
-		return Key(ebiten.KeyMetaRight), true
+		return ebiten.KeyMetaRight
 	case "minus":
-		return Key(ebiten.KeyMinus), true
+		return ebiten.KeyMinus
 	case "numlock":
-		return Key(ebiten.KeyNumLock), true
+		return ebiten.KeyNumLock
 	case "numpad0":
-		return Key(ebiten.KeyNumpad0), true
+		return ebiten.KeyNumpad0
 	case "numpad1":
-		return Key(ebiten.KeyNumpad1), true
+		return ebiten.KeyNumpad1
 	case "numpad2":
-		return Key(ebiten.KeyNumpad2), true
+		return ebiten.KeyNumpad2
 	case "numpad3":
-		return Key(ebiten.KeyNumpad3), true
+		return ebiten.KeyNumpad3
 	case "numpad4":
-		return Key(ebiten.KeyNumpad4), true
+		return ebiten.KeyNumpad4
 	case "numpad5":
-		return Key(ebiten.KeyNumpad5), true
+		return ebiten.KeyNumpad5
 	case "numpad6":
-		return Key(ebiten.KeyNumpad6), true
+		return ebiten.KeyNumpad6
 	case "numpad7":
-		return Key(ebiten.KeyNumpad7), true
+		return ebiten.KeyNumpad7
 	case "numpad8":
-		return Key(ebiten.KeyNumpad8), true
+		return ebiten.KeyNumpad8
 	case "numpad9":
-		return Key(ebiten.KeyNumpad9), true
+		return ebiten.KeyNumpad9
 	case "numpadadd":
-		return Key(ebiten.KeyNumpadAdd), true
+		return ebiten.KeyNumpadAdd
 	case "numpaddecimal":
-		return Key(ebiten.KeyNumpadDecimal), true
+		return ebiten.KeyNumpadDecimal
 	case "numpaddivide":
-		return Key(ebiten.KeyNumpadDivide), true
+		return ebiten.KeyNumpadDivide
 	case "numpadenter":
-		return Key(ebiten.KeyNumpadEnter), true
+		return ebiten.KeyNumpadEnter
 	case "numpadequal":
-		return Key(ebiten.KeyNumpadEqual), true
+		return ebiten.KeyNumpadEqual
 	case "numpadmultiply":
-		return Key(ebiten.KeyNumpadMultiply), true
+		return ebiten.KeyNumpadMultiply
 	case "numpadsubtract":
-		return Key(ebiten.KeyNumpadSubtract), true
+		return ebiten.KeyNumpadSubtract
 	case "pagedown":
-		return Key(ebiten.KeyPageDown), true
+		return ebiten.KeyPageDown
 	case "pageup":
-		return Key(ebiten.KeyPageUp), true
+		return ebiten.KeyPageUp
 	case "pause":
-		return Key(ebiten.KeyPause), true
+		return ebiten.KeyPause
 	case "period":
-		return Key(ebiten.KeyPeriod), true
+		return ebiten.KeyPeriod
 	case "printscreen":
-		return Key(ebiten.KeyPrintScreen), true
+		return ebiten.KeyPrintScreen
 	case "quote":
-		return Key(ebiten.KeyQuote), true
+		return ebiten.KeyQuote
 	case "right":
-		return Key(ebiten.KeyRight), true
+		return ebiten.KeyRight
 	case "rightbracket":
-		return Key(ebiten.KeyRightBracket), true
+		return ebiten.KeyRightBracket
 	case "scrolllock":
-		return Key(ebiten.KeyScrollLock), true
+		return ebiten.KeyScrollLock
 	case "semicolon":
-		return Key(ebiten.KeySemicolon), true
+		return ebiten.KeySemicolon
 	case "shift":
-		return Key(ebiten.KeyShift), true
+		return ebiten.KeyShift
 	case "shiftleft":
-		return Key(ebiten.KeyShiftLeft), true
+		return ebiten.KeyShiftLeft
 	case "shiftright":
-		return Key(ebiten.KeyShiftRight), true
+		return ebiten.KeyShiftRight
 	case "slash":
-		return Key(ebiten.KeySlash), true
+		return ebiten.KeySlash
 	case "space":
-		return Key(ebiten.KeySpace), true
+		return ebiten.KeySpace
 	case "tab":
-		return Key(ebiten.KeyTab), true
+		return ebiten.KeyTab
 	case "up":
-		return Key(ebiten.KeyUp), true
+		return ebiten.KeyUp
 	}
-	return 0, false
+	return 0
 }

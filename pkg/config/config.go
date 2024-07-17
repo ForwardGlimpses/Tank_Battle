@@ -1,10 +1,5 @@
 package config
 
-import (
-
-)
-
-
 var C Config
 
 var (
@@ -16,36 +11,36 @@ var (
 			MinHeight: 0,
 		},
 	}
-	DefaultPlayers = [2]Action{
+	DefaultPlayers = [2]Player{
 		{
-			Up: "ArrowUp",
-			Down: "ArrowDown",
-			Left: "ArrowLeft",
-			Right: "ArrowRight",
+			Up:     "ArrowUp",
+			Down:   "ArrowDown",
+			Left:   "ArrowLeft",
+			Right:  "ArrowRight",
 			Attack: "Space",
 		},
 		{
-			Up: "W",
-			Down: "S",
-			Left: "A",
-			Right: "D",
+			Up:     "W",
+			Down:   "S",
+			Left:   "A",
+			Right:  "D",
 			Attack: "J",
 		},
 	}
 )
 
 type Config struct {
-	Window Window
-	Players []Action
+	Window  Window
+	Players []Player
 	//Network Network
 	Plat string
 }
 
-type Action struct {
-	Up string
-	Down string
-	Left string
-	Right string
+type Player struct {
+	Up     string
+	Down   string
+	Left   string
+	Right  string
 	Attack string
 }
 
@@ -55,7 +50,6 @@ type Window struct {
 	MinHeight int
 	MinWidth  int
 }
-
 
 func GetWindowSize() (int, int) {
 	return defaultConfig.Window.Width, defaultConfig.Window.Height

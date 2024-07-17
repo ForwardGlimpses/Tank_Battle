@@ -1,16 +1,9 @@
 package bullet
 
 import (
-	//"fmt"
-
-	//"fmt"
-
-	//"fmt"
-
 	"github.com/ForwardGlimpses/Tank_Battle/assets/bullet"
 	"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
-
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/types"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/direction"
@@ -29,8 +22,8 @@ type Bullet struct {
 }
 
 func init() {
-	tankbattle.RegisterUpdate(Update,3)
-	tankbattle.RegisterDraw(Draw,3)
+	tankbattle.RegisterUpdate(Update, 3)
+	tankbattle.RegisterDraw(Draw, 3)
 }
 
 func (b *Bullet) Update() {
@@ -43,30 +36,28 @@ func (b *Bullet) Update() {
 
 		for _, obj := range check.Colliders {
 
-			if t , ok := obj.Data.(types.TakeDamage);ok{
+			if t, ok := obj.Data.(types.TakeDamage); ok {
 				if t.GetCamp() != b.Camp {
 					t.TakeDamage(b.Damage)
-					if tt ,ok := obj.Data.(types.Obstacle);ok {
-						if !tt.BulletIsPassable(){
+					if tt, ok := obj.Data.(types.Obstacle); ok {
+						if !tt.BulletIsPassable() {
 							flag = false
 						}
 					}
-				}else {
-					continue
 				}
 			}
-			
+
 		}
 	}
 	if flag {
 		b.Collider.Move(b.Speed)
-	}else{
+	} else {
 		b.Collider.Destruction()
 		delete(globalBullets, b.Index)
 	}
 
 	b.Collider.Update()
-	
+
 }
 
 func (b *Bullet) Draw(screen *ebiten.Image) {
@@ -94,7 +85,7 @@ func Draw(screen *ebiten.Image) {
 
 // TODO: 还需要伤害，创建者之类的信息
 type CreateOption struct {
-	Position vector2.Vector
+	Position  vector2.Vector
 	Direction direction.Direction
 	Camp      string
 }

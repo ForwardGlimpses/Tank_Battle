@@ -32,8 +32,8 @@ var GlobalTanks = make(map[int]*Tank)
 var TankIndex = 0
 
 type Tank struct {
-	Hp       int
-	Collider *collision.Collider
+	Hp        int
+	Collider  *collision.Collider
 	Direction direction.Direction
 	weapon    weapon.Weapon
 	Image     image.Image
@@ -47,9 +47,12 @@ type Position struct {
 	X int
 	Y int
 }
-func New(camp string,tankx int,tanky int) *Tank {
+
+func New(camp string, tankx int, tanky int) *Tank {
+	position := TankBorn(tankx, tanky)
+
 	tank := &Tank{
-		Collider: collision.NewCollider(float64(tankx), float64(tanky), float64(tank.PlayerImage.Bounds().Dx()), float64(tank.PlayerImage.Bounds().Dy())),
+		Collider: collision.NewCollider(float64(position.X), float64(position.Y), float64(tank.PlayerImage.Bounds().Dx()), float64(tank.PlayerImage.Bounds().Dy())),
 		Hp:       100,
 		weapon:   &weapon.DefaultWeapon{},
 		Image:    tank.TankImage[camp],
@@ -58,13 +61,13 @@ func New(camp string,tankx int,tanky int) *Tank {
 	}
 	tank.Collider.Data = tank
 	GlobalTanks[tank.Index] = tank
-	TankIndex ++
+	TankIndex++
 	return tank
 }
 
 func init() {
-	tankbattle.RegisterDraw(Draw,1)
-	tankbattle.RegisterUpdate(Update,3)
+	tankbattle.RegisterDraw(Draw, 1)
+	tankbattle.RegisterUpdate(Update, 3)
 }
 
 func (t *Tank) Update(direction direction.Direction) {
@@ -75,7 +78,7 @@ func (t *Tank) Update(direction direction.Direction) {
 	stop := false
 	if check := t.Collider.Check(dx, dy); check != nil {
 		for _, obj := range check.Colliders {
-			if  tt , ok := obj.Data.(types.Obstacle); ok {
+			if tt, ok := obj.Data.(types.Obstacle); ok {
 				if !tt.TankIsPassable() {
 					stop = true
 				}
@@ -88,22 +91,27 @@ func (t *Tank) Update(direction direction.Direction) {
 	t.Collider.Update()
 }
 
+func (t *Tank) SetPosition(position Position) {
+	t.Collider.Position.X = float64(position.X)
+	t.Collider.Position.Y = float64(position.Y)
+}
+
 func Update() {
 	var Destroyed []Tank
-	for _,tank := range GlobalTanks{
+	for _, tank := range GlobalTanks {
 		if tank.Hp <= 0 {
-			Destroyed=append(Destroyed,*tank)
-		}else if tank.Move {
+			Destroyed = append(Destroyed, *tank)
+		} else if tank.Move {
 			tank.Update(tank.Direction)
 		}
 	}
-    
-	for _,tank :=range Destroyed {
+
+	for _, tank := range Destroyed {
 		tank.Collider.Destruction()
-		delete(GlobalTanks,tank.Index)
+		delete(GlobalTanks, tank.Index)
 	}
 
-	for _,tank := range GlobalTanks{
+	for _, tank := range GlobalTanks {
 		if tank.Attack {
 			tank.Fight()
 			tank.Attack = false
@@ -115,7 +123,6 @@ func Update() {
 func (t *Tank) Fight() {
 	t.weapon.Fight(t.Collider.Position, t.Direction, t.Camp)
 }
-
 
 func TankBorn(dx, dy int) Position {
 
@@ -167,17 +174,17 @@ func (t *Tank) Draw(screen *ebiten.Image) {
 }
 
 func Draw(screen *ebiten.Image) {
-	for _,tank := range GlobalTanks{
+	for _, tank := range GlobalTanks {
 		tank.Draw(screen)
 	}
 }
 
 func (t *Tank) TankIsPassable() bool {
-		return false
+	return false
 }
 
 func (t *Tank) BulletIsPassable() bool {
-		return false
+	return false
 }
 
 func (t *Tank) GetCamp() string {

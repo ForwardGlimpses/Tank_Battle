@@ -1,32 +1,27 @@
 package player
 
 import (
-
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
-
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/direction"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/ebitenextend"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
-const (
-	Up int = iota
-	Down
-	Left
-	Right
-)
-
-var index = 0
-
-var Tanknumer = 2
-
 type Player struct {
-	Tank   *tank.Tank
-	Index  int
-	action config.Action
+	Tank    *tank.Tank
+	Index   int
+	Operate Operate
+}
+
+type Operate struct {
+	Up     ebiten.Key
+	Down   ebiten.Key
+	Left   ebiten.Key
+	Right  ebiten.Key
+	Attack ebiten.Key
 }
 
 func init() {
@@ -37,58 +32,41 @@ func init() {
 var globalPlayer = make(map[int]*Player)
 
 func Init() error {
-	for _, actions := range config.DefaultPlayers {
-		player := &Player{
-			Tank:   tank.New("Player", (index+2)*100, (index+2)*100),
-			Index:  index,
-			action: actions,
-		}
+	for _, cfg := range config.DefaultPlayers {
+		player := New(cfg)
 		globalPlayer[player.Index] = player
-		index++
 	}
 	return nil
 }
 
+var index = 0
 
-func CreatePlayer(dx, dy ,indexx int) {
-	t := tank.TankBorn(dx, dy)
-	if t.X == dx && t.Y == dy {
-		return
+func New(cfg config.Player) *Player {
+	index++
+	return &Player{
+		Tank:  tank.New("Player", (index+2)*100, (index+2)*100),
+		Index: index,
+		Operate: Operate{
+			Up:     ebitenextend.KeyNameToKeyCode(cfg.Up),
+			Down:   ebitenextend.KeyNameToKeyCode(cfg.Down),
+			Left:   ebitenextend.KeyNameToKeyCode(cfg.Left),
+			Right:  ebitenextend.KeyNameToKeyCode(cfg.Right),
+			Attack: ebitenextend.KeyNameToKeyCode(cfg.Attack),
+		},
 	}
-	NewX := t.X
-	NewY := t.Y
-	player := &Player{
-		Tank:   tank.New("Player", NewX, NewY),
-		Index:  indexx,
-		action: config.DefaultPlayers[indexx],
-	}
-	globalPlayer[player.Index] = player
 }
 
 func Update() {
-
-	var Destroyed []Player
-	var Create []int
-
 	for _, player := range globalPlayer {
-		if player.Tank.Hp <= 0 {
-			Destroyed = append(Destroyed, *player)
-		} else {
-			player.Update()
-		}
-	}
-
-	for _, player := range Destroyed {
-		delete(globalPlayer, player.Index)
-		Create = append(Create, player.Index)
-	}
-
-	for _, indexx := range Create {
-		CreatePlayer((indexx+2)*100, (indexx+2)*100,indexx)
+		player.Update()
 	}
 }
 
 func (p *Player) Update() {
+	if p.Tank.Hp <= 0 {
+		p.Reset()
+	}
+
 	direction, pressed := p.GetDirection()
 	if pressed {
 		p.Tank.Direction = direction
@@ -101,27 +79,28 @@ func (p *Player) Update() {
 	}
 }
 
+func (p *Player) Reset() {
+	p.Tank = tank.New("Player", (p.Index+2)*100, (p.Index+2)*100)
+}
+
 func (p *Player) GetDirection() (direction.Direction, bool) {
-	KeyUp , _ := ebitenextend.KeyNameToKeyCode(config.DefaultPlayers[p.Index].Up)
-	KeyDown , _ := ebitenextend.KeyNameToKeyCode(config.DefaultPlayers[p.Index].Down)
-	KeyLeft , _ := ebitenextend.KeyNameToKeyCode(config.DefaultPlayers[p.Index].Left)
-	KeyRight , _ := ebitenextend.KeyNameToKeyCode(config.DefaultPlayers[p.Index].Right)
-	if ebiten.IsKeyPressed(ebiten.Key(KeyUp)) {
+	op := p.Operate
+
+	if ebiten.IsKeyPressed(op.Up) {
 		return direction.Up, true
 	}
-	if ebiten.IsKeyPressed(ebiten.Key(KeyDown)){
+	if ebiten.IsKeyPressed(op.Down) {
 		return direction.Down, true
 	}
-	if ebiten.IsKeyPressed(ebiten.Key(KeyLeft)) {
+	if ebiten.IsKeyPressed(op.Left) {
 		return direction.Left, true
 	}
-	if ebiten.IsKeyPressed(ebiten.Key(KeyRight)) {
+	if ebiten.IsKeyPressed(op.Right) {
 		return direction.Right, true
 	}
 	return 0, false
 }
 
 func (p *Player) Attack() bool {
-	attack , _ := ebitenextend.KeyNameToKeyCode(config.DefaultPlayers[p.Index].Attack)
-	return inpututil.IsKeyJustPressed(ebiten.Key(attack))
+	return inpututil.IsKeyJustPressed(p.Operate.Attack)
 }
