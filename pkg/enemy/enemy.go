@@ -1,7 +1,6 @@
 package enemy
 
 import (
-	//"fmt"
 	"math/rand"
 
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"

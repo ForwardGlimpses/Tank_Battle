@@ -2,7 +2,6 @@ package tankbattle
 
 import (
 	"sort"
-
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -90,5 +89,4 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	for _, f := range DrawList {
 		f.function(screen)
 	}
-
 }

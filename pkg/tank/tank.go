@@ -2,8 +2,6 @@ package tank
 
 import (
 	"container/list"
-	//"fmt"
-	//"fmt"
 	"image"
 	_ "image/png"
 	"math"
@@ -12,7 +10,6 @@ import (
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/types"
-
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/direction"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/weapon"
@@ -162,6 +159,10 @@ func TankBorn(dx, dy int) Position {
 	return Position{dx, dy}
 }
 
+// func Fight(){
+	
+// }
+
 func (t *Tank) Draw(screen *ebiten.Image) {
 	opt := &ebiten.DrawImageOptions{}
 	tranX := float64(t.Image.Bounds().Dx()) / 2
@@ -185,6 +186,18 @@ func (t *Tank) TankIsPassable() bool {
 
 func (t *Tank) BulletIsPassable() bool {
 	return false
+}
+
+func (t *Tank) GetCamp() string {
+	return t.Camp
+}
+
+func (t *Tank) TakeDamage(damage int) {
+	t.Hp -= damage
+}
+
+func (t *Tank) Obstacle() {
+
 }
 
 func (t *Tank) GetCamp() string {

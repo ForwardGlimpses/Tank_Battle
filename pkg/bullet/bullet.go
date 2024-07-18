@@ -1,6 +1,7 @@
 package bullet
 
 import (
+
 	"github.com/ForwardGlimpses/Tank_Battle/assets/bullet"
 	"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
@@ -33,7 +34,6 @@ func (b *Bullet) Update() {
 
 	flag := true
 	if check := b.Collider.Check(dx, dy); check != nil {
-
 		for _, obj := range check.Colliders {
 
 			if t, ok := obj.Data.(types.TakeDamage); ok {
@@ -57,7 +57,6 @@ func (b *Bullet) Update() {
 	}
 
 	b.Collider.Update()
-
 }
 
 func (b *Bullet) Draw(screen *ebiten.Image) {
@@ -68,7 +67,6 @@ func (b *Bullet) Draw(screen *ebiten.Image) {
 
 var step float64 = 4
 
-// 全局子弹列表
 var globalBullets = make(map[int]*Bullet)
 
 func Update() {
@@ -83,7 +81,6 @@ func Draw(screen *ebiten.Image) {
 	}
 }
 
-// TODO: 还需要伤害，创建者之类的信息
 type CreateOption struct {
 	Position  vector2.Vector
 	Direction direction.Direction
@@ -104,7 +101,6 @@ func Create(opt *CreateOption) {
 		Damage:    50,
 		Camp:      opt.Camp,
 	}
-	//  TODO: 设置碰撞器
 
 	bullet.Collider.Data = bullet
 	globalBullets[bullet.Index] = bullet
