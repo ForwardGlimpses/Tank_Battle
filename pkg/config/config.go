@@ -1,14 +1,5 @@
 package config
 
-import (
-	//"strings"
-
-	//"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
-	//"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
-	"github.com/hajimehoshi/ebiten/v2"
-)
-
-
 var C Config
 
 var (
@@ -20,36 +11,36 @@ var (
 			MinHeight: 0,
 		},
 	}
-	DefaultPlayers = [2]Action{
+	DefaultPlayers = [2]Player{
 		{
-			Up: "ArrowUp",
-			Down: "ArrowDown",
-			Left: "ArrowLeft",
-			Right: "ArrowRight",
+			Up:     "ArrowUp",
+			Down:   "ArrowDown",
+			Left:   "ArrowLeft",
+			Right:  "ArrowRight",
 			Attack: "Space",
 		},
 		{
-			Up: "W",
-			Down: "S",
-			Left: "A",
-			Right: "D",
+			Up:     "W",
+			Down:   "S",
+			Left:   "A",
+			Right:  "D",
 			Attack: "J",
 		},
 	}
 )
 
 type Config struct {
-	Window Window
-	Players []Action
+	Window  Window
+	Players []Player
 	//Network Network
 	Plat string
 }
 
-type Action struct {
-	Up string
-	Down string
-	Left string
-	Right string
+type Player struct {
+	Up     string
+	Down   string
+	Left   string
+	Right  string
 	Attack string
 }
 
@@ -58,81 +49,6 @@ type Window struct {
 	Height    int
 	MinHeight int
 	MinWidth  int
-}
-
-// func init(){
-// 	tankbattle.RegisterInit(Init,1)
-// }
-
-// func Init() error{
-// 	// sizeX, sizeY := GetWindowSize()
-// 	// collision.Init(sizeX, sizeY, 2, 2)
-// 	return nil
-// }
-
-func KeyMap(name string)ebiten.Key{
-	switch name{
-	case "0":
-		return ebiten.Key0
-	case "1":
-		return ebiten.Key1
-	case "2":
-		return ebiten.Key2
-	case "3":
-		return ebiten.Key3
-	case "4":
-		return ebiten.Key4
-	case "5":
-		return ebiten.Key5
-	case "6":
-		return ebiten.Key6
-	case "7":
-		return ebiten.Key7
-	case "8":
-		return ebiten.Key8
-	case "9":
-		return ebiten.Key9
-	case "Q":
-		return ebiten.KeyQ
-	case "W":
-		return ebiten.KeyW
-	case "E":
-		return ebiten.KeyE
-	case "R":
-		return ebiten.KeyR
-	case "A":
-		return ebiten.KeyA
-	case "S":
-		return ebiten.KeyS
-	case "ArrowUp":
-		return ebiten.KeyArrowUp
-	case "ArrowDown":
-		return ebiten.KeyArrowDown
-	case "ArrowLeft":
-		return ebiten.KeyArrowLeft
-	case "ArrowRight":
-		return ebiten.KeyArrowRight
-	case "Space":
-		return ebiten.KeySpace
-	case "F":
-		return ebiten.KeyF
-	case "G":
-		return ebiten.KeyG
-	case "H":
-		return ebiten.KeyH
-	case "J":
-		return ebiten.KeyJ
-	case "K":
-		return ebiten.KeyK
-	case "L":
-		return ebiten.KeyL
-	case "Z":
-		return ebiten.KeyZ
-	case "D":
-		return ebiten.KeyD
-	default:
-	    return ebiten.KeyF11
-	}
 }
 
 func GetWindowSize() (int, int) {

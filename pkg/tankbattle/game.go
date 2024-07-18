@@ -1,16 +1,8 @@
 package tankbattle
 
 import (
-	//"github.com/ForwardGlimpses/Tank_Battle/pkg/bullet"
-
-	//"github.com/ForwardGlimpses/Tank_Battle/pkg/enemy"
-	//"github.com/ForwardGlimpses/Tank_Battle/pkg/player"
-	//"github.com/ForwardGlimpses/Tank_Battle/pkg/scenes"
-	"fmt"
 	"sort"
-
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
-	//"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -33,51 +25,47 @@ type Drawfunc struct {
 	priority int
 }
 
-func RegisterInit(a func() error,b int) {
-	InitList = append(InitList,Initfunc{
+func RegisterInit(a func() error, b int) {
+	InitList = append(InitList, Initfunc{
 		function: a,
 		priority: b,
 	})
-	sort.Slice(InitList,func(i int, j int) bool{
+	sort.Slice(InitList, func(i int, j int) bool {
 		return InitList[i].priority < InitList[j].priority
 	})
-	fmt.Println("Init")
+	//fmt.Println("Init")
 }
 
-func RegisterUpdate(a func(),b int) {
-	UpdateList = append(UpdateList,Updatefunc{
+func RegisterUpdate(a func(), b int) {
+	UpdateList = append(UpdateList, Updatefunc{
 		function: a,
 		priority: b,
 	})
-	sort.Slice(UpdateList,func(i int, j int) bool{
+	sort.Slice(UpdateList, func(i int, j int) bool {
 		return UpdateList[i].priority < UpdateList[j].priority
 	})
-	fmt.Println("Update")
+	//fmt.Println("Update")
 }
 
-func RegisterDraw(a func(screen *ebiten.Image),b int) {
-	DrawList = append(DrawList,Drawfunc{
+func RegisterDraw(a func(screen *ebiten.Image), b int) {
+	DrawList = append(DrawList, Drawfunc{
 		function: a,
 		priority: b,
 	})
-	sort.Slice(DrawList,func(i int, j int) bool{
+	sort.Slice(DrawList, func(i int, j int) bool {
 		return DrawList[i].priority < DrawList[j].priority
 	})
-	fmt.Println("Draw")
+	//fmt.Println("Draw")
 }
 
 type Game struct {
-
 }
 
 func NewGame() (*Game, error) {
-	// sizeX, sizeY := config.GetWindowSize()
-	// collision.Init(sizeX, sizeY, 2, 2)
-	for _,f :=range InitList {
-		if err :=f.function(); err !=nil {
-			return nil , err
+	for _, f := range InitList {
+		if err := f.function(); err != nil {
+			return nil, err
 		}
-		//f.function()
 	}
 	return &Game{}, nil
 }
@@ -88,19 +76,17 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 }
 
 // Update updates the current game state.
-func (g *Game) Update() error{
-	for _,f :=range UpdateList {
+func (g *Game) Update() error {
+	for _, f := range UpdateList {
 		f.function()
 	}
-	
+
 	return nil
 }
 
 // Draw draws the current game to the given screen.
 func (g *Game) Draw(screen *ebiten.Image) {
-	for _,f :=range DrawList {
+	for _, f := range DrawList {
 		f.function(screen)
 	}
-
-	
 }

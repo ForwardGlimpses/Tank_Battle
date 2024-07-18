@@ -34,7 +34,7 @@ var (
 
 func init() {
 	tankbattle.RegisterInit(Init,2)
-	tankbattle.RegisterDraw(Draw,1)
+	tankbattle.RegisterDraw(Draw,2)
 }
 
 
@@ -63,10 +63,6 @@ func New(position vector2.Vector, t ScenesType) *Scenes {
 	}
 }
 
-func Delete(s *Scenes) {
-	delete(globalScenes, s.index)
-	s.Collider.Update()
-}
 
 func (s *Scenes) Draw(screen *ebiten.Image) {
 	opt := &ebiten.DrawImageOptions{}
@@ -87,10 +83,27 @@ func (t *Scenes) GetCamp() string {
 func (t *Scenes) TakeDamage(damage int) {
 	if t.Type == Brick {
 		t.Hp -= damage
+		if t.Hp <= 0 {
+			delete(globalScenes, t.index)
+			t.Collider.Destruction()
+	        t.Collider.Update()
+		}
 	}
 }
 
-// 此函数暂时无逻辑，仅标识此结构为障碍物
-func (t *Scenes) Obstacle() {
 
+func (t *Scenes) TankIsPassable() bool {
+	if t.Type == Grass {
+		return true
+	}else{
+		return false
+	}
+}
+
+func (t *Scenes) BulletIsPassable() bool {
+	if t.Type == Grass || t.Type == Rivers{
+		return true
+	}else{
+		return false
+	}
 }
