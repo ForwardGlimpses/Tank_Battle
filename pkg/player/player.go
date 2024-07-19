@@ -1,6 +1,7 @@
 package player
 
 import (
+	//"fmt"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
@@ -56,11 +57,16 @@ func New(cfg config.Player) *Player {
 	}
 }
 
-func Update() {
+func Update(){
 	for _, player := range globalPlayer {
 		player.Update()
 	}
-	return nil
+}
+
+func Update(){
+	for _, player := range globalPlayer {
+		player.Update()
+	}
 }
 
 func (p *Player) Update() {
@@ -79,6 +85,7 @@ func (p *Player) Update() {
 		p.Tank.Attack = true
 	}
 }
+
 
 func (p *Player) Reset() {
 	p.Tank = tank.New("Player", (p.Index+2)*100, (p.Index+2)*100)
