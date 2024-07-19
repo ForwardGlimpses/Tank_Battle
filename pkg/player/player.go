@@ -57,18 +57,17 @@ func New(cfg config.Player) *Player {
 	}
 }
 
-func Update() err{
+func Update(){
 	for _, player := range globalPlayer {
 		player.Update()
 	}
-	return nil
 }
 
-
-func date() {
-
+func Update(){
+	for _, player := range globalPlayer {
+		player.Update()
+	}
 }
-
 
 func (p *Player) Update() {
 	if p.Tank.Hp <= 0 {
