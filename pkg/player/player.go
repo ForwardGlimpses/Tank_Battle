@@ -1,7 +1,6 @@
 package player
 
 import (
-	//"fmt"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
@@ -54,12 +53,6 @@ func New(cfg config.Player) *Player {
 			Right:  ebitenextend.KeyNameToKeyCode(cfg.Right),
 			Attack: ebitenextend.KeyNameToKeyCode(cfg.Attack),
 		},
-	}
-}
-
-func Update(){
-	for _, player := range globalPlayer {
-		player.Update()
 	}
 }
 
