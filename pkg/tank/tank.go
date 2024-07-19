@@ -159,9 +159,6 @@ func TankBorn(dx, dy int) Position {
 	return Position{dx, dy}
 }
 
-// func Fight(){
-	
-// }
 
 func (t *Tank) Draw(screen *ebiten.Image) {
 	opt := &ebiten.DrawImageOptions{}
@@ -186,18 +183,6 @@ func (t *Tank) TankIsPassable() bool {
 
 func (t *Tank) BulletIsPassable() bool {
 	return false
-}
-
-func (t *Tank) GetCamp() string {
-	return t.Camp
-}
-
-func (t *Tank) TakeDamage(damage int) {
-	t.Hp -= damage
-}
-
-func (t *Tank) Obstacle() {
-
 }
 
 func (t *Tank) GetCamp() string {
