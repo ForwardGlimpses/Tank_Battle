@@ -79,6 +79,7 @@ func (p *Player) Update() {
 	}
 }
 
+// New tank
 func (p *Player) Reset() {
 	p.Tank = tank.New("Player", (p.Index+2)*100, (p.Index+2)*100)
 }
