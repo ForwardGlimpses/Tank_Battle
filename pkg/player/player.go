@@ -60,6 +60,7 @@ func Update() {
 	for _, player := range globalPlayer {
 		player.Update()
 	}
+	return nil
 }
 
 func (p *Player) Update() {
