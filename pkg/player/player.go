@@ -1,6 +1,7 @@
 package player
 
 import (
+	//"fmt"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
@@ -56,17 +57,18 @@ func New(cfg config.Player) *Player {
 	}
 }
 
-func Update() {
+func Update() err{
 	for _, player := range globalPlayer {
 		player.Update()
 	}
+	return nil
 }
 
-/*
+
 func date() {
 
 }
-*/
+
 
 func (p *Player) Update() {
 	if p.Tank.Hp <= 0 {
