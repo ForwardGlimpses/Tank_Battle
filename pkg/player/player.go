@@ -60,9 +60,13 @@ func Update() {
 	for _, player := range globalPlayer {
 		player.Update()
 	}
-	return true 
 }
 
+/*
+func date() {
+
+}
+*/
 
 func (p *Player) Update() {
 	if p.Tank.Hp <= 0 {
