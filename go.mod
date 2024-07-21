@@ -3,6 +3,7 @@ module github.com/ForwardGlimpses/Tank_Battle
 go 1.21.3
 
 require (
+	github.com/google/uuid v1.6.0
 	github.com/hajimehoshi/ebiten/v2 v2.6.3
 	github.com/solarlune/resolv v0.7.0
 )

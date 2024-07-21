@@ -32,8 +32,15 @@ var (
 type Config struct {
 	Window  Window
 	Players []Player
-	//Network Network
-	Plat string
+	Network Network
+	Plat    string
+}
+
+type Network struct {
+	Type     string // client or server or none
+	Protocol string
+	IP       string
+	Port     int
 }
 
 type Player struct {
