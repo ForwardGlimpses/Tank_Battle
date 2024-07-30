@@ -27,6 +27,9 @@ var (
 			Attack: "J",
 		},
 	}
+	DefaultNetwork = &Network{
+		Type: "server",
+	}
 )
 
 type Config struct {

@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/types"
 )
 
@@ -29,6 +30,11 @@ func RegisterClient(key string, manager types.NetworkManager) {
 
 func RegisterServer(key string, manager types.NetworkManager) {
 	serverManagers[key] = manager
+}
+
+func init(){
+	tankbattle.RegisterInit(Init,4)
+	tankbattle.RegisterUpdate(Update,4)
 }
 
 func Init() (err error) {

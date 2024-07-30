@@ -6,6 +6,9 @@ import (
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/vector2"
 )
 
+var (
+	weapons = make(map[int]Weapon)
+)
 type Weapon interface {
 	Fight(position vector2.Vector, direction direction.Direction,camp string)
 }
@@ -22,4 +25,12 @@ func (D *DefaultWeapon) Fight(position vector2.Vector, direction direction.Direc
 		Camp: camp,
 	}
 	bullet.Create(opt)
+}
+
+func GetWeapon(Type int) Weapon {
+    return weapons[Type]
+}
+
+func init() {
+    weapons[0] = &DefaultWeapon{Damage: 10}
 }

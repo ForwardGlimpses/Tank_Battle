@@ -2,6 +2,7 @@ package player
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/network"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/json"
@@ -16,7 +17,6 @@ func init() {
 type playerMassage struct {
 	Index   string
 	Operate Operate
-	Uuid    string
 }
 
 type networkClient struct{}
@@ -43,7 +43,12 @@ func (a *networkServer) Send() string {
 }
 
 func (a *networkServer) Receive(m string) {
+
+	//add 10轮未接收数据，清除玩家数据
 	massage := []playerMassage{}
 	json.Unmarshal([]byte(m), &massage)
-
+	for _, playermassage := range massage {
+		index, _ := strconv.Atoi(playermassage.Index)
+		globalPlayer[index].Operate = playermassage.Operate
+	}
 }

@@ -22,12 +22,16 @@ const (
 	Left
 	Right
 	step float64 = 3
+	PlayerImage = 0
+	EnemyImage = 1
 )
 
 var GlobalTanks = make(map[int]*Tank)
 
-var TankIndex = 0
-
+var (
+	// images  = make(map[int]image.Image)
+	TankIndex = 0
+)
 type Tank struct {
 	Hp        int
 	Collider  *collision.Collider
@@ -67,6 +71,12 @@ func init() {
 	tankbattle.RegisterUpdate(Update, 3)
 }
 
+// func Init() error{
+// 	images[PlayerImage] = 
+
+
+// 	return nil
+// }
 func (t *Tank) Update(direction direction.Direction) {
 	t.Direction = direction
 	increment := direction.DirectionVector2().MulScale(step)

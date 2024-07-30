@@ -17,7 +17,7 @@ func process(conn net.Conn) {
 	}
 
 	data := string(buf[0:n])
-	fmt.Println("收到Client端发来的数据：", data)
+	fmt.Println("收到Client端发来的数据", data)
 
 	conn.Write([]byte("tcp:127.0.0.1:9999"))
 }
