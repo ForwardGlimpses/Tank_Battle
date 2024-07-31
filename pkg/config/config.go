@@ -29,6 +29,9 @@ var (
 	}
 	DefaultNetwork = &Network{
 		Type: "server",
+        Protocol: "tcp",
+        IP: "127.0.0.1",
+        Port: 8080,
 	}
 )
 

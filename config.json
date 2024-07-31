@@ -1,0 +1,31 @@
+{
+    "Window": {
+        "Width": 600,
+        "Height": 600,
+        "MinWidth": 0,
+        "MinHeight": 0
+    },
+    "Players": [
+        {
+            "Up": "ArrowUp",
+            "Down": "ArrowDown",
+            "Left": "ArrowLeft",
+            "Right": "ArrowRight",
+            "Attack": "Space"
+        },
+        {
+            "Up": "W",
+            "Down": "S",
+            "Left": "A",
+            "Right": "D",
+            "Attack": "J"
+        }
+    ],
+    "Network": {
+        "Type": "client",
+        "Protocol": "tcp",
+        "IP": "127.0.0.1",
+        "Port": 8080
+    },
+    "Plat": "Windows"
+}
