@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/network"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/json"
 	"github.com/google/uuid"
 )
@@ -15,20 +16,25 @@ func init() {
 }
 
 type playerMassage struct {
-	Index   string
-	Operate Operate
+	PlayerUuid string
+	Index      string
+	Operate    Operate
 }
 
 type networkClient struct{}
 
-var Uuid string = uuid.New().String()
+var (
+	Uuid          string = uuid.New().String()
+	networkDetect        = map[string]int{}
+)
 
 func (a *networkClient) Send() string {
 	massage := []playerMassage{}
 	for _, player := range globalPlayer {
 		massage = append(massage, playerMassage{
-			Index:   fmt.Sprintf("%s%d", Uuid, player.Index),
-			Operate: player.Operate,
+			PlayerUuid: player.PlayerUuid,
+			Index:      player.Index,
+			Operate:    player.Operate,
 		})
 	}
 	return json.MarshalToString(massage)
@@ -43,12 +49,33 @@ func (a *networkServer) Send() string {
 }
 
 func (a *networkServer) Receive(m string) {
-
-	//add 10轮未接收数据，清除玩家数据
 	massage := []playerMassage{}
 	json.Unmarshal([]byte(m), &massage)
 	for _, playermassage := range massage {
-		index, _ := strconv.Atoi(playermassage.Index)
-		globalPlayer[index].Operate = playermassage.Operate
+		CombinedKey := fmt.Sprintf("%s%s", playermassage.PlayerUuid, playermassage.Index)
+		networkDetect[CombinedKey] = 10
+		dx, _ := strconv.Atoi(playermassage.Index)
+		dy, _ := strconv.Atoi(playermassage.Index)
+		player := &Player{
+			Tank:       tank.New("Player", (dx+2)*100, (dy+2)*100),
+			PlayerUuid: playermassage.PlayerUuid,
+			Index:      playermassage.Index,
+			Operate:    playermassage.Operate,
+		}
+		globalPlayer[CombinedKey] = player
+	}
+	// 10轮未接收数据，清除玩家数据
+	var deletaPlayer []Player
+	for _, player := range globalPlayer {
+		CombinedKey := fmt.Sprintf("%s%s", player.PlayerUuid, player.Index)
+		networkDetect[CombinedKey]--
+		if networkDetect[CombinedKey] == 0 {
+			deletaPlayer = append(deletaPlayer, *player)
+		}
+	}
+
+	for _, player := range deletaPlayer {
+		CombinedKey := fmt.Sprintf("%s%s", player.PlayerUuid, player.Index)
+		delete(globalPlayer, CombinedKey)
 	}
 }

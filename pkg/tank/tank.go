@@ -71,12 +71,6 @@ func init() {
 	tankbattle.RegisterUpdate(Update, 3)
 }
 
-// func Init() error{
-// 	images[PlayerImage] = 
-
-
-// 	return nil
-// }
 func (t *Tank) Update(direction direction.Direction) {
 	t.Direction = direction
 	increment := direction.DirectionVector2().MulScale(step)

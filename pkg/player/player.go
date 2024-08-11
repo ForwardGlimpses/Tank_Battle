@@ -1,6 +1,9 @@
 package player
 
 import (
+	"fmt"
+	"strconv"
+
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
@@ -11,9 +14,10 @@ import (
 )
 
 type Player struct {
-	Tank    *tank.Tank
-	Index   int
-	Operate Operate
+	Tank       *tank.Tank
+	PlayerUuid string
+	Index      string
+	Operate    Operate
 }
 
 type Operate struct {
@@ -29,12 +33,13 @@ func init() {
 	tankbattle.RegisterUpdate(Update, 2)
 }
 
-var globalPlayer = make(map[int]*Player)
+var globalPlayer = make(map[string]*Player)
 
 func Init() error {
 	for _, cfg := range config.DefaultPlayers {
 		player := New(cfg)
-		globalPlayer[player.Index] = player
+		combinedKey := fmt.Sprintf("%s%s", player.PlayerUuid, player.Index)
+		globalPlayer[combinedKey] = player
 	}
 	return nil
 }
@@ -43,9 +48,11 @@ var index = 0
 
 func New(cfg config.Player) *Player {
 	index++
+	indexStr := fmt.Sprintf("%d", index)
 	return &Player{
-		Tank:  tank.New("Player", (index+2)*100, (index+2)*100),
-		Index: index,
+		Tank:       tank.New("Player", (index+2)*100, (index+2)*100),
+		PlayerUuid: Uuid,
+		Index:      indexStr,
 		Operate: Operate{
 			Up:     ebitenextend.KeyNameToKeyCode(cfg.Up),
 			Down:   ebitenextend.KeyNameToKeyCode(cfg.Down),
@@ -56,7 +63,7 @@ func New(cfg config.Player) *Player {
 	}
 }
 
-func Update(){
+func Update() {
 	for _, player := range globalPlayer {
 		player.Update()
 	}
@@ -79,9 +86,10 @@ func (p *Player) Update() {
 	}
 }
 
-
 func (p *Player) Reset() {
-	p.Tank = tank.New("Player", (p.Index+2)*100, (p.Index+2)*100)
+	dx, _ := strconv.Atoi(p.Index)
+	dy, _ := strconv.Atoi(p.Index)
+	p.Tank = tank.New("Player", (dx+2)*10, (dy+2)*100)
 }
 
 func (p *Player) GetDirection() (direction.Direction, bool) {
