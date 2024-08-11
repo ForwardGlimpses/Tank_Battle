@@ -66,22 +66,18 @@ func (a *factory) Server(ip string, port int) (types.SendChan, types.ReceiveChan
 				}(conn)
 			}
 		}()
-
 		go func() {
-			for {
-				select {
-				case data := <-send:
-					for _, conn := range conns {
-						_, err := conn.Write(append(data, '\n'))
-						if err != nil {
-							fmt.Println("Write error: ", err)
-							conn.Close()
-							// 删除断开的连接
-							for i, c := range conns {
-								if c == conn {
-									conns = append(conns[:i], conns[i+1:]...)
-									break
-								}
+			for data := range send {
+				for _, conn := range conns {
+					_, err := conn.Write(append(data, '\n'))
+					if err != nil {
+						fmt.Println("Write error: ", err)
+						conn.Close()
+						// 删除断开的连接
+						for i, c := range conns {
+							if c == conn {
+								conns = append(conns[:i], conns[i+1:]...)
+								break
 							}
 						}
 					}

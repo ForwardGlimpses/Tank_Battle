@@ -10,6 +10,7 @@ import (
 	_"github.com/ForwardGlimpses/Tank_Battle/pkg/enemy"
 	_"github.com/ForwardGlimpses/Tank_Battle/pkg/configmanager"
 	_"github.com/ForwardGlimpses/Tank_Battle/pkg/scenes"
+	_"github.com/ForwardGlimpses/Tank_Battle/pkg/network/protocol/tcp"
 )
 
 func main() {

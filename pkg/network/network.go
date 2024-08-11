@@ -3,8 +3,10 @@ package network
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 
-	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
+	//"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/configmanager"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/types"
 )
@@ -38,7 +40,9 @@ func init(){
 }
 
 func Init() (err error) {
-	cfg := config.C.Network
+	// cfg := configmanager.CC.Network
+	C, err := configmanager.LoadConfig("C:\\Users\\乔书祥\\Desktop\\远程文件库\\Tank_Battle\\config.json")
+	cfg:=C.Network
 	switch cfg.Type {
 	case "client":
 		protocol := protocolsFactorys[cfg.Protocol]
@@ -65,6 +69,7 @@ func Init() (err error) {
 	default:
 		model = noneModel
 	}
+	fmt.Println(model)
 	return
 }
 

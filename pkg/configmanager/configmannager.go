@@ -22,6 +22,7 @@ func Init() error {
 	}
 	sizeX, sizeY := cfg.Window.Width, cfg.Window.Height
 	collision.Init(sizeX, sizeY, 2, 2)
+	//fmt.Println("configmanange")
 	return nil
 }
 
