@@ -34,15 +34,15 @@ func RegisterServer(key string, manager types.NetworkManager) {
 	serverManagers[key] = manager
 }
 
-func init(){
-	tankbattle.RegisterInit(Init,4)
-	tankbattle.RegisterUpdate(Update,4)
+func init() {
+	tankbattle.RegisterInit(Init, 4)
+	tankbattle.RegisterUpdate(Update, 4)
 }
 
 func Init() (err error) {
 	// cfg := configmanager.CC.Network
 	C, err := configmanager.LoadConfig("C:\\Users\\乔书祥\\Desktop\\远程文件库\\Tank_Battle\\config.json")
-	cfg:=C.Network
+	cfg := C.Network
 	switch cfg.Type {
 	case "client":
 		protocol := protocolsFactorys[cfg.Protocol]
@@ -114,9 +114,16 @@ func sendMassage() {
 
 func receiveMassage() {
 	var data []byte
-	select {
-	case data = <-receiveCh:
-	default:
+
+Out:
+	for {
+		select {
+		case data = <-receiveCh:
+		default:
+			break Out
+		}
+	}
+	if len(data) == 0 {
 		return
 	}
 

@@ -18,6 +18,7 @@ type Player struct {
 	PlayerUuid string
 	Index      string
 	Operate    Operate
+	Action     Action
 }
 
 type Operate struct {
@@ -26,6 +27,12 @@ type Operate struct {
 	Left   ebiten.Key
 	Right  ebiten.Key
 	Attack ebiten.Key
+}
+
+type Action struct {
+	Direction direction.Direction
+	Attack    bool
+	Move      bool
 }
 
 func init() {
@@ -70,23 +77,15 @@ func Update() {
 }
 
 func (p *Player) Update() {
-
 	if p.Tank.Hp <= 0 {
 		p.Reset()
 	}
 
-	direction, pressed := p.GetDirection()
-	if pressed {
-		p.Tank.Direction = direction
-		p.Tank.Move = true
-	} else {
-		p.Tank.Move = false
-	}
-	if p.Attack() {
-		p.Tank.Attack = true
-		fmt.Println("攻击-----攻击-----")
-	}
-	//fmt.Println("已更新，已更新，已更新---")
+	p.GetDirection()
+	p.Attack()
+	p.Tank.Move = p.Action.Move
+	p.Tank.Attack = p.Action.Attack
+	p.Tank.Direction = p.Action.Direction
 }
 
 func (p *Player) Reset() {
@@ -95,29 +94,32 @@ func (p *Player) Reset() {
 	p.Tank = tank.New("Player", (dx+2)*10, (dy+2)*100)
 }
 
-func (p *Player) GetDirection() (direction.Direction, bool) {
+func (p *Player) GetDirection() {
 	op := p.Operate
 
 	if p.PlayerUuid != Uuid {
-		return 0, false
+		return
 	}
+
 	if ebiten.IsKeyPressed(op.Up) {
-		//fmt.Println("上上上上上")
-		return direction.Up, true
+		p.Action.Direction = direction.Up
+		p.Action.Move = true
 	}
 	if ebiten.IsKeyPressed(op.Down) {
-		return direction.Down, true
+		p.Action.Direction = direction.Down
+		p.Action.Move = true
 	}
 	if ebiten.IsKeyPressed(op.Left) {
-		return direction.Left, true
+		p.Action.Direction = direction.Left
+		p.Action.Move = true
 	}
 	if ebiten.IsKeyPressed(op.Right) {
-		return direction.Right, true
+		p.Action.Direction = direction.Right
+		p.Action.Move = true
 	}
-	//fmt.Println("移动移动移动---")
-	return 0, false
+	p.Action.Move = false
 }
 
-func (p *Player) Attack() bool {
-	return inpututil.IsKeyJustPressed(p.Operate.Attack)
+func (p *Player) Attack() {
+	p.Action.Attack = inpututil.IsKeyJustPressed(p.Operate.Attack)
 }
