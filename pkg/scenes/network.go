@@ -11,10 +11,14 @@ func init() {
 	network.RegisterServer("scenes", &networkServer{})
 }
 
+var (
+	scenesDetect = map[int]bool{}
+)
+
 type scenesMassage struct {
-	dx    int
-	dy    int
-	index int
+	Dx    int
+	Dy    int
+	Index int
 	Type  ScenesType
 	Hp    int
 }
@@ -29,17 +33,24 @@ func (a *neteworkClient) Receive(m string) {
 	massage := []scenesMassage{}
 	json.Unmarshal([]byte(m), &massage)
 	for _, scenesmassage := range massage {
-		dx := scenesmassage.dx
-		dy := scenesmassage.dy
+		dx := scenesmassage.Dx
+		dy := scenesmassage.Dy
 		Types := scenesmassage.Type
-		scenes := &Scenes{
-			Collider: collision.NewCollider(float64(dx), float64(dy), float64(scenesImages[Types].Bounds().Dx()), float64(scenesImages[Types].Bounds().Dy())),
-			Image:    scenesImages[Types],
-			index:    scenesmassage.index,
-			Type:     Types,
-			Hp:       scenesmassage.Hp,
+		_,ok:= scenesDetect[scenesmassage.Index]
+		if ok {
+			globalScenes[scenesmassage.Index].Hp = scenesmassage.Hp
+		}else{
+			scenes := &Scenes{
+				Collider: collision.NewCollider(float64(dx), float64(dy), float64(scenesImages[Types].Bounds().Dx()), float64(scenesImages[Types].Bounds().Dy())),
+				Image:    scenesImages[Types],
+				index:    scenesmassage.Index,
+				Type:     Types,
+				Hp:       scenesmassage.Hp,
+			}
+			globalScenes[scenesmassage.Index] = scenes
+			scenesDetect[scenesmassage.Index] = true
 		}
-		globalScenes[scenesmassage.index] = scenes
+
 	}
 }
 
@@ -49,9 +60,9 @@ func (a *networkServer) Send() string {
 	massage := []scenesMassage{}
 	for _, scenes := range globalScenes {
 		massage = append(massage, scenesMassage{
-			dx:    int(scenes.Collider.Position.X),
-			dy:    int(scenes.Collider.Position.Y),
-			index: scenes.index,
+			Dx:    int(scenes.Collider.Position.X),
+			Dy:    int(scenes.Collider.Position.Y),
+			Index: scenes.index,
 			Type:  scenes.Type,
 			Hp:    scenes.Hp,
 		})

@@ -66,12 +66,11 @@ func New(cfg config.Player) *Player {
 func Update() {
 	for _, player := range globalPlayer {
 		player.Update()
-		// CombinedKey := fmt.Sprintf("%s%s",player.PlayerUuid,player.Index)
-		// fmt.Println(CombinedKey)
 	}
 }
 
 func (p *Player) Update() {
+
 	if p.Tank.Hp <= 0 {
 		p.Reset()
 	}
@@ -85,7 +84,9 @@ func (p *Player) Update() {
 	}
 	if p.Attack() {
 		p.Tank.Attack = true
+		fmt.Println("攻击-----攻击-----")
 	}
+	//fmt.Println("已更新，已更新，已更新---")
 }
 
 func (p *Player) Reset() {
@@ -97,7 +98,11 @@ func (p *Player) Reset() {
 func (p *Player) GetDirection() (direction.Direction, bool) {
 	op := p.Operate
 
+	if p.PlayerUuid != Uuid {
+		return 0, false
+	}
 	if ebiten.IsKeyPressed(op.Up) {
+		//fmt.Println("上上上上上")
 		return direction.Up, true
 	}
 	if ebiten.IsKeyPressed(op.Down) {
@@ -109,6 +114,7 @@ func (p *Player) GetDirection() (direction.Direction, bool) {
 	if ebiten.IsKeyPressed(op.Right) {
 		return direction.Right, true
 	}
+	//fmt.Println("移动移动移动---")
 	return 0, false
 }
 

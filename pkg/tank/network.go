@@ -1,7 +1,6 @@
 package tank
 
 import (
-	"fmt"
 
 	"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/network"
@@ -45,7 +44,6 @@ func (a *neteworkClient) Send() string {
 func (a *neteworkClient) Receive(m string) {
 	massage := []tankMassage{}
 	json.Unmarshal([]byte(m), &massage)
-	fmt.Println("接收：",massage)
 	for _, tankmassage := range massage {
 		_, ok := tankDetect[tankmassage.Index]
 		if ok {
@@ -55,7 +53,7 @@ func (a *neteworkClient) Receive(m string) {
 			GlobalTanks[tankmassage.Index].Move = tankmassage.Move
 			GlobalTanks[tankmassage.Index].Collider.Position.X = float64(tankmassage.Dx)
 			GlobalTanks[tankmassage.Index].Collider.Position.Y = float64(tankmassage.Dy)
-			fmt.Println(tankmassage.Dx,tankmassage.Dy)
+			//fmt.Println(tankmassage.Dx,tankmassage.Dy)
 		} else {
 			tank := &Tank{
 				Hp:        tankmassage.Hp,
@@ -70,7 +68,7 @@ func (a *neteworkClient) Receive(m string) {
 			}
 			GlobalTanks[tank.Index] = tank
 			tankDetect[tank.Index] = true
-			fmt.Println(tank.Index)
+			//fmt.Println(tank.Index)
 		}
 	}
 	//fmt.Println("-------------")
@@ -95,7 +93,7 @@ func (a *networkServer) Send() string {
 		
 	}
 	date:=json.MarshalToString(massage)
-	fmt.Println("发送: ",massage)
+	//fmt.Println("发送: ",massage)
 	return date
 	
 }

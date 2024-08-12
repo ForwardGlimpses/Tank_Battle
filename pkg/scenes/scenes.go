@@ -87,6 +87,7 @@ func (t *Scenes) TakeDamage(damage int) {
 			delete(globalScenes, t.index)
 			t.Collider.Destruction()
 	        t.Collider.Update()
+			scenesDetect[t.index] = false
 		}
 	}
 }

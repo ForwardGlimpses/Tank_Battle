@@ -36,10 +36,10 @@ func (a *networkClient) Send() string {
 			Index:      player.Index,
 			Operate:    player.Operate,
 		})
-		//CombinedKey := fmt.Sprintf("%s%s",Uuid,player.Index)
-		//fmt.Println(Uuid)
 	}
-	return json.MarshalToString(massage)
+	date:=json.MarshalToString(massage)
+	fmt.Println("发送数据：",date)
+	return date
 }
 
 func (a *networkClient) Receive(m string) {}
@@ -53,6 +53,7 @@ func (a *networkServer) Send() string {
 func (a *networkServer) Receive(m string) {
 	massage := []playerMassage{}
 	json.Unmarshal([]byte(m), &massage)
+	fmt.Println("接收数据：",massage)
 	for _, playermassage := range massage {
 		CombinedKey := fmt.Sprintf("%s%s", playermassage.PlayerUuid, playermassage.Index)
 		networkDetect[CombinedKey] = 10
@@ -70,7 +71,6 @@ func (a *networkServer) Receive(m string) {
 			}
 			globalPlayer[CombinedKey] = player
 		}
-		//fmt.Println(CombinedKey)
 	}
 	// 10轮未接收数据，清除玩家数据
 	var deletaPlayer []Player
