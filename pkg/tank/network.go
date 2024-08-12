@@ -1,6 +1,8 @@
 package tank
 
 import (
+	"fmt"
+
 	"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/network"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
@@ -21,14 +23,18 @@ const (
 type tankMassage struct {
 	Index     int
 	Hp        int
-	dx        int
-	dy        int
+	Dx        int
+	Dy        int
 	Direction direction.Direction
 	weapon    int
 	Attack    bool
 	Move      bool
 	Camp      string
 }
+
+var (
+	tankDetect = map[int]bool{}
+)
 
 type neteworkClient struct{}
 
@@ -39,20 +45,35 @@ func (a *neteworkClient) Send() string {
 func (a *neteworkClient) Receive(m string) {
 	massage := []tankMassage{}
 	json.Unmarshal([]byte(m), &massage)
+	fmt.Println("接收：",massage)
 	for _, tankmassage := range massage {
-		tank := &Tank{
-			Hp:        tankmassage.Hp,
-			Collider:  collision.NewCollider(float64(tankmassage.dx),float64(tankmassage.dy),float64(tank.PlayerImage.Bounds().Dx()),float64(tank.PlayerImage.Bounds().Dy())),
-			Direction: tankmassage.Direction,
-			weapon:    weapon.GetWeapon(Weapon),
-			Image:     tank.TankImage[tankmassage.Camp],
-			Attack:    tankmassage.Attack,
-			Move:      tankmassage.Move,
-			Camp:      tankmassage.Camp,
-			Index:     TankIndex,
+		_, ok := tankDetect[tankmassage.Index]
+		if ok {
+			GlobalTanks[tankmassage.Index].Hp = tankmassage.Hp
+			GlobalTanks[tankmassage.Index].Direction = tankmassage.Direction
+			GlobalTanks[tankmassage.Index].Attack = tankmassage.Attack
+			GlobalTanks[tankmassage.Index].Move = tankmassage.Move
+			GlobalTanks[tankmassage.Index].Collider.Position.X = float64(tankmassage.Dx)
+			GlobalTanks[tankmassage.Index].Collider.Position.Y = float64(tankmassage.Dy)
+			fmt.Println(tankmassage.Dx,tankmassage.Dy)
+		} else {
+			tank := &Tank{
+				Hp:        tankmassage.Hp,
+				Collider:  collision.NewCollider(float64(tankmassage.Dx), float64(tankmassage.Dy), float64(tank.PlayerImage.Bounds().Dx()), float64(tank.PlayerImage.Bounds().Dy())),
+				Direction: tankmassage.Direction,
+				weapon:    weapon.GetWeapon(Weapon),
+				Image:     tank.TankImage[tankmassage.Camp],
+				Attack:    tankmassage.Attack,
+				Move:      tankmassage.Move,
+				Camp:      tankmassage.Camp,
+				Index:     tankmassage.Index,
+			}
+			GlobalTanks[tank.Index] = tank
+			tankDetect[tank.Index] = true
+			fmt.Println(tank.Index)
 		}
-		GlobalTanks[tankmassage.Index] = tank
 	}
+	//fmt.Println("-------------")
 }
 
 type networkServer struct{}
@@ -61,20 +82,24 @@ func (a *networkServer) Send() string {
 	massage := []tankMassage{}
 	for _, tank := range GlobalTanks {
 		massage = append(massage, tankMassage{
-			Index:     TankIndex,
+			Index:     tank.Index,
 			Hp:        tank.Hp,
-			dx:        int(tank.Collider.Position.X),
-			dy:        int(tank.Collider.Position.Y),
+			Dx:        int(tank.Collider.Position.X),
+			Dy:        int(tank.Collider.Position.Y),
 			Direction: tank.Direction,
 			weapon:    Weapon,
 			Attack:    tank.Attack,
 			Move:      tank.Move,
 			Camp:      tank.Camp,
 		})
+		
 	}
-	return json.MarshalToString(massage)
+	date:=json.MarshalToString(massage)
+	fmt.Println("发送: ",massage)
+	return date
+	
 }
-
+//fmt.Println(int(tank.Collider.Position.X),int(tank.Collider.Position.Y))
 func (a *networkServer) Receive(m string) {
-
+//fmt.Println("--------------")
 }

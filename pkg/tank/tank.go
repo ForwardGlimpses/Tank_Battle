@@ -2,6 +2,8 @@ package tank
 
 import (
 	"container/list"
+	//"fmt"
+	//"fmt"
 	"image"
 	_ "image/png"
 	"math"
@@ -105,11 +107,13 @@ func Update() {
 		} else if tank.Move {
 			tank.Update(tank.Direction)
 		}
+		//fmt.Println("--------------------------------")
 	}
 
 	for _, tank := range Destroyed {
 		tank.Collider.Destruction()
 		delete(GlobalTanks, tank.Index)
+		tankDetect[tank.Index] = false
 	}
 
 	for _, tank := range GlobalTanks {
@@ -118,7 +122,6 @@ func Update() {
 			tank.Attack = false
 		}
 	}
-
 }
 
 func (t *Tank) Fight() {
@@ -129,21 +132,18 @@ func TankBorn(dx, dy int) Position {
 
 	queue := list.New()
 	queue.PushBack(Position{X: dx, Y: dy})
-
 	SizeX, SizeY := config.GetWindowSize()
-
 	visited := make([][]bool, SizeX)
 	for i := range visited {
 		visited[i] = make([]bool, SizeY)
 	}
+	
 	visited[dx][dy] = true
-
 	directions := [][]int{{-20, 0}, {20, 0}, {0, -20}, {0, 20}}
 	for queue.Len() > 0 {
 		e := queue.Front()
 		queue.Remove(e)
 		pos := e.Value.(Position)
-
 		for _, dir := range directions {
 			newX, newY := pos.X+dir[0], pos.Y+dir[1]
 			if newX > 0 && newX < SizeX && newY > 0 && newY < SizeY {
@@ -172,7 +172,8 @@ func (t *Tank) Draw(screen *ebiten.Image) {
 	opt.GeoM.Rotate(t.Direction.Theta() * 2 * math.Pi / 360)
 	opt.GeoM.Translate(t.Collider.Position.X+tranX, t.Collider.Position.Y+tranY)
 	screen.DrawImage(ebiten.NewImageFromImage(t.Image), opt)
-
+	// fmt.Println(t.Collider.Position.X,t.Collider.Position.Y)
+	// fmt.Println("-------------------------------")
 }
 
 func Draw(screen *ebiten.Image) {

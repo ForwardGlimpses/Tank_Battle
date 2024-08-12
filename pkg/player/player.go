@@ -66,6 +66,8 @@ func New(cfg config.Player) *Player {
 func Update() {
 	for _, player := range globalPlayer {
 		player.Update()
+		// CombinedKey := fmt.Sprintf("%s%s",player.PlayerUuid,player.Index)
+		// fmt.Println(CombinedKey)
 	}
 }
 

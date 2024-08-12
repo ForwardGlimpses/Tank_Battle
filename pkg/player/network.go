@@ -32,10 +32,12 @@ func (a *networkClient) Send() string {
 	massage := []playerMassage{}
 	for _, player := range globalPlayer {
 		massage = append(massage, playerMassage{
-			PlayerUuid: player.PlayerUuid,
+			PlayerUuid: Uuid,
 			Index:      player.Index,
 			Operate:    player.Operate,
 		})
+		//CombinedKey := fmt.Sprintf("%s%s",Uuid,player.Index)
+		//fmt.Println(Uuid)
 	}
 	return json.MarshalToString(massage)
 }
@@ -54,15 +56,21 @@ func (a *networkServer) Receive(m string) {
 	for _, playermassage := range massage {
 		CombinedKey := fmt.Sprintf("%s%s", playermassage.PlayerUuid, playermassage.Index)
 		networkDetect[CombinedKey] = 10
-		dx, _ := strconv.Atoi(playermassage.Index)
-		dy, _ := strconv.Atoi(playermassage.Index)
-		player := &Player{
-			Tank:       tank.New("Player", (dx+2)*100, (dy+2)*100),
-			PlayerUuid: playermassage.PlayerUuid,
-			Index:      playermassage.Index,
-			Operate:    playermassage.Operate,
+		_, ok := globalPlayer[CombinedKey]
+		if ok {
+			globalPlayer[CombinedKey].Operate = playermassage.Operate
+		} else {
+			dx, _ := strconv.Atoi(playermassage.Index)
+			dy, _ := strconv.Atoi(playermassage.Index)
+			player := &Player{
+				Tank:       tank.New("Player", (dx+2)*100, (dy+2)*100),
+				PlayerUuid: playermassage.PlayerUuid,
+				Index:      playermassage.Index,
+				Operate:    playermassage.Operate,
+			}
+			globalPlayer[CombinedKey] = player
 		}
-		globalPlayer[CombinedKey] = player
+		//fmt.Println(CombinedKey)
 	}
 	// 10轮未接收数据，清除玩家数据
 	var deletaPlayer []Player
