@@ -32,5 +32,5 @@ func GetWeapon(Type int) Weapon {
 }
 
 func init() {
-    weapons[0] = &DefaultWeapon{Damage: 10}
+    weapons[0] = &DefaultWeapon{}
 }

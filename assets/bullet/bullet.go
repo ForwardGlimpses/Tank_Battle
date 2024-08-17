@@ -11,12 +11,19 @@ import (
 
 var (
 	//go:embed bullet.png
-	Bullet_png  []byte
-	BulletImage *ebiten.Image
+	Bullet1_png []byte
+	//go:embed bullet2.png
+	Bullet2_png []byte
+	BulletImage = map[string]*ebiten.Image{}
 )
 
 func init() {
-	temp, _, _ := image.Decode(bytes.NewReader(Bullet_png))
-	BulletImage = ebiten.NewImageFromImage(temp)
+	bulletPlayer, _, _ := image.Decode(bytes.NewReader(Bullet1_png))
+	BulletPlayer := ebiten.NewImageFromImage(bulletPlayer)
+	bulletEnemy, _, _ := image.Decode(bytes.NewReader(Bullet2_png))
+	BulletEnemy := ebiten.NewImageFromImage(bulletEnemy)
+	BulletImage = map[string]*ebiten.Image{
+		"Player": BulletPlayer,
+		"NPC":    BulletEnemy,
+	}
 }
-

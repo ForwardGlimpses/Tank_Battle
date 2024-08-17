@@ -2,6 +2,8 @@ package tank
 
 import (
 	"container/list"
+	"fmt"
+	//"fmt"
 	//"fmt"
 	//"fmt"
 	"image"
@@ -23,9 +25,9 @@ const (
 	Down
 	Left
 	Right
-	step float64 = 3
-	PlayerImage = 0
-	EnemyImage = 1
+	step        float64 = 3
+	PlayerImage         = 0
+	EnemyImage          = 1
 )
 
 var GlobalTanks = make(map[int]*Tank)
@@ -33,6 +35,7 @@ var GlobalTanks = make(map[int]*Tank)
 var (
 	TankIndex = 0
 )
+
 type Tank struct {
 	Hp        int
 	Collider  *collision.Collider
@@ -52,7 +55,6 @@ type Position struct {
 
 func New(camp string, tankx int, tanky int) *Tank {
 	position := TankBorn(tankx, tanky)
-
 	tank := &Tank{
 		Collider: collision.NewCollider(float64(position.X), float64(position.Y), float64(tank.PlayerImage.Bounds().Dx()), float64(tank.PlayerImage.Bounds().Dy())),
 		Hp:       100,
@@ -106,12 +108,13 @@ func Update() {
 		} else if tank.Move {
 			tank.Update(tank.Direction)
 		}
+		fmt.Println("下标：--",tank.Index,"方向：--",tank.Direction)
 	}
 
 	for _, tank := range Destroyed {
 		tank.Collider.Destruction()
 		delete(GlobalTanks, tank.Index)
-		tankDetect[tank.Index] = false
+		//tankDetect[tank.Index] = false
 	}
 
 	for _, tank := range GlobalTanks {
@@ -160,7 +163,6 @@ func TankBorn(dx, dy int) Position {
 	}
 	return Position{dx, dy}
 }
-
 
 func (t *Tank) Draw(screen *ebiten.Image) {
 	opt := &ebiten.DrawImageOptions{}

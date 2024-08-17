@@ -18,7 +18,7 @@ func init() {
 type playerMassage struct {
 	PlayerUuid string
 	Index      string
-	Operate    Operate
+	Action     Action
 }
 
 type networkClient struct{}
@@ -34,11 +34,11 @@ func (a *networkClient) Send() string {
 		massage = append(massage, playerMassage{
 			PlayerUuid: Uuid,
 			Index:      player.Index,
-			Operate:    player.Operate,
+			Action:    player.Action,
 		})
 	}
 	date:=json.MarshalToString(massage)
-	fmt.Println("发送数据：",date)
+	//fmt.Println("发送数据：",date)
 	return date
 }
 
@@ -53,13 +53,13 @@ func (a *networkServer) Send() string {
 func (a *networkServer) Receive(m string) {
 	massage := []playerMassage{}
 	json.Unmarshal([]byte(m), &massage)
-	fmt.Println("接收数据：",massage)
+	//fmt.Println("接收数据：",massage)
 	for _, playermassage := range massage {
 		CombinedKey := fmt.Sprintf("%s%s", playermassage.PlayerUuid, playermassage.Index)
 		networkDetect[CombinedKey] = 10
 		_, ok := globalPlayer[CombinedKey]
 		if ok {
-			globalPlayer[CombinedKey].Operate = playermassage.Operate
+			globalPlayer[CombinedKey].Action = playermassage.Action
 		} else {
 			dx, _ := strconv.Atoi(playermassage.Index)
 			dy, _ := strconv.Atoi(playermassage.Index)
@@ -67,9 +67,11 @@ func (a *networkServer) Receive(m string) {
 				Tank:       tank.New("Player", (dx+2)*100, (dy+2)*100),
 				PlayerUuid: playermassage.PlayerUuid,
 				Index:      playermassage.Index,
-				Operate:    playermassage.Operate,
+				Action:    playermassage.Action,
 			}
 			globalPlayer[CombinedKey] = player
+			// fmt.Println("玩家：：",CombinedKey)
+			// fmt.Println("本地：",Uuid)
 		}
 	}
 	// 10轮未接收数据，清除玩家数据

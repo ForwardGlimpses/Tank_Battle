@@ -11,9 +11,6 @@ func init() {
 	network.RegisterServer("scenes", &networkServer{})
 }
 
-var (
-	scenesDetect = map[int]bool{}
-)
 
 type scenesMassage struct {
 	Dx    int
@@ -36,7 +33,7 @@ func (a *neteworkClient) Receive(m string) {
 		dx := scenesmassage.Dx
 		dy := scenesmassage.Dy
 		Types := scenesmassage.Type
-		_,ok:= scenesDetect[scenesmassage.Index]
+		_,ok:= globalScenes[scenesmassage.Index]
 		if ok {
 			globalScenes[scenesmassage.Index].Hp = scenesmassage.Hp
 		}else{
@@ -48,7 +45,6 @@ func (a *neteworkClient) Receive(m string) {
 				Hp:       scenesmassage.Hp,
 			}
 			globalScenes[scenesmassage.Index] = scenes
-			scenesDetect[scenesmassage.Index] = true
 		}
 
 	}
