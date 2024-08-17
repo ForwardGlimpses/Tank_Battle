@@ -32,7 +32,6 @@ type tankMassage struct {
 	Camp      string
 }
 
-
 type neteworkClient struct{}
 
 func (a *neteworkClient) Send() string {
@@ -42,7 +41,7 @@ func (a *neteworkClient) Send() string {
 func (a *neteworkClient) Receive(m string) {
 	massage := []tankMassage{}
 	json.Unmarshal([]byte(m), &massage)
-	fmt.Println("接收数据:",massage)
+	fmt.Println("接收数据:", massage)
 	for _, tankmassage := range massage {
 		_, ok := GlobalTanks[tankmassage.Index]
 		if ok {
@@ -66,7 +65,7 @@ func (a *neteworkClient) Receive(m string) {
 				Index:     tankmassage.Index,
 			}
 			GlobalTanks[tank.Index] = tank
-			fmt.Println("编号：",tank.Index,"-------")
+			fmt.Println("编号：", tank.Index, "-------")
 			//tankDetect[tank.Index] = true
 			//fmt.Println(tank.Index)
 		}
@@ -93,7 +92,6 @@ func (a *networkServer) Send() string {
 
 	}
 	date := json.MarshalToString(massage)
-	fmt.Println("发送: ",massage)
 	return date
 
 }

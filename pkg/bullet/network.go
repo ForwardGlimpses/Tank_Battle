@@ -31,7 +31,6 @@ type bulletMassage struct {
 	Camp      string
 }
 
-
 type neteworkClient struct{}
 
 func (a *neteworkClient) Send() string {
@@ -80,12 +79,9 @@ func (a *networkServer) Send() string {
 		})
 	}
 	date := json.MarshalToString(massage)
-	//fmt.Println("发送: ",massage)
 	return date
 
 }
 
-// fmt.Println(int(tank.Collider.Position.X),int(tank.Collider.Position.Y))
 func (a *networkServer) Receive(m string) {
-	//fmt.Println("--------------")
 }

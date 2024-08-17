@@ -3,11 +3,12 @@ package configmanager
 import (
 	"encoding/json"
 	"fmt"
+	"io"
+	"os"
+
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
-	"io"
-	"os"
 )
 
 func init() {
@@ -16,13 +17,15 @@ func init() {
 
 func Init() error {
 
-	cfg, err := LoadConfig("C:\\Users\\乔书祥\\Desktop\\远程文件库\\Tank_Battle\\config.json")
+	cfg, err := LoadConfig("./configs/config.json")
 	if err != nil {
 		return err
 	}
+
 	sizeX, sizeY := cfg.Window.Width, cfg.Window.Height
 	collision.Init(sizeX, sizeY, 2, 2)
-	//fmt.Println("configmanange")
+
+	config.C = *cfg
 	return nil
 }
 
@@ -43,6 +46,6 @@ func LoadConfig(filename string) (*config.Config, error) {
 	if err := json.Unmarshal(bytes, &cfg); err != nil {
 		return nil, fmt.Errorf("could not parse config file: %v", err)
 	}
-	
+
 	return &cfg, nil
 }

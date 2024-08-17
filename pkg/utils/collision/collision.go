@@ -1,7 +1,6 @@
 package collision
 
 import (
-	"fmt"
 	"math"
 	"math/rand"
 	"sort"
@@ -55,7 +54,6 @@ func RandNewCollider(w, h float64, tags ...string) *Collider {
 		rx := rand.Intn(space.Width())
 		ry := rand.Intn(space.Height())
 		c = space.Cell(rx, ry)
-		fmt.Println(c.Occupied())
 		if c.Occupied() {
 			c = nil
 		} else {

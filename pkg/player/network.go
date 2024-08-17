@@ -1,9 +1,6 @@
 package player
 
 import (
-	"fmt"
-	"strconv"
-
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/network"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/json"
@@ -19,13 +16,13 @@ type playerMassage struct {
 	PlayerUuid string
 	Index      string
 	Action     Action
+	TankIndex  int
 }
 
 type networkClient struct{}
 
 var (
-	Uuid          string = uuid.New().String()
-	networkDetect        = map[string]int{}
+	Uuid string = uuid.New().String()
 )
 
 func (a *networkClient) Send() string {
@@ -34,10 +31,10 @@ func (a *networkClient) Send() string {
 		massage = append(massage, playerMassage{
 			PlayerUuid: Uuid,
 			Index:      player.Index,
-			Action:    player.Action,
+			Action:     player.Action,
 		})
 	}
-	date:=json.MarshalToString(massage)
+	date := json.MarshalToString(massage)
 	//fmt.Println("发送数据：",date)
 	return date
 }
@@ -53,39 +50,34 @@ func (a *networkServer) Send() string {
 func (a *networkServer) Receive(m string) {
 	massage := []playerMassage{}
 	json.Unmarshal([]byte(m), &massage)
-	//fmt.Println("接收数据：",massage)
+
 	for _, playermassage := range massage {
-		CombinedKey := fmt.Sprintf("%s%s", playermassage.PlayerUuid, playermassage.Index)
-		networkDetect[CombinedKey] = 10
-		_, ok := globalPlayer[CombinedKey]
+		player, ok := globalPlayer[playermassage.Index]
 		if ok {
-			globalPlayer[CombinedKey].Action = playermassage.Action
+			player.Action = playermassage.Action
+			player.NetworkCount = 10
+			player.TankIndex = playermassage.TankIndex
 		} else {
-			dx, _ := strconv.Atoi(playermassage.Index)
-			dy, _ := strconv.Atoi(playermassage.Index)
 			player := &Player{
-				Tank:       tank.New("Player", (dx+2)*100, (dy+2)*100),
-				PlayerUuid: playermassage.PlayerUuid,
-				Index:      playermassage.Index,
-				Action:    playermassage.Action,
+				TankIndex:    tank.New("Player", 100, 100).Index,
+				Index:        playermassage.Index,
+				Action:       playermassage.Action,
+				NetworkCount: 10,
 			}
-			globalPlayer[CombinedKey] = player
-			// fmt.Println("玩家：：",CombinedKey)
-			// fmt.Println("本地：",Uuid)
+			globalPlayer[playermassage.Index] = player
 		}
 	}
 	// 10轮未接收数据，清除玩家数据
 	var deletaPlayer []Player
 	for _, player := range globalPlayer {
-		CombinedKey := fmt.Sprintf("%s%s", player.PlayerUuid, player.Index)
-		networkDetect[CombinedKey]--
-		if networkDetect[CombinedKey] == 0 {
+		player.NetworkCount--
+		if player.NetworkCount <= 0 {
 			deletaPlayer = append(deletaPlayer, *player)
 		}
 	}
 
 	for _, player := range deletaPlayer {
-		CombinedKey := fmt.Sprintf("%s%s", player.PlayerUuid, player.Index)
-		delete(globalPlayer, CombinedKey)
+
+		delete(globalPlayer, player.Index)
 	}
 }

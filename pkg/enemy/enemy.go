@@ -40,9 +40,9 @@ func init() {
 func Update() {
 
 	if GetCreatEnemy() && Enemynumers < Limit {
-		dx:= (Enemynumers+1)*100
-		dy:= (Enemynumers+1)*100
-		t:=tank.TankBorn(dx,dy)
+		dx := (Enemynumers + 1) * 100
+		dy := (Enemynumers + 1) * 100
+		t := tank.TankBorn(dx, dy)
 		if t.X != dx || t.Y != dy {
 			enemy := &Enemy{
 				Attack:         false,
@@ -52,8 +52,8 @@ func Update() {
 				Direction:      direction.Direction(Up),
 				Tank:           tank.New("NPC", t.X, t.Y),
 			}
-			Enemynumers ++
-			index ++
+			Enemynumers++
+			index++
 			globalEnemy[enemy.Index] = enemy
 		}
 	}
@@ -61,7 +61,7 @@ func Update() {
 	for _, enemy := range globalEnemy {
 		if enemy.Tank.Hp <= 0 {
 			Destroyed = append(Destroyed, *enemy)
-		}else{
+		} else {
 			enemy.Update()
 		}
 	}

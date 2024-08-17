@@ -2,7 +2,6 @@ package tank
 
 import (
 	"container/list"
-	"fmt"
 	//"fmt"
 	//"fmt"
 	//"fmt"
@@ -69,6 +68,10 @@ func New(camp string, tankx int, tanky int) *Tank {
 	return tank
 }
 
+func Get(index int) *Tank {
+	return GlobalTanks[index]
+}
+
 func init() {
 	tankbattle.RegisterDraw(Draw, 1)
 	tankbattle.RegisterUpdate(Update, 3)
@@ -108,13 +111,11 @@ func Update() {
 		} else if tank.Move {
 			tank.Update(tank.Direction)
 		}
-		fmt.Println("下标：--",tank.Index,"方向：--",tank.Direction)
 	}
 
 	for _, tank := range Destroyed {
 		tank.Collider.Destruction()
 		delete(GlobalTanks, tank.Index)
-		//tankDetect[tank.Index] = false
 	}
 
 	for _, tank := range GlobalTanks {
