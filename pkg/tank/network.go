@@ -1,9 +1,10 @@
 package tank
 
 import (
-	"fmt"
+	//"fmt"
 
 	"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
+	//"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/network"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/direction"
@@ -41,17 +42,35 @@ func (a *neteworkClient) Send() string {
 func (a *neteworkClient) Receive(m string) {
 	massage := []tankMassage{}
 	json.Unmarshal([]byte(m), &massage)
-	fmt.Println("接收数据:", massage)
+	//fmt.Println("接收数据:", massage)
+	Survived := map[int]bool{}
+	for _, tank := range GlobalTanks {
+		Survived[tank.Index] = false
+	}
 	for _, tankmassage := range massage {
-		_, ok := GlobalTanks[tankmassage.Index]
+		tankTank, ok := GlobalTanks[tankmassage.Index]
+		Survived[tankmassage.Index] = true
 		if ok {
-			GlobalTanks[tankmassage.Index].Hp = tankmassage.Hp
-			GlobalTanks[tankmassage.Index].Direction = tankmassage.Direction
-			GlobalTanks[tankmassage.Index].Attack = tankmassage.Attack
-			GlobalTanks[tankmassage.Index].Move = tankmassage.Move
-			GlobalTanks[tankmassage.Index].Collider.Position.X = float64(tankmassage.Dx)
-			GlobalTanks[tankmassage.Index].Collider.Position.Y = float64(tankmassage.Dy)
-			//fmt.Println(tankmassage.Dx,tankmassage.Dy)
+			tankTank.Hp = tankmassage.Hp
+			tankTank.Direction = tankmassage.Direction
+			tankTank.Attack = tankmassage.Attack
+			tankTank.Move = tankmassage.Move
+			tankTank.Collider.Position.X = float64(tankmassage.Dx)
+			tankTank.Collider.Position.Y = float64(tankmassage.Dy)
+			// if tankTank.Hp <= 0 {
+			// 	if tankTank.Camp == "Player" {
+			// 		cfg := config.C.Network
+			// 		if cfg.Type == "server" {
+			// 			d := TankBorn(100, 100)
+			// 			tankTank.Collider.Position.X = float64(d.X)
+			// 			tankTank.Collider.Position.Y = float64(d.Y)
+			// 			tankTank.Hp = 100
+			// 		}
+			// 	} else {
+			// 		tankTank.Collider.Destruction()
+			// 		delete(GlobalTanks, tankTank.Index)
+			// 	}
+			// }
 		} else {
 			tank := &Tank{
 				Hp:        tankmassage.Hp,
@@ -65,9 +84,12 @@ func (a *neteworkClient) Receive(m string) {
 				Index:     tankmassage.Index,
 			}
 			GlobalTanks[tank.Index] = tank
-			fmt.Println("编号：", tank.Index, "-------")
-			//tankDetect[tank.Index] = true
-			//fmt.Println(tank.Index)
+		}
+	}
+	for tankindex, flag := range Survived {
+		if !flag {
+			GlobalTanks[tankindex].Collider.Destruction()
+			delete(GlobalTanks, tankindex)
 		}
 	}
 	//fmt.Println("-------------")
@@ -89,14 +111,12 @@ func (a *networkServer) Send() string {
 			Move:      tank.Move,
 			Camp:      tank.Camp,
 		})
-
 	}
 	date := json.MarshalToString(massage)
 	return date
 
 }
 
-// fmt.Println(int(tank.Collider.Position.X),int(tank.Collider.Position.Y))
 func (a *networkServer) Receive(m string) {
 	//fmt.Println("--------------")
 }

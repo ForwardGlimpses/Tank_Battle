@@ -2,7 +2,7 @@ package scenes
 
 import (
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/network"
-	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
+	//"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/json"
 )
 
@@ -30,23 +30,27 @@ func (a *neteworkClient) Receive(m string) {
 	massage := []scenesMassage{}
 	json.Unmarshal([]byte(m), &massage)
 	for _, scenesmassage := range massage {
-		dx := scenesmassage.Dx
-		dy := scenesmassage.Dy
-		Types := scenesmassage.Type
-		_,ok:= globalScenes[scenesmassage.Index]
+		//dx := scenesmassage.Dx
+		//dy := scenesmassage.Dy
+		//Types := scenesmassage.Type
+		scenes,ok:= globalScenes[scenesmassage.Index]
 		if ok {
-			globalScenes[scenesmassage.Index].Hp = scenesmassage.Hp
-		}else{
+			scenes.Hp = scenesmassage.Hp
+			if scenes.Hp <= 0 {
+				delete(globalScenes, scenes.Index)
+				scenes.Collider.Destruction()
+				scenes.Collider.Update()
+			}
+		}/*else{
 			scenes := &Scenes{
 				Collider: collision.NewCollider(float64(dx), float64(dy), float64(scenesImages[Types].Bounds().Dx()), float64(scenesImages[Types].Bounds().Dy())),
 				Image:    scenesImages[Types],
-				index:    scenesmassage.Index,
+				Index:    scenesmassage.Index,
 				Type:     Types,
 				Hp:       scenesmassage.Hp,
 			}
 			globalScenes[scenesmassage.Index] = scenes
-		}
-
+		}*/
 	}
 }
 
@@ -58,7 +62,7 @@ func (a *networkServer) Send() string {
 		massage = append(massage, scenesMassage{
 			Dx:    int(scenes.Collider.Position.X),
 			Dy:    int(scenes.Collider.Position.Y),
-			Index: scenes.index,
+			Index: scenes.Index,
 			Type:  scenes.Type,
 			Hp:    scenes.Hp,
 		})

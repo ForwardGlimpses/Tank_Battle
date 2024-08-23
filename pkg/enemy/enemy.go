@@ -3,6 +3,7 @@ package enemy
 import (
 	"math/rand"
 
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/direction"
@@ -40,8 +41,8 @@ func init() {
 func Update() {
 
 	if GetCreatEnemy() && Enemynumers < Limit {
-		dx := (Enemynumers + 1) * 100
-		dy := (Enemynumers + 1) * 100
+		dx := 100
+		dy := 100
 		t := tank.TankBorn(dx, dy)
 		if t.X != dx || t.Y != dy {
 			enemy := &Enemy{
@@ -69,7 +70,6 @@ func Update() {
 		delete(globalEnemy, enemy.Index)
 		Enemynumers--
 	}
-
 }
 
 func (a *Enemy) Update() {
@@ -126,5 +126,9 @@ func (a *Enemy) IsMove() {
 }
 
 func GetCreatEnemy() bool {
+	cfg:= config.C.Network
+	if cfg.Type == "client" {
+		return false 
+	}
 	return inpututil.IsKeyJustPressed(ebiten.KeyQ)
 }

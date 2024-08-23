@@ -21,7 +21,7 @@ const (
 type Scenes struct {
 	Collider *collision.Collider
 	Image *ebiten.Image
-	index int
+	Index int
 	Type  ScenesType
 	Hp int
 }
@@ -45,7 +45,7 @@ func Init() error {
 			if t != Space {
 				ins := New(position, t)
 				ins.Collider.Data = ins
-				globalScenes[ins.index] = ins
+				globalScenes[ins.Index] = ins
 			}
 		}
 	}
@@ -57,7 +57,7 @@ func New(position vector2.Vector, t ScenesType) *Scenes {
 	return &Scenes{
 		Collider: collision.NewCollider(position.X, position.Y, float64(scenesImages[t].Bounds().Dy()), float64(scenesImages[t].Bounds().Dx())),
 		Image:    scenesImages[t],
-		index:    Key,
+		Index:    Key,
 		Type:     t,
 		Hp:       100,
 	}
@@ -76,6 +76,7 @@ func Draw(screen *ebiten.Image) {
 	}
 }
 
+
 func (t *Scenes) GetCamp() string {
 	return ""
 }
@@ -84,7 +85,7 @@ func (t *Scenes) TakeDamage(damage int) {
 	if t.Type == Brick {
 		t.Hp -= damage
 		if t.Hp <= 0 {
-			delete(globalScenes, t.index)
+			delete(globalScenes, t.Index)
 			t.Collider.Destruction()
 	        t.Collider.Update()
 		}

@@ -2,6 +2,7 @@ package tank
 
 import (
 	"container/list"
+	"fmt"
 	//"fmt"
 	//"fmt"
 	//"fmt"
@@ -9,7 +10,7 @@ import (
 	_ "image/png"
 	"math"
 
-	"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
+	tankassets"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/types"
@@ -55,10 +56,10 @@ type Position struct {
 func New(camp string, tankx int, tanky int) *Tank {
 	position := TankBorn(tankx, tanky)
 	tank := &Tank{
-		Collider: collision.NewCollider(float64(position.X), float64(position.Y), float64(tank.PlayerImage.Bounds().Dx()), float64(tank.PlayerImage.Bounds().Dy())),
+		Collider: collision.NewCollider(float64(position.X), float64(position.Y), float64(tankassets.PlayerImage.Bounds().Dx()), float64(tankassets.PlayerImage.Bounds().Dy())),
 		Hp:       100,
 		weapon:   &weapon.DefaultWeapon{},
-		Image:    tank.TankImage[camp],
+		Image:    tankassets.TankImage[camp],
 		Camp:     camp,
 		Index:    TankIndex,
 	}
@@ -105,9 +106,20 @@ func (t *Tank) SetPosition(position Position) {
 
 func Update() {
 	var Destroyed []Tank
+	cfg := config.C.Network
 	for _, tank := range GlobalTanks {
 		if tank.Hp <= 0 {
-			Destroyed = append(Destroyed, *tank)
+			if tank.Camp == "Player" {
+				if cfg.Type == "server" {
+					d := TankBorn(100, 100)
+					tank.Collider.Position.X = float64(d.X)
+					tank.Collider.Position.Y = float64(d.Y)
+					tank.Hp = 100
+				}
+			} else {
+				Destroyed = append(Destroyed, *tank)
+			}
+			fmt.Println("被击毁")
 		} else if tank.Move {
 			tank.Update(tank.Direction)
 		}
@@ -121,9 +133,11 @@ func Update() {
 	for _, tank := range GlobalTanks {
 		if tank.Attack {
 			tank.Fight()
+			fmt.Println("攻击----")
 			tank.Attack = false
 		}
 	}
+	fmt.Println("----------")
 }
 
 func (t *Tank) Fight() {
@@ -153,7 +167,7 @@ func TankBorn(dx, dy int) Position {
 					continue
 				}
 				visited[newX][newY] = true
-				t := collision.NewCollider(float64(dx), float64(dy), float64(tank.PlayerImage.Bounds().Dx()), float64(tank.PlayerImage.Bounds().Dy()))
+				t := collision.NewCollider(float64(dx), float64(dy), float64(tankassets.PlayerImage.Bounds().Dx()), float64(tankassets.PlayerImage.Bounds().Dy()))
 				if check := t.Check(float64(newX-dx), float64(newY-dy)); check != nil {
 					queue.PushBack(Position{X: newX, Y: newY})
 				} else {

@@ -57,7 +57,7 @@ var (
 func New(cfg config.Player) *Player {
 	index++
 	return &Player{
-		TankIndex: tank.New("Player", (index+2)*100, (index+2)*100).Index,
+		TankIndex: tank.New("Player", 100, 100).Index,
 		Index:     fmt.Sprintf("%s%d", Uuid, index),
 		Local:     true,
 		Operate: Operate{
@@ -85,6 +85,7 @@ func (p *Player) Update() {
 	t.Move = p.Action.Move
 	t.Attack = p.Action.Attack
 	t.Direction = p.Action.Direction
+	//fmt.Println("-----------")
 }
 
 func (p *Player) GetDirection() {
@@ -92,22 +93,18 @@ func (p *Player) GetDirection() {
 
 	p.Action.Move = false
 	if ebiten.IsKeyPressed(op.Up) {
-		//fmt.Println("上----")
 		p.Action.Direction = direction.Up
 		p.Action.Move = true
 	}
 	if ebiten.IsKeyPressed(op.Down) {
-		//fmt.Println("下----")
 		p.Action.Direction = direction.Down
 		p.Action.Move = true
 	}
 	if ebiten.IsKeyPressed(op.Left) {
-		//fmt.Println("左----")
 		p.Action.Direction = direction.Left
 		p.Action.Move = true
 	}
 	if ebiten.IsKeyPressed(op.Right) {
-		//fmt.Println("右----")
 		p.Action.Direction = direction.Right
 		p.Action.Move = true
 	}

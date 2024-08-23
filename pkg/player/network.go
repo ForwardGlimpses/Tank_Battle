@@ -1,6 +1,8 @@
 package player
 
 import (
+	//"fmt"
+
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/network"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/json"
@@ -13,7 +15,6 @@ func init() {
 }
 
 type playerMassage struct {
-	PlayerUuid string
 	Index      string
 	Action     Action
 	TankIndex  int
@@ -29,22 +30,39 @@ func (a *networkClient) Send() string {
 	massage := []playerMassage{}
 	for _, player := range globalPlayer {
 		massage = append(massage, playerMassage{
-			PlayerUuid: Uuid,
 			Index:      player.Index,
 			Action:     player.Action,
+			TankIndex:  player.TankIndex,
 		})
 	}
 	date := json.MarshalToString(massage)
-	//fmt.Println("发送数据：",date)
 	return date
 }
 
-func (a *networkClient) Receive(m string) {}
+func (a *networkClient) Receive(m string) {
+	massage := []playerMassage{}
+	json.Unmarshal([]byte(m), &massage)
+	for _, playermassage := range massage {
+		player, ok := globalPlayer[playermassage.Index]
+		if ok {
+			player.TankIndex = playermassage.TankIndex
+		}
+	}
+}
 
 type networkServer struct{}
 
 func (a *networkServer) Send() string {
-	return ""
+	massage := []playerMassage{}
+	for _, player := range globalPlayer {
+		massage = append(massage, playerMassage{
+			Index:      player.Index,
+			Action:     player.Action,
+			TankIndex:  player.TankIndex,
+		})
+	}
+	date := json.MarshalToString(massage)
+	return date
 }
 
 func (a *networkServer) Receive(m string) {
@@ -56,7 +74,6 @@ func (a *networkServer) Receive(m string) {
 		if ok {
 			player.Action = playermassage.Action
 			player.NetworkCount = 10
-			player.TankIndex = playermassage.TankIndex
 		} else {
 			player := &Player{
 				TankIndex:    tank.New("Player", 100, 100).Index,
@@ -70,6 +87,9 @@ func (a *networkServer) Receive(m string) {
 	// 10轮未接收数据，清除玩家数据
 	var deletaPlayer []Player
 	for _, player := range globalPlayer {
+		if player.Local {
+			continue
+		}
 		player.NetworkCount--
 		if player.NetworkCount <= 0 {
 			deletaPlayer = append(deletaPlayer, *player)
@@ -77,7 +97,6 @@ func (a *networkServer) Receive(m string) {
 	}
 
 	for _, player := range deletaPlayer {
-
 		delete(globalPlayer, player.Index)
 	}
 }

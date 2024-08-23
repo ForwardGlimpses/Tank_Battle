@@ -40,7 +40,6 @@ func (a *neteworkClient) Send() string {
 func (a *neteworkClient) Receive(m string) {
 	massage := []bulletMassage{}
 	json.Unmarshal([]byte(m), &massage)
-	//fmt.Println("接收数据：：",massage)
 	for _, bulletmassage := range massage {
 		_, ok := globalBullets[bulletmassage.Index]
 		if ok {

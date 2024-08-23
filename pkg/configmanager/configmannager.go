@@ -17,7 +17,8 @@ func init() {
 
 func Init() error {
 
-	cfg, err := LoadConfig("./configs/config.json")
+	//cfg, err := LoadConfig("./configs/config.json")
+	cfg, err := LoadConfig("C:\\Users\\乔书祥\\Desktop\\远程文件库\\Tank_Battle\\configs\\config.json")
 	if err != nil {
 		return err
 	}

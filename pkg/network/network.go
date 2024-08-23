@@ -3,7 +3,6 @@ package network
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 
 	//"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 
@@ -68,7 +67,6 @@ func Init() (err error) {
 	default:
 		model = noneModel
 	}
-	fmt.Println(model)
 	return
 }
 
@@ -81,7 +79,7 @@ func Update() {
 		duration--
 		return
 	} else {
-		duration = 10
+		duration = 1
 	}
 
 	sendMassage()
