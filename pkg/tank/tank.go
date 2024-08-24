@@ -2,7 +2,7 @@ package tank
 
 import (
 	"container/list"
-	"fmt"
+	//"fmt"
 	//"fmt"
 	//"fmt"
 	//"fmt"
@@ -10,7 +10,7 @@ import (
 	_ "image/png"
 	"math"
 
-	tankassets"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
+	tankassets "github.com/ForwardGlimpses/Tank_Battle/assets/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/types"
@@ -109,35 +109,37 @@ func Update() {
 	cfg := config.C.Network
 	for _, tank := range GlobalTanks {
 		if tank.Hp <= 0 {
-			if tank.Camp == "Player" {
-				if cfg.Type == "server" {
-					d := TankBorn(100, 100)
-					tank.Collider.Position.X = float64(d.X)
-					tank.Collider.Position.Y = float64(d.Y)
-					tank.Hp = 100
-				}
-			} else {
-				Destroyed = append(Destroyed, *tank)
-			}
-			fmt.Println("被击毁")
+			Destroyed = append(Destroyed, *tank)
 		} else if tank.Move {
 			tank.Update(tank.Direction)
 		}
+		//fmt.Println("下标：",tank.Index,"坐标: ",tank.Collider.Position)
 	}
+	//fmt.Println("--------------------------------------")
 
 	for _, tank := range Destroyed {
-		tank.Collider.Destruction()
-		delete(GlobalTanks, tank.Index)
+		if tank.Camp == "Player" {
+			 if cfg.Type == "server" {
+				d := TankBorn((tank.Index+2)*100, (tank.Index+1)*100)
+				GlobalTanks[tank.Index].Collider.Position.X = float64(d.X)
+			    GlobalTanks[tank.Index].Collider.Position.Y = float64(d.Y)
+				GlobalTanks[tank.Index].Hp = 100
+				//fmt.Println("新坐标：",d)
+			}
+		} else {
+			tank.Collider.Destruction()
+			delete(GlobalTanks, tank.Index)
+		}
+
 	}
 
 	for _, tank := range GlobalTanks {
 		if tank.Attack {
 			tank.Fight()
-			fmt.Println("攻击----")
+			//fmt.Println("攻击----")
 			tank.Attack = false
 		}
 	}
-	fmt.Println("----------")
 }
 
 func (t *Tank) Fight() {

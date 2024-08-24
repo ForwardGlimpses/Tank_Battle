@@ -11,7 +11,6 @@ func init() {
 	network.RegisterServer("scenes", &networkServer{})
 }
 
-
 type scenesMassage struct {
 	Dx    int
 	Dy    int
@@ -29,11 +28,16 @@ func (a *neteworkClient) Send() string {
 func (a *neteworkClient) Receive(m string) {
 	massage := []scenesMassage{}
 	json.Unmarshal([]byte(m), &massage)
+	Survived := map[int]bool{}
+	for _, scenes := range globalScenes {
+		Survived[scenes.Index] = false
+	}
 	for _, scenesmassage := range massage {
 		//dx := scenesmassage.Dx
 		//dy := scenesmassage.Dy
 		//Types := scenesmassage.Type
-		scenes,ok:= globalScenes[scenesmassage.Index]
+		Survived[scenesmassage.Index] = true
+		scenes, ok := globalScenes[scenesmassage.Index]
 		if ok {
 			scenes.Hp = scenesmassage.Hp
 			if scenes.Hp <= 0 {
@@ -41,7 +45,7 @@ func (a *neteworkClient) Receive(m string) {
 				scenes.Collider.Destruction()
 				scenes.Collider.Update()
 			}
-		}/*else{
+		} /*else{
 			scenes := &Scenes{
 				Collider: collision.NewCollider(float64(dx), float64(dy), float64(scenesImages[Types].Bounds().Dx()), float64(scenesImages[Types].Bounds().Dy())),
 				Image:    scenesImages[Types],
@@ -51,6 +55,12 @@ func (a *neteworkClient) Receive(m string) {
 			}
 			globalScenes[scenesmassage.Index] = scenes
 		}*/
+	}
+	for scenesindex, flag := range Survived {
+		if !flag {
+			globalScenes[scenesindex].Collider.Destruction()
+			delete(globalScenes, scenesindex)
+		}
 	}
 }
 
