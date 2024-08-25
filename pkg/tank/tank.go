@@ -74,8 +74,8 @@ func Get(index int) *Tank {
 }
 
 func init() {
-	tankbattle.RegisterDraw(Draw, 1)
-	tankbattle.RegisterUpdate(Update, 3)
+	tankbattle.RegisterDraw(Draw, 10)
+	tankbattle.RegisterUpdate(Update, 30)
 }
 
 func (t *Tank) Update(direction direction.Direction) {
@@ -119,10 +119,11 @@ func Update() {
 
 	for _, tank := range Destroyed {
 		if tank.Camp == "Player" {
-			 if cfg.Type == "server" {
+			if cfg.Type == "server" {
 				d := TankBorn((tank.Index+2)*100, (tank.Index+1)*100)
 				GlobalTanks[tank.Index].Collider.Position.X = float64(d.X)
-			    GlobalTanks[tank.Index].Collider.Position.Y = float64(d.Y)
+				GlobalTanks[tank.Index].Collider.Position.Y = float64(d.Y)
+				GlobalTanks[tank.Index].Collider.Update()
 				GlobalTanks[tank.Index].Hp = 100
 				//fmt.Println("新坐标：",d)
 			}
@@ -130,7 +131,6 @@ func Update() {
 			tank.Collider.Destruction()
 			delete(GlobalTanks, tank.Index)
 		}
-
 	}
 
 	for _, tank := range GlobalTanks {

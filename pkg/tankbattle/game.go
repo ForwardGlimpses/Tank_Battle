@@ -2,6 +2,7 @@ package tankbattle
 
 import (
 	"sort"
+
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/hajimehoshi/ebiten/v2"
 )

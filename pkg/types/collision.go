@@ -10,5 +10,4 @@ type TakeDamage interface {
 
 type Obstacle interface {
 	TankIsPassable() bool
-	BulletIsPassable() bool
 }

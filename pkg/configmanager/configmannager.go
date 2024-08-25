@@ -2,6 +2,7 @@ package configmanager
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -11,14 +12,17 @@ import (
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
 )
 
+var file *string
+
 func init() {
-	tankbattle.RegisterInit(Init, 1)
+	tankbattle.RegisterInit(Init, 0)
+	file = flag.String("file", "./configs/config.json", "config file path")
+	flag.Parse()
 }
 
 func Init() error {
 
-	//cfg, err := LoadConfig("./configs/config.json")
-	cfg, err := LoadConfig("C:\\Users\\乔书祥\\Desktop\\远程文件库\\Tank_Battle\\configs\\config.json")
+	cfg, err := LoadConfig(*file)
 	if err != nil {
 		return err
 	}

@@ -11,13 +11,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
-const (
-	Up int = iota
-	Down
-	Left
-	Right
-)
-
 type Enemy struct {
 	MoveDuration   int
 	AttackDuration int
@@ -35,7 +28,7 @@ var (
 )
 
 func init() {
-	tankbattle.RegisterUpdate(Update, 1)
+	tankbattle.RegisterUpdate(Update, 10)
 }
 
 func Update() {
@@ -50,7 +43,7 @@ func Update() {
 				MoveDuration:   0,
 				AttackDuration: 0,
 				Index:          index,
-				Direction:      direction.Direction(Up),
+				Direction:      direction.Up,
 				Tank:           tank.New("NPC", t.X, t.Y),
 			}
 			Enemynumers++
@@ -126,9 +119,9 @@ func (a *Enemy) IsMove() {
 }
 
 func GetCreatEnemy() bool {
-	cfg:= config.C.Network
+	cfg := config.C.Network
 	if cfg.Type == "client" {
-		return false 
+		return false
 	}
 	return inpututil.IsKeyJustPressed(ebiten.KeyQ)
 }

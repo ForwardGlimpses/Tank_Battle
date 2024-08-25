@@ -1,9 +1,7 @@
 package tank
 
 import (
-
 	"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
-	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/network"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/direction"
@@ -56,20 +54,6 @@ func (a *neteworkClient) Receive(m string) {
 			tankTank.Move = tankmassage.Move
 			tankTank.Collider.Position.X = float64(tankmassage.Dx)
 			tankTank.Collider.Position.Y = float64(tankmassage.Dy)
-			if tankmassage.Hp <= 0 {
-				if tankTank.Camp == "Player" {
-					cfg := config.C.Network
-					if cfg.Type == "server" {
-						d := TankBorn(100, 100)
-						tankTank.Collider.Position.X = float64(d.X)
-						tankTank.Collider.Position.Y = float64(d.Y)
-						tankTank.Hp = 100
-					}
-				} else {
-					tankTank.Collider.Destruction()
-					delete(GlobalTanks, tankTank.Index)
-				}
-			}
 		} else {
 			tank := &Tank{
 				Hp:        tankmassage.Hp,

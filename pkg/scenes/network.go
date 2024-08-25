@@ -40,11 +40,6 @@ func (a *neteworkClient) Receive(m string) {
 		scenes, ok := globalScenes[scenesmassage.Index]
 		if ok {
 			scenes.Hp = scenesmassage.Hp
-			if scenes.Hp <= 0 {
-				delete(globalScenes, scenes.Index)
-				scenes.Collider.Destruction()
-				scenes.Collider.Update()
-			}
 		} /*else{
 			scenes := &Scenes{
 				Collider: collision.NewCollider(float64(dx), float64(dy), float64(scenesImages[Types].Bounds().Dx()), float64(scenesImages[Types].Bounds().Dy())),

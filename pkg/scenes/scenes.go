@@ -20,23 +20,22 @@ const (
 
 type Scenes struct {
 	Collider *collision.Collider
-	Image *ebiten.Image
-	Index int
-	Type  ScenesType
-	Hp int
+	Image    *ebiten.Image
+	Index    int
+	Type     ScenesType
+	Hp       int
 }
 
 var (
 	globalScenes     = make(map[int]*Scenes)
-	scenesImages     = []*ebiten.Image{nil, scenes.BrickImage, scenes.SteelImage, scenes.GrassImage,scenes.Rivers_Image}
+	scenesImages     = []*ebiten.Image{nil, scenes.BrickImage, scenes.SteelImage, scenes.GrassImage, scenes.Rivers_Image}
 	Key          int = 0
 )
 
 func init() {
-	tankbattle.RegisterInit(Init,2)
-	tankbattle.RegisterDraw(Draw,2)
+	tankbattle.RegisterInit(Init, 20)
+	tankbattle.RegisterDraw(Draw, 20)
 }
-
 
 func Init() error {
 	for y, line := range defMap {
@@ -63,7 +62,6 @@ func New(position vector2.Vector, t ScenesType) *Scenes {
 	}
 }
 
-
 func (s *Scenes) Draw(screen *ebiten.Image) {
 	opt := &ebiten.DrawImageOptions{}
 	opt.GeoM.Translate(s.Collider.Position.X, s.Collider.Position.Y)
@@ -76,7 +74,6 @@ func Draw(screen *ebiten.Image) {
 	}
 }
 
-
 func (t *Scenes) GetCamp() string {
 	return ""
 }
@@ -87,24 +84,23 @@ func (t *Scenes) TakeDamage(damage int) {
 		if t.Hp <= 0 {
 			delete(globalScenes, t.Index)
 			t.Collider.Destruction()
-	        t.Collider.Update()
+			t.Collider.Update()
 		}
 	}
 }
 
-
 func (t *Scenes) TankIsPassable() bool {
 	if t.Type == Grass {
 		return true
-	}else{
+	} else {
 		return false
 	}
 }
 
 func (t *Scenes) BulletIsPassable() bool {
-	if t.Type == Grass || t.Type == Rivers{
+	if t.Type == Grass || t.Type == Rivers {
 		return true
-	}else{
+	} else {
 		return false
 	}
 }

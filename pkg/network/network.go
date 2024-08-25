@@ -35,8 +35,8 @@ func RegisterServer(key string, manager types.NetworkManager) {
 }
 
 func init() {
-	tankbattle.RegisterInit(Init, 4)
-	tankbattle.RegisterUpdate(Update, 4)
+	tankbattle.RegisterInit(Init, 40)
+	tankbattle.RegisterUpdate(Update, 40)
 }
 
 func Init() (err error) {

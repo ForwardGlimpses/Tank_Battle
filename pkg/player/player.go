@@ -36,8 +36,8 @@ type Action struct {
 }
 
 func init() {
-	tankbattle.RegisterInit(Init, 3)
-	tankbattle.RegisterUpdate(Update, 2)
+	tankbattle.RegisterInit(Init, 30)
+	tankbattle.RegisterUpdate(Update, 20)
 }
 
 var globalPlayer = make(map[string]*Player)

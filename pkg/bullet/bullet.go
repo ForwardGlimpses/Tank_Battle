@@ -1,7 +1,6 @@
 package bullet
 
 import (
-
 	"github.com/ForwardGlimpses/Tank_Battle/assets/bullet"
 	"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
@@ -23,8 +22,8 @@ type Bullet struct {
 }
 
 func init() {
-	tankbattle.RegisterUpdate(Update, 3)
-	tankbattle.RegisterDraw(Draw, 3)
+	tankbattle.RegisterUpdate(Update, 30)
+	tankbattle.RegisterDraw(Draw, 30)
 }
 
 func (b *Bullet) Update() {
@@ -39,11 +38,7 @@ func (b *Bullet) Update() {
 			if t, ok := obj.Data.(types.TakeDamage); ok {
 				if t.GetCamp() != b.Camp {
 					t.TakeDamage(b.Damage)
-					if tt, ok := obj.Data.(types.Obstacle); ok {
-						if !tt.BulletIsPassable() {
-							flag = false
-						}
-					}
+					flag = false
 				}
 			}
 
