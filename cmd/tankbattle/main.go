@@ -4,6 +4,7 @@ import (
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
 	"github.com/hajimehoshi/ebiten/v2"
 	"log"
+	_"github.com/ForwardGlimpses/Tank_Battle/pkg/network/protocol/http"
 	_"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
 	_"github.com/ForwardGlimpses/Tank_Battle/pkg/bullet"
 	_"github.com/ForwardGlimpses/Tank_Battle/pkg/player"

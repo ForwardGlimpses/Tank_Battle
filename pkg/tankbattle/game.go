@@ -1,70 +1,62 @@
 package tankbattle
 
 import (
-	"sort"
+	//"sort"
 
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-var InitList []Initfunc
-var UpdateList []Updatefunc
-var DrawList []Drawfunc
+var initList []func() error 
+var initPriorities []int
 
-type Initfunc struct {
-	function func() error
-	priority int
+var updateList []func()
+var updatePriorities []int
+
+var drawList []func(screen *ebiten.Image)
+var drawPriorities []int
+
+func RegisterInit(f func() error, priority int) {
+	initList = append(initList, f)
+	initPriorities = append(initPriorities, priority)
+	sortFuncsByPriority(initList,initPriorities)
 }
 
-type Updatefunc struct {
-	function func()
-	priority int
+func RegisterUpdate(f func(), priority int) {
+	updateList = append(updateList, f)
+	updatePriorities = append(updatePriorities, priority)
+	sortFuncsByPriority(updateList,updatePriorities)
 }
 
-type Drawfunc struct {
-	function func(screen *ebiten.Image)
-	priority int
+func RegisterDraw(f func(screen *ebiten.Image), priority int) {
+	drawList = append(drawList, f)
+	drawPriorities = append(drawPriorities, priority)
+	sortFuncsByPriority(drawList,drawPriorities)
 }
 
-func RegisterInit(a func() error, b int) {
-	InitList = append(InitList, Initfunc{
-		function: a,
-		priority: b,
-	})
-	sort.Slice(InitList, func(i int, j int) bool {
-		return InitList[i].priority < InitList[j].priority
-	})
-	//fmt.Println("Init")
+func sortFuncsByPriority[T any](funcs []T, priorities []int) {
+	for i := 1; i < len(priorities); i++ {
+		keyFunc := funcs[i]
+		keyPriority := priorities[i]
+		j := i - 1
+
+		for j >= 0 && priorities[j] >= keyPriority {
+			funcs[j+1] = funcs[j]
+			priorities[j+1] = priorities[j]
+			j = j - 1
+		}
+		funcs[j+1] = keyFunc
+		priorities[j+1] = keyPriority
+	}
 }
 
-func RegisterUpdate(a func(), b int) {
-	UpdateList = append(UpdateList, Updatefunc{
-		function: a,
-		priority: b,
-	})
-	sort.Slice(UpdateList, func(i int, j int) bool {
-		return UpdateList[i].priority < UpdateList[j].priority
-	})
-	//fmt.Println("Update")
-}
-
-func RegisterDraw(a func(screen *ebiten.Image), b int) {
-	DrawList = append(DrawList, Drawfunc{
-		function: a,
-		priority: b,
-	})
-	sort.Slice(DrawList, func(i int, j int) bool {
-		return DrawList[i].priority < DrawList[j].priority
-	})
-	//fmt.Println("Draw")
-}
 
 type Game struct {
 }
 
 func NewGame() (*Game, error) {
-	for _, f := range InitList {
-		if err := f.function(); err != nil {
+	for _, f := range initList {
+		if err := f(); err != nil {
 			return nil, err
 		}
 	}
@@ -78,8 +70,8 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 
 // Update updates the current game state.
 func (g *Game) Update() error {
-	for _, f := range UpdateList {
-		f.function()
+	for _, f := range updateList {
+		f()
 	}
 
 	return nil
@@ -87,7 +79,7 @@ func (g *Game) Update() error {
 
 // Draw draws the current game to the given screen.
 func (g *Game) Draw(screen *ebiten.Image) {
-	for _, f := range DrawList {
-		f.function(screen)
+	for _, f := range drawList {
+		f(screen)
 	}
 }
