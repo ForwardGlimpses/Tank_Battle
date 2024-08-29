@@ -75,7 +75,12 @@ func Draw(screen *ebiten.Image) {
 }
 
 func (t *Scenes) GetCamp() string {
-	return ""
+	if t.Type == Grass || t.Type == Rivers {
+		return "bulletIsPassable"
+	}else{
+		return ""
+	}
+	
 }
 
 func (t *Scenes) TakeDamage(damage int) {

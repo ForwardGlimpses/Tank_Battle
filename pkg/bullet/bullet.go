@@ -38,7 +38,10 @@ func (b *Bullet) Update() {
 			if t, ok := obj.Data.(types.TakeDamage); ok {
 				if t.GetCamp() != b.Camp {
 					t.TakeDamage(b.Damage)
-					flag = false
+					if t.GetCamp() != "bulletIsPassable" {
+						flag = false
+					}
+
 				}
 			}
 

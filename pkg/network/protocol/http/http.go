@@ -17,40 +17,42 @@ func init() {
 type factory struct{}
 
 var (
-	send    = make(chan []byte, 10)
-	receive = make(chan []byte, 10)
+	sendQueue    []byte
+	send         = make(chan []byte, 10)
+	receive      = make(chan []byte, 10)
 )
 
-// 服务器端处理逻辑
 func (a *factory) Server(ip string, port int) (types.SendChan, types.ReceiveChan, error) {
 	mux := http.NewServeMux()
 
-	// 处理接收数据的 HTTP 请求
+	// 处理接收数据的 HTTP 请求（POST）
 	mux.HandleFunc("/receive", func(w http.ResponseWriter, r *http.Request) {
-        if r.Method == http.MethodPost {
-            data, err := io.ReadAll(r.Body)
-            if err != nil {
-                http.Error(w, "Read error", http.StatusInternalServerError)
-                return
-            }
-            select {
-            case receive <- data:
-                w.WriteHeader(http.StatusOK)
-            default:
-                http.Error(w, "Receive channel is full", http.StatusInternalServerError)
-            }
-        } else if r.Method == http.MethodGet {
-            select {
-            case data := <-receive:
-                w.Write(data)
-            default:
-                w.WriteHeader(http.StatusNoContent)
-            }
-        } else {
-            http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-        }
-    })
-    
+		if r.Method == http.MethodPost {
+			data, err := io.ReadAll(r.Body)
+			if err != nil {
+				http.Error(w, "Read error", http.StatusInternalServerError)
+				return
+			}
+			receive <- data
+			w.WriteHeader(http.StatusOK)
+		} else {
+			http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		}
+	})
+
+	// 处理客户端获取数据的 HTTP 请求（GET）
+	mux.HandleFunc("/getdata", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			if len(sendQueue) > 0 {
+				w.Write(sendQueue)
+				sendQueue = nil
+			} else {
+				w.WriteHeader(http.StatusNoContent)
+			}
+		} else {
+			http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		}
+	})
 
 	server := &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", ip, port),
@@ -65,17 +67,13 @@ func (a *factory) Server(ip string, port int) (types.SendChan, types.ReceiveChan
 
 	go func() {
 		for data := range send {
-			_, err := http.Post(fmt.Sprintf("http://%s:%d/receive", ip, port), "application/octet-stream", bytes.NewReader(data))
-			if err != nil {
-				fmt.Println("Send error: ", err)
-			}
+			sendQueue = data
 		}
 	}()
 
 	return send, receive, nil
 }
 
-// 客户端处理逻辑
 func (a *factory) Client(ip string, port int) (types.SendChan, types.ReceiveChan, error) {
 	client := &http.Client{}
 
@@ -90,22 +88,26 @@ func (a *factory) Client(ip string, port int) (types.SendChan, types.ReceiveChan
 
 	go func() {
 		for {
-			resp, err := client.Get(fmt.Sprintf("http://%s:%d/receive", ip, port))
+			resp, err := client.Get(fmt.Sprintf("http://%s:%d/getdata", ip, port))
 			if err != nil {
 				fmt.Println("Client read error: ", err)
 				continue
 			}
+
 			if resp.StatusCode == http.StatusNoContent {
 				resp.Body.Close()
 				continue
 			}
+
 			data, err := io.ReadAll(resp.Body)
 			resp.Body.Close() // 确保关闭响应体
 			if err != nil {
 				fmt.Println("Client read error: ", err)
 				continue
 			}
-			receive <- data
+			if len(data) > 0 {
+				receive <- data
+			}
 		}
 	}()
 
