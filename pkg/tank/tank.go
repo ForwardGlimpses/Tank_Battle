@@ -134,6 +134,7 @@ func Update() {
 	}
 
 	for _, tank := range GlobalTanks {
+		tank.weapon.Cooling()
 		if tank.Attack {
 			tank.Fight()
 			//fmt.Println("攻击----")

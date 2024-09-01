@@ -9,47 +9,44 @@ import (
 var (
 	Weapons = make(map[int]Weapon)
 )
+
 type Weapon interface {
-	Fight(position vector2.Vector, direction direction.Direction,camp string)
-	IsCooling() bool
+	Fight(position vector2.Vector, direction direction.Direction, camp string)
+	Cooling()
 }
 
 // 当前武器是一个抽象概念，不需要实际的图片
 type DefaultWeapon struct {
-	Damage int
-	Cooling int
+	Damage       int
 	CoolingCount int
 }
 
-func (d *DefaultWeapon) Fight(position vector2.Vector, direction direction.Direction,camp string) {
-	if d.IsCooling(){
+func (d *DefaultWeapon) Fight(position vector2.Vector, direction direction.Direction, camp string) {
+	// TODO: 客户端冷却数值不准确
+	if d.CoolingCount > 0 {
 		return
 	}
+
 	opt := &bullet.CreateOption{
 		Position:  position,
 		Direction: direction,
-		Camp: camp,
+		Camp:      camp,
 	}
 	bullet.Create(opt)
-	d.CoolingCount = d.Cooling
+	d.CoolingCount = 60
 }
 
-func (d *DefaultWeapon) IsCooling() bool {
-	if d.CoolingCount > 0 {
-		d.CoolingCount --
-		return true
-	}
-	return false
+func (d *DefaultWeapon) Cooling() {
+	d.CoolingCount--
 }
 
 func GetWeapon(Type int) Weapon {
-    return Weapons[Type]
+	return Weapons[Type]
 }
 
 func init() {
-    Weapons[0] = &DefaultWeapon{
-		Damage: 50,
-		Cooling: 10,
+	Weapons[0] = &DefaultWeapon{
+		Damage:       50,
 		CoolingCount: 0,
 	}
 }
