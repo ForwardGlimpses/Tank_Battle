@@ -58,7 +58,7 @@ func New(camp string, tankx int, tanky int) *Tank {
 	tank := &Tank{
 		Collider: collision.NewCollider(float64(position.X), float64(position.Y), float64(tankassets.PlayerImage.Bounds().Dx()), float64(tankassets.PlayerImage.Bounds().Dy())),
 		Hp:       100,
-		weapon:   &weapon.DefaultWeapon{},
+		weapon:   weapon.Weapons[0],
 		Image:    tankassets.TankImage[camp],
 		Camp:     camp,
 		Index:    TankIndex,

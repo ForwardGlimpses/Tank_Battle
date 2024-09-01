@@ -9,7 +9,7 @@ import (
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/direction"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/ebitenextend"
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	//"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 type Player struct {
@@ -111,5 +111,5 @@ func (p *Player) GetDirection() {
 }
 
 func (p *Player) Attack() {
-	p.Action.Attack = inpututil.IsKeyJustPressed(p.Operate.Attack)
+	p.Action.Attack = ebiten.IsKeyPressed(p.Operate.Attack)
 }
