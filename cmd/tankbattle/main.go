@@ -4,12 +4,14 @@ import (
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
 	"github.com/hajimehoshi/ebiten/v2"
 	"log"
+	_"github.com/ForwardGlimpses/Tank_Battle/pkg/network/protocol/http"
 	_"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
 	_"github.com/ForwardGlimpses/Tank_Battle/pkg/bullet"
 	_"github.com/ForwardGlimpses/Tank_Battle/pkg/player"
 	_"github.com/ForwardGlimpses/Tank_Battle/pkg/enemy"
 	_"github.com/ForwardGlimpses/Tank_Battle/pkg/configmanager"
 	_"github.com/ForwardGlimpses/Tank_Battle/pkg/scenes"
+	_"github.com/ForwardGlimpses/Tank_Battle/pkg/network/protocol/tcp"
 )
 
 func main() {

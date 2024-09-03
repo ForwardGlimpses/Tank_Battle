@@ -20,23 +20,22 @@ const (
 
 type Scenes struct {
 	Collider *collision.Collider
-	Image *ebiten.Image
-	index int
-	Type  ScenesType
-	Hp int
+	Image    *ebiten.Image
+	Index    int
+	Type     ScenesType
+	Hp       int
 }
 
 var (
 	globalScenes     = make(map[int]*Scenes)
-	scenesImages     = []*ebiten.Image{nil, scenes.BrickImage, scenes.SteelImage, scenes.GrassImage,scenes.Rivers_Image}
+	scenesImages     = []*ebiten.Image{nil, scenes.BrickImage, scenes.SteelImage, scenes.GrassImage, scenes.Rivers_Image}
 	Key          int = 0
 )
 
 func init() {
-	tankbattle.RegisterInit(Init,2)
-	tankbattle.RegisterDraw(Draw,2)
+	tankbattle.RegisterInit(Init, 20)
+	tankbattle.RegisterDraw(Draw, 20)
 }
-
 
 func Init() error {
 	for y, line := range defMap {
@@ -45,7 +44,7 @@ func Init() error {
 			if t != Space {
 				ins := New(position, t)
 				ins.Collider.Data = ins
-				globalScenes[ins.index] = ins
+				globalScenes[ins.Index] = ins
 			}
 		}
 	}
@@ -57,12 +56,11 @@ func New(position vector2.Vector, t ScenesType) *Scenes {
 	return &Scenes{
 		Collider: collision.NewCollider(position.X, position.Y, float64(scenesImages[t].Bounds().Dy()), float64(scenesImages[t].Bounds().Dx())),
 		Image:    scenesImages[t],
-		index:    Key,
+		Index:    Key,
 		Type:     t,
 		Hp:       100,
 	}
 }
-
 
 func (s *Scenes) Draw(screen *ebiten.Image) {
 	opt := &ebiten.DrawImageOptions{}
@@ -77,33 +75,37 @@ func Draw(screen *ebiten.Image) {
 }
 
 func (t *Scenes) GetCamp() string {
-	return ""
+	if t.Type == Grass || t.Type == Rivers {
+		return "bulletIsPassable"
+	}else{
+		return ""
+	}
+	
 }
 
 func (t *Scenes) TakeDamage(damage int) {
 	if t.Type == Brick {
 		t.Hp -= damage
 		if t.Hp <= 0 {
-			delete(globalScenes, t.index)
+			delete(globalScenes, t.Index)
 			t.Collider.Destruction()
-	        t.Collider.Update()
+			t.Collider.Update()
 		}
 	}
 }
 
-
 func (t *Scenes) TankIsPassable() bool {
 	if t.Type == Grass {
 		return true
-	}else{
+	} else {
 		return false
 	}
 }
 
 func (t *Scenes) BulletIsPassable() bool {
-	if t.Type == Grass || t.Type == Rivers{
+	if t.Type == Grass || t.Type == Rivers {
 		return true
-	}else{
+	} else {
 		return false
 	}
 }

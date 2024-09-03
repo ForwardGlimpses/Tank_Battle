@@ -6,20 +6,47 @@ import (
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/vector2"
 )
 
+var (
+	Weapons = make(map[int]Weapon)
+)
+
 type Weapon interface {
-	Fight(position vector2.Vector, direction direction.Direction,camp string)
+	Fight(position vector2.Vector, direction direction.Direction, camp string)
+	Cooling()
 }
 
 // 当前武器是一个抽象概念，不需要实际的图片
 type DefaultWeapon struct {
-	Damage int
+	Damage       int
+	CoolingCount int
 }
 
-func (D *DefaultWeapon) Fight(position vector2.Vector, direction direction.Direction,camp string) {
+func (d *DefaultWeapon) Fight(position vector2.Vector, direction direction.Direction, camp string) {
+	// TODO: 客户端冷却数值不准确
+	if d.CoolingCount > 0 {
+		return
+	}
+
 	opt := &bullet.CreateOption{
 		Position:  position,
 		Direction: direction,
-		Camp: camp,
+		Camp:      camp,
 	}
 	bullet.Create(opt)
+	d.CoolingCount = 60
+}
+
+func (d *DefaultWeapon) Cooling() {
+	d.CoolingCount--
+}
+
+func GetWeapon(Type int) Weapon {
+	return Weapons[Type]
+}
+
+func init() {
+	Weapons[0] = &DefaultWeapon{
+		Damage:       50,
+		CoolingCount: 0,
+	}
 }

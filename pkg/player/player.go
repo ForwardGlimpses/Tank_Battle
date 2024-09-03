@@ -1,19 +1,24 @@
 package player
 
 import (
+	"fmt"
+
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/direction"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/ebitenextend"
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	//"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 type Player struct {
-	Tank    *tank.Tank
-	Index   int
-	Operate Operate
+	TankIndex    int
+	Index        string
+	Operate      Operate
+	Action       Action
+	NetworkCount int
+	Local        bool
 }
 
 type Operate struct {
@@ -24,28 +29,37 @@ type Operate struct {
 	Attack ebiten.Key
 }
 
-func init() {
-	tankbattle.RegisterInit(Init, 3)
-	tankbattle.RegisterUpdate(Update, 2)
+type Action struct {
+	Direction direction.Direction
+	Attack    bool
+	Move      bool
 }
 
-var globalPlayer = make(map[int]*Player)
+func init() {
+	tankbattle.RegisterInit(Init, 30)
+	tankbattle.RegisterUpdate(Update, 20)
+}
 
-func Init() error {
+var globalPlayer = make(map[string]*Player)
+
+func Init() (err error) {
 	for _, cfg := range config.DefaultPlayers {
 		player := New(cfg)
 		globalPlayer[player.Index] = player
 	}
-	return nil
+	return
 }
 
-var index = 0
+var (
+	index = 0
+)
 
 func New(cfg config.Player) *Player {
 	index++
 	return &Player{
-		Tank:  tank.New("Player", (index+2)*100, (index+2)*100),
-		Index: index,
+		TankIndex: tank.New("Player", 100, 100).Index,
+		Index:     fmt.Sprintf("%s%d", Uuid, index),
+		Local:     true,
 		Operate: Operate{
 			Up:     ebitenextend.KeyNameToKeyCode(cfg.Up),
 			Down:   ebitenextend.KeyNameToKeyCode(cfg.Down),
@@ -56,52 +70,46 @@ func New(cfg config.Player) *Player {
 	}
 }
 
-func Update(){
+func Update() {
 	for _, player := range globalPlayer {
 		player.Update()
 	}
 }
 
 func (p *Player) Update() {
-	if p.Tank.Hp <= 0 {
-		p.Reset()
+	if p.Local {
+		p.GetDirection()
+		p.Attack()
 	}
-
-	direction, pressed := p.GetDirection()
-	if pressed {
-		p.Tank.Direction = direction
-		p.Tank.Move = true
-	} else {
-		p.Tank.Move = false
-	}
-	if p.Attack() {
-		p.Tank.Attack = true
-	}
+	t := tank.Get(p.TankIndex)
+	t.Move = p.Action.Move
+	t.Attack = p.Action.Attack
+	t.Direction = p.Action.Direction
+	//fmt.Println("-----------")
 }
 
-
-func (p *Player) Reset() {
-	p.Tank = tank.New("Player", (p.Index+2)*100, (p.Index+2)*100)
-}
-
-func (p *Player) GetDirection() (direction.Direction, bool) {
+func (p *Player) GetDirection() {
 	op := p.Operate
 
+	p.Action.Move = false
 	if ebiten.IsKeyPressed(op.Up) {
-		return direction.Up, true
+		p.Action.Direction = direction.Up
+		p.Action.Move = true
 	}
 	if ebiten.IsKeyPressed(op.Down) {
-		return direction.Down, true
+		p.Action.Direction = direction.Down
+		p.Action.Move = true
 	}
 	if ebiten.IsKeyPressed(op.Left) {
-		return direction.Left, true
+		p.Action.Direction = direction.Left
+		p.Action.Move = true
 	}
 	if ebiten.IsKeyPressed(op.Right) {
-		return direction.Right, true
+		p.Action.Direction = direction.Right
+		p.Action.Move = true
 	}
-	return 0, false
 }
 
-func (p *Player) Attack() bool {
-	return inpututil.IsKeyJustPressed(p.Operate.Attack)
+func (p *Player) Attack() {
+	p.Action.Attack = ebiten.IsKeyPressed(p.Operate.Attack)
 }

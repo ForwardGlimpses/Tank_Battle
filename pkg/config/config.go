@@ -27,13 +27,26 @@ var (
 			Attack: "J",
 		},
 	}
+	DefaultNetwork = &Network{
+		Type: "server",
+        Protocol: "tcp",
+        IP: "127.0.0.1",
+        Port: 8080,
+	}
 )
 
 type Config struct {
 	Window  Window
 	Players []Player
-	//Network Network
-	Plat string
+	Network Network
+	Plat    string
+}
+
+type Network struct {
+	Type     string // client or server or none
+	Protocol string
+	IP       string
+	Port     int
 }
 
 type Player struct {

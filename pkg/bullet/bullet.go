@@ -1,7 +1,6 @@
 package bullet
 
 import (
-
 	"github.com/ForwardGlimpses/Tank_Battle/assets/bullet"
 	"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
@@ -23,8 +22,8 @@ type Bullet struct {
 }
 
 func init() {
-	tankbattle.RegisterUpdate(Update, 3)
-	tankbattle.RegisterDraw(Draw, 3)
+	tankbattle.RegisterUpdate(Update, 30)
+	tankbattle.RegisterDraw(Draw, 30)
 }
 
 func (b *Bullet) Update() {
@@ -39,11 +38,10 @@ func (b *Bullet) Update() {
 			if t, ok := obj.Data.(types.TakeDamage); ok {
 				if t.GetCamp() != b.Camp {
 					t.TakeDamage(b.Damage)
-					if tt, ok := obj.Data.(types.Obstacle); ok {
-						if !tt.BulletIsPassable() {
-							flag = false
-						}
+					if t.GetCamp() != "bulletIsPassable" {
+						flag = false
 					}
+
 				}
 			}
 
@@ -55,7 +53,6 @@ func (b *Bullet) Update() {
 		b.Collider.Destruction()
 		delete(globalBullets, b.Index)
 	}
-
 	b.Collider.Update()
 }
 
@@ -91,12 +88,12 @@ var index = 0
 
 func Create(opt *CreateOption) {
 	index += 1
-	Bullx, Bully := bullet.BulletImage.Bounds().Dx(), bullet.BulletImage.Bounds().Dy()
+	Bullx, Bully := bullet.BulletImage[opt.Camp].Bounds().Dx(), bullet.BulletImage[opt.Camp].Bounds().Dy()
 	bullet := &Bullet{
 		Collider:  collision.NewCollider(opt.Position.X+float64(tank.EnemyImage.Bounds().Dx())/2, opt.Position.Y+float64(tank.EnemyImage.Bounds().Dy())/2, float64(Bullx), float64(Bully)),
 		Direction: opt.Direction,
 		Speed:     opt.Direction.DirectionVector2().MulScale(step),
-		Image:     bullet.BulletImage,
+		Image:     bullet.BulletImage[opt.Camp],
 		Index:     index,
 		Damage:    50,
 		Camp:      opt.Camp,

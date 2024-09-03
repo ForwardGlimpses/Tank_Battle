@@ -1,69 +1,51 @@
 package tankbattle
 
 import (
-	"sort"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-var InitList []Initfunc
-var UpdateList []Updatefunc
-var DrawList []Drawfunc
+var initList []func() error
+var initPriorities []int
 
-type Initfunc struct {
-	function func() error
-	priority int
+var updateList []func()
+var updatePriorities []int
+
+var drawList []func(screen *ebiten.Image)
+var drawPriorities []int
+
+func RegisterInit(f func() error, priority int) {
+	insertSort(&initList, &initPriorities, f, priority)
 }
 
-type Updatefunc struct {
-	function func()
-	priority int
+func RegisterUpdate(f func(), priority int) {
+	insertSort(&updateList, &updatePriorities, f, priority)
 }
 
-type Drawfunc struct {
-	function func(screen *ebiten.Image)
-	priority int
+func RegisterDraw(f func(screen *ebiten.Image), priority int) {
+	insertSort(&drawList, &drawPriorities, f, priority)
 }
 
-func RegisterInit(a func() error, b int) {
-	InitList = append(InitList, Initfunc{
-		function: a,
-		priority: b,
-	})
-	sort.Slice(InitList, func(i int, j int) bool {
-		return InitList[i].priority < InitList[j].priority
-	})
-	//fmt.Println("Init")
-}
+func insertSort[T any](funcs *[]T, priorities *[]int, f T, priority int) {
+	i := len(*priorities)
+	for i > 0 && (*priorities)[i-1] > priority {
+		i--
+	}
+	*funcs = append(*funcs, f)
+	copy((*funcs)[i+1:], (*funcs)[i:])
+	(*funcs)[i] = f
 
-func RegisterUpdate(a func(), b int) {
-	UpdateList = append(UpdateList, Updatefunc{
-		function: a,
-		priority: b,
-	})
-	sort.Slice(UpdateList, func(i int, j int) bool {
-		return UpdateList[i].priority < UpdateList[j].priority
-	})
-	//fmt.Println("Update")
-}
-
-func RegisterDraw(a func(screen *ebiten.Image), b int) {
-	DrawList = append(DrawList, Drawfunc{
-		function: a,
-		priority: b,
-	})
-	sort.Slice(DrawList, func(i int, j int) bool {
-		return DrawList[i].priority < DrawList[j].priority
-	})
-	//fmt.Println("Draw")
+	*priorities = append(*priorities, priority)
+	copy((*priorities)[i+1:], (*priorities)[i:])
+	(*priorities)[i] = priority
 }
 
 type Game struct {
 }
 
 func NewGame() (*Game, error) {
-	for _, f := range InitList {
-		if err := f.function(); err != nil {
+	for _, f := range initList {
+		if err := f(); err != nil {
 			return nil, err
 		}
 	}
@@ -77,8 +59,8 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 
 // Update updates the current game state.
 func (g *Game) Update() error {
-	for _, f := range UpdateList {
-		f.function()
+	for _, f := range updateList {
+		f()
 	}
 
 	return nil
@@ -86,7 +68,7 @@ func (g *Game) Update() error {
 
 // Draw draws the current game to the given screen.
 func (g *Game) Draw(screen *ebiten.Image) {
-	for _, f := range DrawList {
-		f.function(screen)
+	for _, f := range drawList {
+		f(screen)
 	}
 }

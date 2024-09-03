@@ -2,11 +2,15 @@ package tank
 
 import (
 	"container/list"
+	//"fmt"
+	//"fmt"
+	//"fmt"
+	//"fmt"
 	"image"
 	_ "image/png"
 	"math"
 
-	"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
+	tankassets "github.com/ForwardGlimpses/Tank_Battle/assets/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/types"
@@ -21,12 +25,16 @@ const (
 	Down
 	Left
 	Right
-	step float64 = 3
+	step        float64 = 3
+	PlayerImage         = 0
+	EnemyImage          = 1
 )
 
 var GlobalTanks = make(map[int]*Tank)
 
-var TankIndex = 0
+var (
+	TankIndex = 0
+)
 
 type Tank struct {
 	Hp        int
@@ -47,12 +55,11 @@ type Position struct {
 
 func New(camp string, tankx int, tanky int) *Tank {
 	position := TankBorn(tankx, tanky)
-
 	tank := &Tank{
-		Collider: collision.NewCollider(float64(position.X), float64(position.Y), float64(tank.PlayerImage.Bounds().Dx()), float64(tank.PlayerImage.Bounds().Dy())),
+		Collider: collision.NewCollider(float64(position.X), float64(position.Y), float64(tankassets.PlayerImage.Bounds().Dx()), float64(tankassets.PlayerImage.Bounds().Dy())),
 		Hp:       100,
-		weapon:   &weapon.DefaultWeapon{},
-		Image:    tank.TankImage[camp],
+		weapon:   weapon.Weapons[0],
+		Image:    tankassets.TankImage[camp],
 		Camp:     camp,
 		Index:    TankIndex,
 	}
@@ -62,9 +69,13 @@ func New(camp string, tankx int, tanky int) *Tank {
 	return tank
 }
 
+func Get(index int) *Tank {
+	return GlobalTanks[index]
+}
+
 func init() {
-	tankbattle.RegisterDraw(Draw, 1)
-	tankbattle.RegisterUpdate(Update, 3)
+	tankbattle.RegisterDraw(Draw, 10)
+	tankbattle.RegisterUpdate(Update, 30)
 }
 
 func (t *Tank) Update(direction direction.Direction) {
@@ -95,26 +106,41 @@ func (t *Tank) SetPosition(position Position) {
 
 func Update() {
 	var Destroyed []Tank
+	cfg := config.C.Network
 	for _, tank := range GlobalTanks {
 		if tank.Hp <= 0 {
 			Destroyed = append(Destroyed, *tank)
 		} else if tank.Move {
 			tank.Update(tank.Direction)
 		}
+		//fmt.Println("下标：",tank.Index,"坐标: ",tank.Collider.Position)
 	}
+	//fmt.Println("--------------------------------------")
 
 	for _, tank := range Destroyed {
-		tank.Collider.Destruction()
-		delete(GlobalTanks, tank.Index)
-	}
-
-	for _, tank := range GlobalTanks {
-		if tank.Attack {
-			tank.Fight()
-			tank.Attack = false
+		if tank.Camp == "Player" {
+			if cfg.Type == "server" {
+				d := TankBorn((tank.Index+2)*100, (tank.Index+1)*100)
+				GlobalTanks[tank.Index].Collider.Position.X = float64(d.X)
+				GlobalTanks[tank.Index].Collider.Position.Y = float64(d.Y)
+				GlobalTanks[tank.Index].Collider.Update()
+				GlobalTanks[tank.Index].Hp = 100
+				//fmt.Println("新坐标：",d)
+			}
+		} else {
+			tank.Collider.Destruction()
+			delete(GlobalTanks, tank.Index)
 		}
 	}
 
+	for _, tank := range GlobalTanks {
+		tank.weapon.Cooling()
+		if tank.Attack {
+			tank.Fight()
+			//fmt.Println("攻击----")
+			tank.Attack = false
+		}
+	}
 }
 
 func (t *Tank) Fight() {
@@ -125,21 +151,18 @@ func TankBorn(dx, dy int) Position {
 
 	queue := list.New()
 	queue.PushBack(Position{X: dx, Y: dy})
-
 	SizeX, SizeY := config.GetWindowSize()
-
 	visited := make([][]bool, SizeX)
 	for i := range visited {
 		visited[i] = make([]bool, SizeY)
 	}
-	visited[dx][dy] = true
 
+	visited[dx][dy] = true
 	directions := [][]int{{-20, 0}, {20, 0}, {0, -20}, {0, 20}}
 	for queue.Len() > 0 {
 		e := queue.Front()
 		queue.Remove(e)
 		pos := e.Value.(Position)
-
 		for _, dir := range directions {
 			newX, newY := pos.X+dir[0], pos.Y+dir[1]
 			if newX > 0 && newX < SizeX && newY > 0 && newY < SizeY {
@@ -147,7 +170,7 @@ func TankBorn(dx, dy int) Position {
 					continue
 				}
 				visited[newX][newY] = true
-				t := collision.NewCollider(float64(dx), float64(dy), float64(tank.PlayerImage.Bounds().Dx()), float64(tank.PlayerImage.Bounds().Dy()))
+				t := collision.NewCollider(float64(dx), float64(dy), float64(tankassets.PlayerImage.Bounds().Dx()), float64(tankassets.PlayerImage.Bounds().Dy()))
 				if check := t.Check(float64(newX-dx), float64(newY-dy)); check != nil {
 					queue.PushBack(Position{X: newX, Y: newY})
 				} else {
@@ -159,7 +182,6 @@ func TankBorn(dx, dy int) Position {
 	return Position{dx, dy}
 }
 
-
 func (t *Tank) Draw(screen *ebiten.Image) {
 	opt := &ebiten.DrawImageOptions{}
 	tranX := float64(t.Image.Bounds().Dx()) / 2
@@ -168,7 +190,6 @@ func (t *Tank) Draw(screen *ebiten.Image) {
 	opt.GeoM.Rotate(t.Direction.Theta() * 2 * math.Pi / 360)
 	opt.GeoM.Translate(t.Collider.Position.X+tranX, t.Collider.Position.Y+tranY)
 	screen.DrawImage(ebiten.NewImageFromImage(t.Image), opt)
-
 }
 
 func Draw(screen *ebiten.Image) {

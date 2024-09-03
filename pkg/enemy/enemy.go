@@ -3,18 +3,12 @@ package enemy
 import (
 	"math/rand"
 
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/direction"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
-)
-
-const (
-	Up int = iota
-	Down
-	Left
-	Right
 )
 
 type Enemy struct {
@@ -34,26 +28,26 @@ var (
 )
 
 func init() {
-	tankbattle.RegisterUpdate(Update, 1)
+	tankbattle.RegisterUpdate(Update, 10)
 }
 
 func Update() {
 
 	if GetCreatEnemy() && Enemynumers < Limit {
-		dx:= (Enemynumers+1)*100
-		dy:= (Enemynumers+1)*100
-		t:=tank.TankBorn(dx,dy)
+		dx := 100
+		dy := 100
+		t := tank.TankBorn(dx, dy)
 		if t.X != dx || t.Y != dy {
 			enemy := &Enemy{
 				Attack:         false,
 				MoveDuration:   0,
 				AttackDuration: 0,
 				Index:          index,
-				Direction:      direction.Direction(Up),
+				Direction:      direction.Up,
 				Tank:           tank.New("NPC", t.X, t.Y),
 			}
-			Enemynumers ++
-			index ++
+			Enemynumers++
+			index++
 			globalEnemy[enemy.Index] = enemy
 		}
 	}
@@ -61,7 +55,7 @@ func Update() {
 	for _, enemy := range globalEnemy {
 		if enemy.Tank.Hp <= 0 {
 			Destroyed = append(Destroyed, *enemy)
-		}else{
+		} else {
 			enemy.Update()
 		}
 	}
@@ -69,7 +63,6 @@ func Update() {
 		delete(globalEnemy, enemy.Index)
 		Enemynumers--
 	}
-
 }
 
 func (a *Enemy) Update() {
@@ -126,5 +119,9 @@ func (a *Enemy) IsMove() {
 }
 
 func GetCreatEnemy() bool {
+	cfg := config.C.Network
+	if cfg.Type == "client" {
+		return false
+	}
 	return inpututil.IsKeyJustPressed(ebiten.KeyQ)
 }
