@@ -1,13 +1,11 @@
 package tankbattle
 
 import (
-	//"sort"
-
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-var initList []func() error 
+var initList []func() error
 var initPriorities []int
 
 var updateList []func()
@@ -17,39 +15,30 @@ var drawList []func(screen *ebiten.Image)
 var drawPriorities []int
 
 func RegisterInit(f func() error, priority int) {
-	initList = append(initList, f)
-	initPriorities = append(initPriorities, priority)
-	sortFuncsByPriority(initList,initPriorities)
+	insertSort(&initList, &initPriorities, f, priority)
 }
 
 func RegisterUpdate(f func(), priority int) {
-	updateList = append(updateList, f)
-	updatePriorities = append(updatePriorities, priority)
-	sortFuncsByPriority(updateList,updatePriorities)
+	insertSort(&updateList, &updatePriorities, f, priority)
 }
 
 func RegisterDraw(f func(screen *ebiten.Image), priority int) {
-	drawList = append(drawList, f)
-	drawPriorities = append(drawPriorities, priority)
-	sortFuncsByPriority(drawList,drawPriorities)
+	insertSort(&drawList, &drawPriorities, f, priority)
 }
 
-func sortFuncsByPriority[T any](funcs []T, priorities []int) {
-	for i := 1; i < len(priorities); i++ {
-		keyFunc := funcs[i]
-		keyPriority := priorities[i]
-		j := i - 1
-
-		for j >= 0 && priorities[j] >= keyPriority {
-			funcs[j+1] = funcs[j]
-			priorities[j+1] = priorities[j]
-			j = j - 1
-		}
-		funcs[j+1] = keyFunc
-		priorities[j+1] = keyPriority
+func insertSort[T any](funcs *[]T, priorities *[]int, f T, priority int) {
+	i := len(*priorities)
+	for i > 0 && (*priorities)[i-1] > priority {
+		i--
 	}
-}
+	*funcs = append(*funcs, f)
+	copy((*funcs)[i+1:], (*funcs)[i:])
+	(*funcs)[i] = f
 
+	*priorities = append(*priorities, priority)
+	copy((*priorities)[i+1:], (*priorities)[i:])
+	(*priorities)[i] = priority
+}
 
 type Game struct {
 }
