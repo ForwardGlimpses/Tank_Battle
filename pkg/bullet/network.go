@@ -17,18 +17,15 @@ func init() {
 	network.RegisterServer("bullet", &networkServer{})
 }
 
-// const (
-// 	Weapon int = 0
-// )
-
 type bulletMassage struct {
-	Dx        int
-	Dy        int
-	Direction direction.Direction
-	Speed     vector2.Vector
-	Index     int
-	Damage    int
-	Camp      string
+	Dx          int
+	Dy          int
+	Direction   direction.Direction
+	Speed       vector2.Vector
+	Index       int
+	Damage      int
+	Camp        string
+	PlayerIndex int
 }
 
 type neteworkClient struct{}
@@ -43,19 +40,18 @@ func (a *neteworkClient) Receive(m string) {
 	for _, bulletmassage := range massage {
 		_, ok := globalBullets[bulletmassage.Index]
 		if ok {
-			//globalBullets[bulletmassage.Index].Direction = bulletmassage.Direction
 			globalBullets[bulletmassage.Index].Collider.Position.X = float64(bulletmassage.Dx)
 			globalBullets[bulletmassage.Index].Collider.Position.Y = float64(bulletmassage.Dy)
-			//globalBullets[bulletmassage.Index].Speed = bulletmassage.Speed
 		} else {
 			bullet := &Bullet{
-				Collider:  collision.NewCollider(float64(bulletmassage.Dx), float64(bulletmassage.Dy), float64(bullet.BulletImage[bulletmassage.Camp].Bounds().Dx()), float64(bullet.BulletImage[bulletmassage.Camp].Bounds().Dy())),
-				Direction: bulletmassage.Direction,
-				Image:     bullet.BulletImage[bulletmassage.Camp],
-				Camp:      bulletmassage.Camp,
-				Index:     bulletmassage.Index,
-				Damage:    bulletmassage.Damage,
-				Speed:     bulletmassage.Speed,
+				Collider:    collision.NewCollider(float64(bulletmassage.Dx), float64(bulletmassage.Dy), float64(bullet.BulletImage[bulletmassage.Camp].Bounds().Dx()), float64(bullet.BulletImage[bulletmassage.Camp].Bounds().Dy())),
+				Direction:   bulletmassage.Direction,
+				Image:       bullet.BulletImage[bulletmassage.Camp],
+				Camp:        bulletmassage.Camp,
+				Index:       bulletmassage.Index,
+				Damage:      bulletmassage.Damage,
+				Speed:       bulletmassage.Speed,
+				PlayerIndex: bulletmassage.PlayerIndex,
 			}
 			globalBullets[bullet.Index] = bullet
 		}
@@ -68,13 +64,14 @@ func (a *networkServer) Send() string {
 	massage := []bulletMassage{}
 	for _, bullet := range globalBullets {
 		massage = append(massage, bulletMassage{
-			Index:     bullet.Index,
-			Dx:        int(bullet.Collider.Position.X),
-			Dy:        int(bullet.Collider.Position.Y),
-			Direction: bullet.Direction,
-			Camp:      bullet.Camp,
-			Damage:    bullet.Damage,
-			Speed:     bullet.Speed,
+			Index:       bullet.Index,
+			Dx:          int(bullet.Collider.Position.X),
+			Dy:          int(bullet.Collider.Position.Y),
+			Direction:   bullet.Direction,
+			Camp:        bullet.Camp,
+			Damage:      bullet.Damage,
+			Speed:       bullet.Speed,
+			PlayerIndex: bullet.PlayerIndex,
 		})
 	}
 	date := json.MarshalToString(massage)

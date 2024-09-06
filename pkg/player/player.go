@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/config"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/scorer"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/direction"
@@ -51,14 +52,15 @@ func Init() (err error) {
 }
 
 var (
-	index = 0
+	IndexCount = 0
 )
 
 func New(cfg config.Player) *Player {
-	index++
+	IndexCount++
+	scorer.New(IndexCount)
 	return &Player{
-		TankIndex: tank.New("Player", 100, 100).Index,
-		Index:     fmt.Sprintf("%s%d", Uuid, index),
+		TankIndex: tank.New("Player", 100, 100, IndexCount).Index,
+		Index:     fmt.Sprintf("%s%d", Uuid, IndexCount),
 		Local:     true,
 		Operate: Operate{
 			Up:     ebitenextend.KeyNameToKeyCode(cfg.Up),
@@ -68,6 +70,7 @@ func New(cfg config.Player) *Player {
 			Attack: ebitenextend.KeyNameToKeyCode(cfg.Attack),
 		},
 	}
+
 }
 
 func Update() {
@@ -85,7 +88,6 @@ func (p *Player) Update() {
 	t.Move = p.Action.Move
 	t.Attack = p.Action.Attack
 	t.Direction = p.Action.Direction
-	//fmt.Println("-----------")
 }
 
 func (p *Player) GetDirection() {

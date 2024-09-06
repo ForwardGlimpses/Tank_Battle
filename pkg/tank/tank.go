@@ -37,15 +37,16 @@ var (
 )
 
 type Tank struct {
-	Hp        int
-	Collider  *collision.Collider
-	Direction direction.Direction
-	weapon    weapon.Weapon
-	Image     image.Image
-	Attack    bool
-	Move      bool
-	Camp      string
-	Index     int
+	Hp          int
+	Collider    *collision.Collider
+	Direction   direction.Direction
+	weapon      weapon.Weapon
+	Image       image.Image
+	Attack      bool
+	Move        bool
+	Camp        string
+	Index       int
+	PlayerIndex int
 }
 
 type Position struct {
@@ -53,15 +54,16 @@ type Position struct {
 	Y int
 }
 
-func New(camp string, tankx int, tanky int) *Tank {
+func New(camp string, tankx int, tanky int, playerindex int) *Tank {
 	position := TankBorn(tankx, tanky)
 	tank := &Tank{
-		Collider: collision.NewCollider(float64(position.X), float64(position.Y), float64(tankassets.PlayerImage.Bounds().Dx()), float64(tankassets.PlayerImage.Bounds().Dy())),
-		Hp:       100,
-		weapon:   weapon.Weapons[0],
-		Image:    tankassets.TankImage[camp],
-		Camp:     camp,
-		Index:    TankIndex,
+		Collider:    collision.NewCollider(float64(position.X), float64(position.Y), float64(tankassets.PlayerImage.Bounds().Dx()), float64(tankassets.PlayerImage.Bounds().Dy())),
+		Hp:          100,
+		weapon:      weapon.Weapons[0],
+		Image:       tankassets.TankImage[camp],
+		Camp:        camp,
+		Index:       TankIndex,
+		PlayerIndex: playerindex,
 	}
 	tank.Collider.Data = tank
 	GlobalTanks[tank.Index] = tank
@@ -113,9 +115,7 @@ func Update() {
 		} else if tank.Move {
 			tank.Update(tank.Direction)
 		}
-		//fmt.Println("下标：",tank.Index,"坐标: ",tank.Collider.Position)
 	}
-	//fmt.Println("--------------------------------------")
 
 	for _, tank := range Destroyed {
 		if tank.Camp == "Player" {
@@ -125,7 +125,6 @@ func Update() {
 				GlobalTanks[tank.Index].Collider.Position.Y = float64(d.Y)
 				GlobalTanks[tank.Index].Collider.Update()
 				GlobalTanks[tank.Index].Hp = 100
-				//fmt.Println("新坐标：",d)
 			}
 		} else {
 			tank.Collider.Destruction()
@@ -144,7 +143,7 @@ func Update() {
 }
 
 func (t *Tank) Fight() {
-	t.weapon.Fight(t.Collider.Position, t.Direction, t.Camp)
+	t.weapon.Fight(t.Collider.Position, t.Direction, t.Camp, t.PlayerIndex)
 }
 
 func TankBorn(dx, dy int) Position {

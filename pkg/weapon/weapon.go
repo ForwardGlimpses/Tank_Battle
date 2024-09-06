@@ -11,7 +11,7 @@ var (
 )
 
 type Weapon interface {
-	Fight(position vector2.Vector, direction direction.Direction, camp string)
+	Fight(position vector2.Vector, direction direction.Direction, camp string, playerIndex int)
 	Cooling()
 }
 
@@ -21,16 +21,17 @@ type DefaultWeapon struct {
 	CoolingCount int
 }
 
-func (d *DefaultWeapon) Fight(position vector2.Vector, direction direction.Direction, camp string) {
+func (d *DefaultWeapon) Fight(position vector2.Vector, direction direction.Direction, camp string, playerIndex int) {
 	// TODO: 客户端冷却数值不准确
 	if d.CoolingCount > 0 {
 		return
 	}
 
 	opt := &bullet.CreateOption{
-		Position:  position,
-		Direction: direction,
-		Camp:      camp,
+		Position:    position,
+		Direction:   direction,
+		Camp:        camp,
+		PlayerIndex: playerIndex,
 	}
 	bullet.Create(opt)
 	d.CoolingCount = 60

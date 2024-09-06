@@ -15,9 +15,9 @@ func init() {
 }
 
 type playerMassage struct {
-	Index      string
-	Action     Action
-	TankIndex  int
+	Index     string
+	Action    Action
+	TankIndex int
 }
 
 type networkClient struct{}
@@ -30,9 +30,9 @@ func (a *networkClient) Send() string {
 	massage := []playerMassage{}
 	for _, player := range globalPlayer {
 		massage = append(massage, playerMassage{
-			Index:      player.Index,
-			Action:     player.Action,
-			TankIndex:  player.TankIndex,
+			Index:     player.Index,
+			Action:    player.Action,
+			TankIndex: player.TankIndex,
 		})
 	}
 	date := json.MarshalToString(massage)
@@ -56,9 +56,9 @@ func (a *networkServer) Send() string {
 	massage := []playerMassage{}
 	for _, player := range globalPlayer {
 		massage = append(massage, playerMassage{
-			Index:      player.Index,
-			Action:     player.Action,
-			TankIndex:  player.TankIndex,
+			Index:     player.Index,
+			Action:    player.Action,
+			TankIndex: player.TankIndex,
 		})
 	}
 	date := json.MarshalToString(massage)
@@ -75,8 +75,9 @@ func (a *networkServer) Receive(m string) {
 			player.Action = playermassage.Action
 			player.NetworkCount = 10
 		} else {
+			IndexCount++
 			player := &Player{
-				TankIndex:    tank.New("Player", 100, 100).Index,
+				TankIndex:    tank.New("Player", 100, 100, IndexCount).Index,
 				Index:        playermassage.Index,
 				Action:       playermassage.Action,
 				NetworkCount: 10,
