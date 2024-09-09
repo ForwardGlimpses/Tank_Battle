@@ -70,7 +70,6 @@ func New(cfg config.Player) *Player {
 			Attack: ebitenextend.KeyNameToKeyCode(cfg.Attack),
 		},
 	}
-
 }
 
 func Update() {

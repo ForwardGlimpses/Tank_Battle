@@ -4,6 +4,7 @@ import (
 	//"fmt"
 
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/network"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/scorer"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tank"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/json"
 	"github.com/google/uuid"
@@ -76,6 +77,7 @@ func (a *networkServer) Receive(m string) {
 			player.NetworkCount = 10
 		} else {
 			IndexCount++
+			scorer.New(IndexCount)
 			player := &Player{
 				TankIndex:    tank.New("Player", 100, 100, IndexCount).Index,
 				Index:        playermassage.Index,
