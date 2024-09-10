@@ -3,6 +3,7 @@ package bullet
 import (
 	"github.com/ForwardGlimpses/Tank_Battle/assets/bullet"
 	"github.com/ForwardGlimpses/Tank_Battle/assets/tank"
+	"github.com/ForwardGlimpses/Tank_Battle/pkg/scorer"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/tankbattle"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/types"
 	"github.com/ForwardGlimpses/Tank_Battle/pkg/utils/collision"
@@ -12,13 +13,14 @@ import (
 )
 
 type Bullet struct {
-	Collider  *collision.Collider
-	Direction direction.Direction
-	Speed     vector2.Vector
-	Image     *ebiten.Image
-	Index     int
-	Damage    int
-	Camp      string
+	Collider    *collision.Collider
+	Direction   direction.Direction
+	Speed       vector2.Vector
+	Image       *ebiten.Image
+	Index       int
+	Damage      int
+	Camp        string
+	PlayerIndex int
 }
 
 func init() {
@@ -38,10 +40,12 @@ func (b *Bullet) Update() {
 			if t, ok := obj.Data.(types.TakeDamage); ok {
 				if t.GetCamp() != b.Camp {
 					t.TakeDamage(b.Damage)
+					if t.GetCamp() == "NPC" {
+						scorer.AddPoints(b.PlayerIndex, b.Damage)
+					}
 					if t.GetCamp() != "bulletIsPassable" {
 						flag = false
 					}
-
 				}
 			}
 
@@ -79,9 +83,10 @@ func Draw(screen *ebiten.Image) {
 }
 
 type CreateOption struct {
-	Position  vector2.Vector
-	Direction direction.Direction
-	Camp      string
+	Position    vector2.Vector
+	Direction   direction.Direction
+	Camp        string
+	PlayerIndex int
 }
 
 var index = 0
@@ -90,13 +95,14 @@ func Create(opt *CreateOption) {
 	index += 1
 	Bullx, Bully := bullet.BulletImage[opt.Camp].Bounds().Dx(), bullet.BulletImage[opt.Camp].Bounds().Dy()
 	bullet := &Bullet{
-		Collider:  collision.NewCollider(opt.Position.X+float64(tank.EnemyImage.Bounds().Dx())/2, opt.Position.Y+float64(tank.EnemyImage.Bounds().Dy())/2, float64(Bullx), float64(Bully)),
-		Direction: opt.Direction,
-		Speed:     opt.Direction.DirectionVector2().MulScale(step),
-		Image:     bullet.BulletImage[opt.Camp],
-		Index:     index,
-		Damage:    50,
-		Camp:      opt.Camp,
+		Collider:    collision.NewCollider(opt.Position.X+float64(tank.EnemyImage.Bounds().Dx())/2, opt.Position.Y+float64(tank.EnemyImage.Bounds().Dy())/2, float64(Bullx), float64(Bully)),
+		Direction:   opt.Direction,
+		Speed:       opt.Direction.DirectionVector2().MulScale(step),
+		Image:       bullet.BulletImage[opt.Camp],
+		Index:       index,
+		Damage:      50,
+		Camp:        opt.Camp,
+		PlayerIndex: opt.PlayerIndex,
 	}
 
 	bullet.Collider.Data = bullet

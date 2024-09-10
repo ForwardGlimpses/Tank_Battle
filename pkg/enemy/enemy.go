@@ -44,7 +44,7 @@ func Update() {
 				AttackDuration: 0,
 				Index:          index,
 				Direction:      direction.Up,
-				Tank:           tank.New("NPC", t.X, t.Y),
+				Tank:           tank.New("NPC", t.X, t.Y, Enemynumers),
 			}
 			Enemynumers++
 			index++

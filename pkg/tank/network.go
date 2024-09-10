@@ -19,15 +19,16 @@ const (
 )
 
 type tankMassage struct {
-	Index     int
-	Hp        int
-	Dx        int
-	Dy        int
-	Direction direction.Direction
-	weapon    int
-	Attack    bool
-	Move      bool
-	Camp      string
+	Index       int
+	Hp          int
+	Dx          int
+	Dy          int
+	Direction   direction.Direction
+	weapon      int
+	Attack      bool
+	Move        bool
+	Camp        string
+	PlayerIndex int
 }
 
 type neteworkClient struct{}
@@ -56,15 +57,16 @@ func (a *neteworkClient) Receive(m string) {
 			tankTank.Collider.Position.Y = float64(tankmassage.Dy)
 		} else {
 			tank := &Tank{
-				Hp:        tankmassage.Hp,
-				Collider:  collision.NewCollider(float64(tankmassage.Dx), float64(tankmassage.Dy), float64(tank.PlayerImage.Bounds().Dx()), float64(tank.PlayerImage.Bounds().Dy())),
-				Direction: tankmassage.Direction,
-				weapon:    weapon.GetWeapon(Weapon),
-				Image:     tank.TankImage[tankmassage.Camp],
-				Attack:    tankmassage.Attack,
-				Move:      tankmassage.Move,
-				Camp:      tankmassage.Camp,
-				Index:     tankmassage.Index,
+				Hp:          tankmassage.Hp,
+				Collider:    collision.NewCollider(float64(tankmassage.Dx), float64(tankmassage.Dy), float64(tank.PlayerImage.Bounds().Dx()), float64(tank.PlayerImage.Bounds().Dy())),
+				Direction:   tankmassage.Direction,
+				weapon:      weapon.GetWeapon(Weapon),
+				Image:       tank.TankImage[tankmassage.Camp],
+				Attack:      tankmassage.Attack,
+				Move:        tankmassage.Move,
+				Camp:        tankmassage.Camp,
+				Index:       tankmassage.Index,
+				PlayerIndex: tankmassage.PlayerIndex,
 			}
 			GlobalTanks[tank.Index] = tank
 		}
@@ -84,15 +86,16 @@ func (a *networkServer) Send() string {
 	massage := []tankMassage{}
 	for _, tank := range GlobalTanks {
 		massage = append(massage, tankMassage{
-			Index:     tank.Index,
-			Hp:        tank.Hp,
-			Dx:        int(tank.Collider.Position.X),
-			Dy:        int(tank.Collider.Position.Y),
-			Direction: tank.Direction,
-			weapon:    Weapon,
-			Attack:    tank.Attack,
-			Move:      tank.Move,
-			Camp:      tank.Camp,
+			Index:       tank.Index,
+			Hp:          tank.Hp,
+			Dx:          int(tank.Collider.Position.X),
+			Dy:          int(tank.Collider.Position.Y),
+			Direction:   tank.Direction,
+			weapon:      Weapon,
+			Attack:      tank.Attack,
+			Move:        tank.Move,
+			Camp:        tank.Camp,
+			PlayerIndex: tank.PlayerIndex,
 		})
 	}
 	date := json.MarshalToString(massage)
